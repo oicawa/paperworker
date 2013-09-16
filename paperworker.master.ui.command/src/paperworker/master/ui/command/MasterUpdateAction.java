@@ -1,0 +1,79 @@
+package paperworker.master.ui.command;
+
+import java.util.List;
+
+import paperworker.core.PWItem;
+import paperworker.core.PWField;
+import paperworker.core.PWError;
+import paperworker.core.PWUtilities;
+import paperworker.core.PWWarning;
+import paperworker.core.ui.command.Action;
+import paperworker.core.ui.command.PaperWorker;
+import paperworker.master.core.MasterController;
+import paperworker.master.core.MasterItem;
+
+public abstract class MasterUpdateAction<TItem extends MasterItem, TController extends MasterController<TItem>>
+	extends MasterAction<TItem, TController> {
+
+	public MasterUpdateAction() {
+		super();
+	}
+	
+	@Override
+	public String getName() {
+		return "update";
+	}
+
+	@Override
+	public String[] getDescription() {
+		final String[] description = {
+			String.format("Update a %s information by specified ID.", getCommandName()),
+			"  ---------",
+			String.format("  FORMAT > %s %s [ID]", getCommandName(), getName())
+		};
+		return description;
+	}
+
+	public static <TItem extends MasterItem> void update(MasterController<TItem> controller, String itemId, Class<TItem> itemClass) throws PWError, PWWarning {
+		TItem src = controller.get(itemId);
+		if (src == null) {
+			PaperWorker.message("The member is not found. [memberId: %s]", itemId);
+			return;
+		}
+		
+		TItem dst = PWUtilities.createInstance(itemClass);
+		dst.setId(src.getId());
+
+		int maxLength = Action.getMaxLengthOfCaptions(itemClass);
+		
+		List<PWField> fields = PWItem.getFields(itemClass);
+		for (int i = 1; i < fields.size(); i++) {
+			promptField(dst, src, fields.get(i), maxLength);
+		}
+		
+		PaperWorker.message("  ------------------------------");
+		if (PaperWorker.confirm("  Do you save? [Y/N] >> ", "  *** Input 'Y' or 'N'. ***", "Y", "N")) {
+			controller.update(dst);
+			PaperWorker.message("");
+			PaperWorker.message("  Saved.");
+		} else {
+			PaperWorker.message("");
+			PaperWorker.message("  Canceled.");
+		}
+	}
+
+	@Override
+	public void run(String[] args) throws PWError, PWWarning {
+		String itemId = args[2];
+		PWField field = MasterItem.getPrimaryField(getItemType());
+		PaperWorker.message("  << UPDATE >> [%s: %s]", field.getCaption(), itemId);
+		PaperWorker.message("  * If you input no value (just only the ENTER key), the field value doesn't change.");
+		update(controller, itemId, getItemType());
+	}
+
+	@Override
+	protected String getRegexForParse() {
+		return String.format("^%s %s [0-9a-zA-Z]+", getCommandName(), getName());
+	}
+
+}
