@@ -32,11 +32,6 @@ public class PaperWorker implements Closeable {
 	}
 	
 	private void run(String[] args) {
-		if (args.length == 0) {
-			printHelp();
-			return;
-		}
-		
 		message("==================================================");
 		message("PaperWorker");
 		message("==================================================");
@@ -159,17 +154,5 @@ public class PaperWorker implements Closeable {
 	
 	public static void flush() {
 		System.out.flush();
-	}
-	
-	private static void printHelp() {
-		// TODO: Create a help text file.
-		printDocument("paperworker-help.txt");
-	}
-	
-	private static void printDocument(String filePath) {
-		// TODO: Implement next function.
-		//        1. Read a text file.
-		//        2. Print the contents of the file to stdout.
-		message("*** Read [%s] ***", filePath);
 	}
 }
