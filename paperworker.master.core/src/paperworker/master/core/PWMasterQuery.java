@@ -9,7 +9,7 @@ import paperworker.core.PWQuery;
 
 public class PWMasterQuery {
 	
-	public static <T extends MasterItem> PWQuery getCreateQuery(Class<T> masterItemClass) {
+	public static <T extends MasterItem> PWQuery getCreateQuery(Class<T> masterItemClass) throws PWError {
     	List<PWField> fields = PWItem.getFields(masterItemClass);
     	
     	// Create the fields part of query
@@ -33,7 +33,7 @@ public class PWMasterQuery {
     	return query;
 	}
 	
-	public static <T extends MasterItem> PWQuery getSelectQuery(Class<T> masterItemClass) {
+	public static <T extends MasterItem> PWQuery getSelectQuery(Class<T> masterItemClass) throws PWError {
 		PWQuery query = new PWQuery(String.format("select * from %s;", PWQuery.getTableName(masterItemClass)));
 		return query;
 	}

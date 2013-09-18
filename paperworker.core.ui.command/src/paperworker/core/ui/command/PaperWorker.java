@@ -53,6 +53,7 @@ public class PaperWorker implements Closeable {
 				// TODO: Must implement the logic that gets all libraries including "Command" class dynamically.
 				message(" quit");
 				message(" member");
+				message(" group");
 				message(" --------------------------------------------------");
 				message("");
 				continue;

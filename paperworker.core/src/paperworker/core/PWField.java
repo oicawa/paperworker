@@ -15,11 +15,10 @@ public class PWField {
 		this.field = field;
 	}
 	
-	@SuppressWarnings("rawtypes")
-	public static PWField getField(Class class_, String fieldName) throws PWError {
+	public static PWField getField(Class<? extends PWItem> type, String fieldName) throws PWError {
 		Field field;
 		try {
-			field = class_.getDeclaredField(fieldName);
+			field = type.getDeclaredField(fieldName);
 		} catch (SecurityException e) {
 			throw new PWError(e, "Failed to access the field. [field name: '%s']", fieldName);
 		} catch (NoSuchFieldException e) {

@@ -30,8 +30,8 @@ public abstract class MasterAddAction<TItem extends MasterItem, TController exte
 	public void run(String[] args) throws PWError, PWWarning {
 		String newItemId = args[2];
 		controller.add(newItemId);
-		PWField fieldInfo = PWField.getField(getItemType(), "memberId");
-		PaperWorker.message("  Created a new member. [%s: %s]", fieldInfo.getCaption(), newItemId);
+		PWField fieldInfo = MasterItem.getPrimaryField(getItemType());
+		PaperWorker.message("  Created a new %s. [%s: %s]", getCommandName(), fieldInfo.getCaption(), newItemId);
 		PaperWorker.message("  Input detail information below.");
 		PaperWorker.message("  --------------------------------------------------");
 		MasterUpdateAction.update(controller, newItemId, getItemType());

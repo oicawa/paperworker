@@ -7,8 +7,10 @@ import paperworker.core.PWItem;
 import paperworker.core.PWError;
 import paperworker.core.annotation.PWFieldBasicInfo;
 import paperworker.core.annotation.DateTimeInfo;
+import paperworker.core.annotation.PWItemBasicInfo;
 import paperworker.master.core.MasterItem;
 
+@PWItemBasicInfo(caption = "Members", tableName = "Members")
 public class Member extends MasterItem {
 	
 	@PWFieldBasicInfo(caption = "Member ID", type = "varchar(100)", primary = true)

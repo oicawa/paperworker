@@ -25,8 +25,9 @@ public class PWQuery {
 		values.add(value);
 	}
 	
-	public static <T extends PWItem> String getTableName(Class<T> masterItemClass) {
-		String className = masterItemClass.getSimpleName();
-		return className;
+	public static <TItem extends PWItem> String getTableName(Class<TItem> type) throws PWError {
+		
+		String tableName = PWItem.getTableName(type);
+		return tableName;
 	}
 }
