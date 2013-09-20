@@ -1,5 +1,5 @@
 /*
- *  $Id: Command.java 2013/09/21 3:03:36 Masamitsu Oikawa $
+ *  $Id: MasterAfterQuery.java 2013/09/21 3:03:36 Masamitsu Oikawa $
  *
  *  ===============================================================================
  *
@@ -26,40 +26,47 @@
  *  ===============================================================================
  */
 
-package paperworker.member.ui.command;
+package paperworker.master.core;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import paperworker.core.PWAfterQuery;
 import paperworker.core.PWError;
+import paperworker.core.PWField;
+import paperworker.core.PWItem;
+import paperworker.core.PWUtilities;
 import paperworker.core.PWWarning;
-import paperworker.core.ui.command.PWAction;
-import paperworker.master.ui.command.MasterCommand;
-import paperworker.member.core.Member;
-import paperworker.member.core.MemberController;
 
-public class Command extends MasterCommand<Member, MemberController> {
-	public Command() throws PWError, PWWarning {
-		super();
+public class MasterAfterQuery<T extends MasterItem> implements PWAfterQuery<ResultSet>{
+
+	private List<T> masterItemList = new ArrayList<T>();
+	private Class<T> masterItemClass;
+	
+	public MasterAfterQuery(Class<T> masterItemClass) {
+		this.masterItemClass = masterItemClass;
 	}
 	
-	protected String getName() {
-		return "member";
+	@Override
+	public void run(ResultSet resultSet) throws PWWarning, PWError {
+        try {
+			while (resultSet.next()) {
+				T masterItem = PWUtilities.createInstance(masterItemClass);
+	        	List<PWField> fields = PWItem.getFields(masterItemClass);
+		    	for (PWField field : fields) {
+		    		field.setValue(masterItem, resultSet.getObject(field.getName()));
+		    	}
+		    	masterItemList.add(masterItem);
+			}
+		} catch (SQLException e) {
+			throw new PWWarning("Getting member list is failed.");
+		}
 	}
 
-	@Override
-	protected List<PWAction<MemberController>> getActions() {
-		List<PWAction<MemberController>> actions = new ArrayList<PWAction<MemberController>>();
-		actions.add(new ListAction());
-		actions.add(new AddAction());
-		actions.add(new DetailAction());
-		actions.add(new UpdateAction());
-		actions.add(new DeleteAction());
-		return actions;
+	public List<T> getItemList() {
+		return masterItemList;
 	}
 
-	@Override
-	protected MemberController getController() throws PWError, PWWarning {
-		return new MemberController();
-	}
 }
