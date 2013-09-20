@@ -4,8 +4,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/paperworker.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/paperworker.core.ui.command"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/paperworker.group.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/paperworker.master.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/paperworker.master.ui.command"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/paperworker.organization.core"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

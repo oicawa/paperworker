@@ -1,4 +1,4 @@
-package paperworker.group.core;
+package paperworker.organization.core;
 
 import paperworker.core.PWError;
 import paperworker.core.PWItem;
@@ -6,14 +6,14 @@ import paperworker.core.annotation.PWFieldBasicInfo;
 import paperworker.core.annotation.PWItemBasicInfo;
 import paperworker.master.core.MasterItem;
 
-@PWItemBasicInfo(caption = "Groups", tableName = "Groups")
-public class Group extends MasterItem {
+@PWItemBasicInfo(caption = "Organizations", tableName = "Organizations")
+public class Organization extends MasterItem {
 
-	@PWFieldBasicInfo(caption = "Group ID", type = "varchar(100)", primary = true)
-	private String groupId;
+	@PWFieldBasicInfo(caption = "Organization ID", type = "varchar(100)", primary = true)
+	private String organizationId;
 
-	@PWFieldBasicInfo(caption = "Parent Group ID", type = "varchar(100)")
-	private String parentGroupId;
+	@PWFieldBasicInfo(caption = "Parent Organization ID", type = "varchar(100)")
+	private String parentOrganizationId;
 	
 	@PWFieldBasicInfo(caption = "Group Name", type = "varchar(100)")
 	private String name;
@@ -28,22 +28,22 @@ public class Group extends MasterItem {
 	private String subleaderId;
 	
 	@PWFieldBasicInfo(caption = "Division", type = "varchar(100)")
-	private GroupDivision division;
+	private OrganizationDivision division;
 	
-	public String getGroupId() {
-		return groupId;
+	public String getOrganizationId() {
+		return organizationId;
 	}
 
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
 	}
 
-	public String getParentGroupId() {
-		return parentGroupId;
+	public String getParentOrganizationId() {
+		return parentOrganizationId;
 	}
 
-	public void setParentGroupId(String parentGroupId) {
-		this.parentGroupId = parentGroupId;
+	public void setParentOrganizationId(String parentOrganizationId) {
+		this.parentOrganizationId = parentOrganizationId;
 	}
 
 	public String getName() {
@@ -78,22 +78,22 @@ public class Group extends MasterItem {
 		this.subleaderId = subleaderId;
 	}
 
-	public GroupDivision getDivision() {
+	public OrganizationDivision getDivision() {
 		return division;
 	}
 
-	public void setDivision(GroupDivision division) {
+	public void setDivision(OrganizationDivision division) {
 		this.division = division;
 	}
 	
 	@Override
 	public String getId() {
-		return groupId;
+		return organizationId;
 	}
 
 	@Override
 	public void setId(String itemId) {
-		groupId = itemId;
+		organizationId = itemId;
 	}
 
 	@Override

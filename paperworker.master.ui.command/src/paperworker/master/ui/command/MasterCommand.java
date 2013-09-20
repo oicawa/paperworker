@@ -2,12 +2,12 @@ package paperworker.master.ui.command;
 
 import paperworker.core.PWError;
 import paperworker.core.PWWarning;
-import paperworker.core.ui.command.Command;
+import paperworker.core.ui.command.PWCommand;
 import paperworker.master.core.MasterController;
 import paperworker.master.core.MasterItem;
 
 public abstract class MasterCommand<TItem extends MasterItem, TController extends MasterController<TItem>>
-							extends Command<TController> {
+							extends PWCommand<TController> {
 	
 	protected MasterController<TItem> controller;
 	

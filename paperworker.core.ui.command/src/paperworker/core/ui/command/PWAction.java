@@ -10,11 +10,11 @@ import paperworker.core.PWField;
 import paperworker.core.PWError;
 import paperworker.core.PWWarning;
 
-public abstract class Action<TController extends PWController> {
+public abstract class PWAction<TController extends PWController> {
 	
 	protected TController controller;
 	
-	public Action() {
+	public PWAction() {
 	}
 
 	public void setController(TController controller) {

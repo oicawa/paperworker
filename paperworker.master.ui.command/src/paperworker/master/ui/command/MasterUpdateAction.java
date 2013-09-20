@@ -7,7 +7,7 @@ import paperworker.core.PWField;
 import paperworker.core.PWError;
 import paperworker.core.PWUtilities;
 import paperworker.core.PWWarning;
-import paperworker.core.ui.command.Action;
+import paperworker.core.ui.command.PWAction;
 import paperworker.core.ui.command.PaperWorker;
 import paperworker.master.core.MasterController;
 import paperworker.master.core.MasterItem;
@@ -44,7 +44,7 @@ public abstract class MasterUpdateAction<TItem extends MasterItem, TController e
 		TItem dst = PWUtilities.createInstance(itemClass);
 		dst.setId(src.getId());
 
-		int maxLength = Action.getMaxLengthOfCaptions(itemClass);
+		int maxLength = PWAction.getMaxLengthOfCaptions(itemClass);
 		
 		List<PWField> fields = PWItem.getFields(itemClass);
 		for (int i = 1; i < fields.size(); i++) {

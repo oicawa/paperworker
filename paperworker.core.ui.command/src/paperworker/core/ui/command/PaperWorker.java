@@ -2,17 +2,19 @@ package paperworker.core.ui.command;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
 import paperworker.core.PWController;
 import paperworker.core.PWError;
+import paperworker.core.PWUtilities;
 import paperworker.core.PWWarning;
 
 public class PaperWorker implements Closeable {
 	
-	private HashMap<String, Command<? extends PWController>> commands = new HashMap<String, Command<? extends PWController>>();
+	private HashMap<String, PWCommand<? extends PWController>> commands = new HashMap<String, PWCommand<? extends PWController>>();
 
 	public static void main(String[] args) {
 		PaperWorker paperworker = new PaperWorker();
@@ -26,12 +28,13 @@ public class PaperWorker implements Closeable {
 	}
 	
 	public void close() {
-		for (Command<? extends PWController> command : commands.values()) {
+		for (PWCommand<? extends PWController> command : commands.values()) {
 			command.close();
 		}
 	}
 	
-	private void run(String[] args) {
+	private void run(String[] args) throws PWError {
+		registCommands();
 		message("==================================================");
 		message("PaperWorker");
 		message("==================================================");
@@ -48,13 +51,10 @@ public class PaperWorker implements Closeable {
 			}
 			
 			if (input.equals("help")) {
-				message("<< Command List >>");
-				message(" --------------------------------------------------");
-				// TODO: Must implement the logic that gets all libraries including "Command" class dynamically.
-				message(" quit");
-				message(" member");
-				message(" group");
-				message(" --------------------------------------------------");
+				message("quit");
+				for (String name : commands.keySet()) {
+					message(name);
+				}
 				message("");
 				continue;
 			}
@@ -62,7 +62,7 @@ public class PaperWorker implements Closeable {
 			String[] commandLine = input.split(" ");
 			String commandName = commandLine[0];
 			
-			Command<? extends PWController> command = getCommand(commandName);
+			PWCommand<? extends PWController> command = commands.get(commandName);
 			if (command == null) {
 				continue;
 			}
@@ -83,32 +83,38 @@ public class PaperWorker implements Closeable {
 		}
 	}
 	
-	private Command<? extends PWController> getCommand(String commandName) {
-		if (!commands.containsKey(commandName)) {
-			String classPath = String.format("paperworker.%s.ui.command.Command", commandName);
-			try {
-				@SuppressWarnings("unchecked")
-				Class<Command<? extends PWController>> commandClass = (Class<Command<? extends PWController>>)Class.forName(classPath);
-				Command<? extends PWController> command = commandClass.newInstance();
-				commands.put(commandName, command);
-			} catch (ClassNotFoundException e) {
-				error("*** ERROR *** paperworker has no command. [name: %s, classpath: %s]", commandName, classPath);
-				error(e.getMessage());
-				return null;
-			} catch (InstantiationException e) {
-				error("*** ERROR *** paperworker command couldn't instatiate. [name: %s, classpath: %s]", commandName, classPath);
-				error(e.getMessage());
-				return null;
-			} catch (IllegalAccessException e) {
-				error("*** ERROR *** paperworker command [%s] couldn't access to the constructor(?). [name: %s, classpath: %s]", commandName, classPath);
-				error(e.getMessage());
-				return null;
-			} catch (Exception e) {
-				error(e.getMessage());
-				return null;
+	private void registCommands() throws PWError {
+		final String endsWith = ".ui.command/bin"; // TODO Confirm in case *.jar
+		final String endTrim = "/bin"; // TODO Confirm in case *.jar
+		File directory = (new File(".")).getAbsoluteFile().getParentFile().getParentFile();
+		String startsWith = directory.getAbsolutePath();
+		String[] pathes = System.getProperty("java.class.path").split(":");
+		for (String path : pathes) {
+			if (!path.startsWith(startsWith) ||
+				!path.endsWith(endsWith)) {
+				continue;
 			}
+			
+			String packageName = path.substring(startsWith.length() + 1, path.length() - endTrim.length());
+			PWCommand<? extends PWController> command = createCommand(packageName);
+			if (command == null) {
+				continue;
+			}
+			String commandName = PWUtilities.getCommandName(packageName);
+			commands.put(commandName, command);
 		}
-		return commands.get(commandName); 
+	}
+
+	private PWCommand<? extends PWController> createCommand(String packageName) throws PWError {
+		String classPath = String.format("%s.Command", packageName);
+		try {
+			@SuppressWarnings("unchecked")
+			Class<PWCommand<? extends PWController>> commandClass = (Class<PWCommand<? extends PWController>>)Class.forName(classPath);
+			PWCommand<? extends PWController> command = PWUtilities.createInstance(commandClass);
+			return command;
+		} catch (ClassNotFoundException e) {
+			return null;
+		}
 	}
 	
 	public static void message(String format, Object... args) {

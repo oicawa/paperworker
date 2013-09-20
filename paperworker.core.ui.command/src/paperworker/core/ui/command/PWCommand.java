@@ -8,14 +8,14 @@ import paperworker.core.PWController;
 import paperworker.core.PWError;
 import paperworker.core.PWWarning;
 
-public abstract class Command<T extends PWController> implements Closeable {
+public abstract class PWCommand<T extends PWController> implements Closeable {
 
 	private T controller;
-	private HashMap<String, Action<T>> actions = new HashMap<String, Action<T>>();
+	private HashMap<String, PWAction<T>> actions = new HashMap<String, PWAction<T>>();
 	
-	public Command() throws PWError, PWWarning {
+	public PWCommand() throws PWError, PWWarning {
 		this.controller = getController();
-		for (Action<T> action : getActions()) {
+		for (PWAction<T> action : getActions()) {
 			action.setController(controller);
 			actions.put(action.getName(), action);
 		}
@@ -27,9 +27,9 @@ public abstract class Command<T extends PWController> implements Closeable {
 	
 	protected abstract T getController() throws PWError, PWWarning;
 	
-	protected abstract List<Action<T>> getActions();
+	protected abstract List<PWAction<T>> getActions();
 	
-	public Action<T> getAction(String actionName) {
+	public PWAction<T> getAction(String actionName) {
 		if (actions.containsKey(actionName)) {
 			return actions.get(actionName);
 		}
@@ -38,7 +38,7 @@ public abstract class Command<T extends PWController> implements Closeable {
 	
 	public void printActionList() {
 		PaperWorker.message("  --------------------------------------------------");
-		for (Action<T> action : actions.values()) {
+		for (PWAction<T> action : actions.values()) {
 			PaperWorker.message("  %s", action.getName());
 			for (String line : action.getDescription()) {
 				PaperWorker.message("      %s", line);
@@ -55,7 +55,7 @@ public abstract class Command<T extends PWController> implements Closeable {
 			return;
 		}
 		
-		for (Action<T> action : actions.values()) {
+		for (PWAction<T> action : actions.values()) {
 			if (action.parse(args)) {
 				action.run(args);
 				return;

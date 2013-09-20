@@ -1,7 +1,7 @@
 package paperworker.member.ui.command;
 
 import paperworker.core.PWError;
-import paperworker.core.ui.command.Action;
+import paperworker.core.ui.command.PWAction;
 import paperworker.core.ui.command.PaperWorker;
 import paperworker.master.ui.command.MasterDetailAction;
 import paperworker.member.core.Member;
@@ -16,7 +16,7 @@ public class DetailAction extends MasterDetailAction<Member, MemberController> {
 	@Override
 	protected void printDetail(Member item) throws PWError {
 		String[] fieldNames = { "groupId", "birthday", "enteredDate", "gender", "telephone", "address", "email" };
-		int maxLength = Action.getMaxLengthOfCaptions(Member.class);
+		int maxLength = PWAction.getMaxLengthOfCaptions(Member.class);
 		
 		PaperWorker.message("  [%s] %s %s (%s %s)",
 				item.getMemberId(),
