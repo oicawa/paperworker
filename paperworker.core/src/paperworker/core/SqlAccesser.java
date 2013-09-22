@@ -86,7 +86,7 @@ public class SqlAccesser implements Closeable {
 		}
 	}
 	
-	public boolean existTable(String tableName) {
+	public boolean existTable(String tableName) throws PWError {
 		DatabaseMetaData metadata;
 		try {
 			metadata = connection.getMetaData();
@@ -100,10 +100,8 @@ public class SqlAccesser implements Closeable {
 	        }
 	        return false;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new PWError(e, e.getMessage());
 		}
-        return true;
 	}
 	
 	public void select(PWQuery query, PWAfterQuery<ResultSet> afterQuery) throws PWError, PWWarning {
@@ -119,17 +117,17 @@ public class SqlAccesser implements Closeable {
 		        try {
 		        	afterQuery.run(rs);
 		        } catch (Exception e) {
-					throw new PWWarning(e, "SQL Result could not be gotton.");
+					throw new PWWarning(e, e.getMessage());
 		        } finally {
 		            rs.close();
 		        }
 	        } catch (SQLException e) {
-				throw new PWError(e, "SQL Result could not be gotton.");
+				throw new PWError(e, e.getMessage());
 			} finally {
 		        st.close();
 			}
 		} catch (SQLException e) {
-			throw new PWError(e, "SQL Statement could not be created.");
+			throw new PWError(e, e.getMessage());
 		}
 	}
 	
@@ -149,14 +147,14 @@ public class SqlAccesser implements Closeable {
 	    			}
 					st.execute();
 				} catch (SQLException e) {
-					throw new PWError(e, "SQL execute was failed.");
+					throw new PWError(e, e.getMessage());
 				} finally {
 			        st.close();
 				}
 			}
 	        connection.commit();
 		} catch (SQLException e) {
-			throw new PWError(e, "SQL PreparedStatement could not be created.");
+			throw new PWError(e, e.getMessage());
 		}
 	}
 }

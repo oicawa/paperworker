@@ -39,4 +39,5 @@ public @interface PWFieldBasicInfo {
 	String caption() default "*NO CAPTION*";
 	String type();
 	boolean primary() default false;
+	boolean unique() default false;
 }

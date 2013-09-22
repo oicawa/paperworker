@@ -30,6 +30,7 @@ package paperworker.master.ui.command;
 
 import paperworker.core.PWField;
 import paperworker.core.PWError;
+import paperworker.core.PWItem;
 import paperworker.core.PWWarning;
 import paperworker.core.ui.command.PaperWorker;
 import paperworker.master.core.MasterController;
@@ -62,7 +63,8 @@ public abstract class MasterDetailAction<TItem extends MasterItem, TController e
 	public void print(String itemId) throws PWError, PWWarning {
 		TItem item = controller.get(itemId);
 		if (item == null) {
-			PWField field = MasterItem.getPrimaryField(getItemType());
+			// TODO: Must correspond to multiple primary keys input.
+			PWField field = PWItem.getFields(getItemType(), PWField.KeyType.Primary).get(0);
 			PaperWorker.message("The %s is not found. [%s: %s]", getCommandName(), field.getCaption(), itemId);
 			return;
 		}

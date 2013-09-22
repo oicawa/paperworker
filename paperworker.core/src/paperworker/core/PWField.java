@@ -37,6 +37,13 @@ import paperworker.core.annotation.PWFieldBasicInfo;
 import paperworker.core.annotation.DateTimeInfo;
 
 public class PWField {
+	
+	public enum KeyType {
+		None,
+		Primary,
+		Unique,
+	}
+	
 	private Field field;
 	
 	private PWField(Field field) {
@@ -182,14 +189,23 @@ public class PWField {
 			throw new PWError(e, "The field couldn't be access. [field name: '%s']", field.getName());
 		}
 	}
+	
+	public boolean isKey(KeyType keyType)  {
+		assert(keyType != KeyType.None);
+		return keyType == KeyType.Primary ? isPrimary() : isUnique();
+	}
 
 	public boolean isPrimary() {
 		PWFieldBasicInfo info = field.getAnnotation(PWFieldBasicInfo.class);
 		return info.primary();
 	}
 
-	@SuppressWarnings("rawtypes")
-	public Class getFieldType() {
+	public boolean isUnique() {
+		PWFieldBasicInfo info = field.getAnnotation(PWFieldBasicInfo.class);
+		return info.unique();
+	}
+
+	public Class<?> getFieldType() {
 		return field.getType();
 	}
 }

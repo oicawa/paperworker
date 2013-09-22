@@ -46,8 +46,12 @@ public abstract class PWItem {
 		return fieldInfo.getValue(item);
 	}
 	
-	public static List<PWField> getFields(Class<? extends PWItem> class_) {
-		Field[] fields = class_.getDeclaredFields();
+	public static List<PWField> getFields(Class<? extends PWItem> itemType) {
+		return getFields(itemType, PWField.KeyType.None);
+	}
+	
+	public static List<PWField> getFields(Class<? extends PWItem> itemType, PWField.KeyType keyType) {
+		Field[] fields = itemType.getDeclaredFields();
 		List<PWField> list = new ArrayList<PWField>();
 		for (Field field : fields) {
 			int modifiers = field.getModifiers();
@@ -58,7 +62,20 @@ public abstract class PWItem {
 			if (!Modifier.isPrivate(modifiers))
 				continue;
 			field.setAccessible(true);
-			list.add(PWField.getField(field));
+			
+			PWField pwField = PWField.getField(field);
+			
+			if (keyType == PWField.KeyType.None) {
+				list.add(pwField);
+			}
+			
+			if (keyType == PWField.KeyType.Primary && pwField.isPrimary()) {
+				list.add(pwField);
+			}
+			
+			if (keyType == PWField.KeyType.Unique && pwField.isUnique()) {
+				list.add(pwField);
+			}
 		}
 		return list;
 	}
@@ -89,5 +106,13 @@ public abstract class PWItem {
 	public static String getTableName(Class<? extends PWItem> type) throws PWError {
 		PWItemBasicInfo info = type.getAnnotation(PWItemBasicInfo.class);
 		return info == null ? null : info.tableName();
+	}
+	
+	public static List<PWField> getPrimaryFields(Class<? extends PWItem> itemType) throws PWError {
+		return getFields(itemType, PWField.KeyType.Primary);
+	}
+	
+	public static List<PWField> getUniqueFields(Class<? extends PWItem> itemType) throws PWError {
+		return getFields(itemType, PWField.KeyType.Unique);
 	}
 }

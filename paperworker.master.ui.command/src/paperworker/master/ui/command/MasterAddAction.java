@@ -30,6 +30,7 @@ package paperworker.master.ui.command;
 
 import paperworker.core.PWField;
 import paperworker.core.PWError;
+import paperworker.core.PWItem;
 import paperworker.core.PWWarning;
 import paperworker.core.ui.command.PaperWorker;
 import paperworker.master.core.MasterController;
@@ -56,9 +57,10 @@ public abstract class MasterAddAction<TItem extends MasterItem, TController exte
 	}
 
 	public void run(String[] args) throws PWError, PWWarning {
+		// TODO: Must correspond to multiple primary keys input.
 		String newItemId = args[2];
 		controller.add(newItemId);
-		PWField fieldInfo = MasterItem.getPrimaryField(getItemType());
+		PWField fieldInfo = PWItem.getFields(getItemType(), PWField.KeyType.Primary).get(0);
 		PaperWorker.message("  Created a new %s. [%s: %s]", getCommandName(), fieldInfo.getCaption(), newItemId);
 		PaperWorker.message("  Input detail information below.");
 		PaperWorker.message("  --------------------------------------------------");

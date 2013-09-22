@@ -31,6 +31,7 @@ package paperworker.master.core;
 import java.util.List;
 
 import paperworker.core.PWController;
+import paperworker.core.PWField;
 import paperworker.core.PWFilter;
 import paperworker.core.PWError;
 import paperworker.core.PWQuery;
@@ -51,24 +52,24 @@ public class MasterController<T extends MasterItem> extends PWController {
 	}
 	
 	private void create() throws PWError, PWWarning {
-    	PWQuery query = PWMasterQuery.getCreateQuery(type);
+    	PWQuery query = PWQuery.getCreateTableQuery(type);
 		accesser.execute(query);
 	}
 
 	public void add(String itemId) throws PWError, PWWarning {
-		PWQuery query = PWMasterQuery.getInsertQuery(type, itemId);
+		PWQuery query = PWQuery.getInsertQuery(type, itemId);
         accesser.execute(query);
 	}
 
-	public T get(String itemId) throws PWError, PWWarning {
-    	PWQuery query = PWMasterQuery.getSelectQuery(type, itemId);
+	public T get(Object... keyValues) throws PWError, PWWarning {
+    	PWQuery query = PWQuery.getSelectQueryByKeys(type, PWField.KeyType.Primary, keyValues);
     	MasterAfterQuery<T> afterQuery = new MasterAfterQuery<T>(type);
         accesser.select(query, afterQuery);
         return afterQuery.getItemList().size() == 0 ? null : afterQuery.getItemList().get(0);
 	}
 
 	public List<T> get() throws PWError, PWWarning {
-    	PWQuery query = PWMasterQuery.getSelectQuery(type);
+    	PWQuery query = PWQuery.getSelectQueryByKeys(type, PWField.KeyType.Primary);
     	MasterAfterQuery<T> afterQuery = new MasterAfterQuery<T>(type);
         accesser.select(query, afterQuery);
         return afterQuery.getItemList();
@@ -80,12 +81,12 @@ public class MasterController<T extends MasterItem> extends PWController {
 	}
 	
 	public void update(T item) throws PWError, PWWarning {
-		PWQuery query = PWMasterQuery.getUpdateQuery(type, item);
+		PWQuery query = PWQuery.getUpdateQueryByKey(item, PWField.KeyType.Primary);
 		accesser.execute(query);
 	}
 	
 	public void delete(String itemId) throws PWError, PWWarning {
-		PWQuery query = PWMasterQuery.getDeleteQuery(type, itemId);
+		PWQuery query = PWQuery.getDeleteQueryByKey(type, PWField.KeyType.Primary, itemId);
         accesser.execute(query);
 	}
 

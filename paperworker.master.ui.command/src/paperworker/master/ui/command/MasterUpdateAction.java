@@ -92,8 +92,9 @@ public abstract class MasterUpdateAction<TItem extends MasterItem, TController e
 
 	@Override
 	public void run(String[] args) throws PWError, PWWarning {
+		// TODO: Must correspond to multiple primary keys input.
 		String itemId = args[2];
-		PWField field = MasterItem.getPrimaryField(getItemType());
+		PWField field = PWItem.getFields(getItemType(), PWField.KeyType.Primary).get(0);
 		PaperWorker.message("  << UPDATE >> [%s: %s]", field.getCaption(), itemId);
 		PaperWorker.message("  * If you input no value (just only the ENTER key), the field value doesn't change.");
 		update(controller, itemId, getItemType());
