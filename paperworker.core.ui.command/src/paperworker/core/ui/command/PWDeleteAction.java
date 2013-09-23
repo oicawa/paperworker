@@ -1,5 +1,5 @@
 /*
- *  $Id: Command.java 2013/09/23 15:02:33 masamitsu $
+ *  $Id: PWDeleteAction.java 2013/09/23 13:43:04 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,60 +26,57 @@
  *  ===============================================================================
  */
 
-package paperworker.organization.ui.command;
+package paperworker.core.ui.command;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import paperworker.core.PWBasicController;
 import paperworker.core.PWError;
+import paperworker.core.PWField;
+import paperworker.core.PWItem;
+import paperworker.core.PWUtilities;
 import paperworker.core.PWWarning;
-import paperworker.core.ui.command.PWAction;
-import paperworker.master.ui.command.MasterCommand;
-import paperworker.organization.core.Organization;
-import paperworker.organization.core.OrganizationController;
 
 /**
  * @author masamitsu
  *
  */
-public class Command extends MasterCommand<Organization, OrganizationController> {
+public abstract class PWDeleteAction<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWAction<TItem, TController> {
 
-	/**
-	 * @throws PWError
-	 * @throws PWWarning
+	private PWDetailAction<TItem, TController> detailAction;
+	
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getName()
 	 */
-	public Command() throws PWError, PWWarning {
-		super();
+	@Override
+	public String getName() {
+		return "delete";
 	}
 
 	/* (non-Javadoc)
-	 * @see paperworker.core.ui.command.PWCommand#getName()
+	 * @see paperworker.core.ui.command.PWAction#run(java.lang.String[])
 	 */
 	@Override
-	protected String getName() {
-		return "organization";
+	public void run(String[] args) throws PWError, PWWarning {
+		List<PWField> fields = PWItem.getPrimaryFields(getItemType());
+		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(fields, ACTION_ARG_START_INDEX, args);
+		delete(controller, keyValues);
 	}
 
-	/* (non-Javadoc)
-	 * @see paperworker.core.ui.command.PWCommand#createController()
-	 */
-	@Override
-	protected OrganizationController createController() throws PWError, PWWarning {
-		return new OrganizationController();
+	public void delete(TController controller, Object... keyValues) throws PWError, PWWarning {
+		PaperWorker.message("<< DELETE >>");
+		detailAction.print(keyValues);
+		
+		PaperWorker.message("------------------------------");
+		if (PaperWorker.confirm("Do you delete? [Y/N] >> ", "*** Input 'Y' or 'N'. ***", "Y", "N")) {
+			controller.delete(keyValues);
+			PaperWorker.message("Deleted.");
+		} else {
+			PaperWorker.message("Canceled.");
+		}
 	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.ui.command.PWCommand#getActions()
-	 */
-	@Override
-	protected List<PWAction<Organization, OrganizationController>> getActions() {
-		List<PWAction<Organization, OrganizationController>> actions = new ArrayList<PWAction<Organization, OrganizationController>>();
-		actions.add(new ListAction());
-		actions.add(new AddAction());
-		actions.add(new DetailAction());
-		actions.add(new UpdateAction());
-		actions.add(new DeleteAction());
-		return actions;
+	
+	public void setDetailAction(PWDetailAction<TItem, TController> detailAction) {
+		this.detailAction = detailAction;
 	}
-
 }

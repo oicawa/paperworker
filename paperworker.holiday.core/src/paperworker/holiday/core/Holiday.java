@@ -34,21 +34,23 @@ import paperworker.core.PWError;
 import paperworker.core.PWItem;
 import paperworker.core.annotation.DateTimeInfo;
 import paperworker.core.annotation.PWFieldBasicInfo;
+import paperworker.core.annotation.PWItemBasicInfo;
 
 /**
  * @author masamitsu
  *
  */
+@PWItemBasicInfo(caption = "Holidays", tableName = "Holidays")
 public class Holiday extends PWItem {
 
-	@PWFieldBasicInfo(caption = "Creator ID", type = "varchar(100)", unique = true)
+	@PWFieldBasicInfo(caption = "Creator ID", type = "varchar(100)", primary = true)
 	private String creatorId;
 	
-	@PWFieldBasicInfo(caption = "Start Date", type = "datetime", unique = true)
+	@PWFieldBasicInfo(caption = "Start Date", type = "datetime", primary = true)
 	@DateTimeInfo(format = "yyyy-MM-dd")
 	private Date startDate;
 	
-	@PWFieldBasicInfo(caption = "End Date", type = "datetime", unique = true)
+	@PWFieldBasicInfo(caption = "End Date", type = "datetime", primary = true)
 	@DateTimeInfo(format = "yyyy-MM-dd")
 	private Date endDate;
 	
@@ -115,8 +117,7 @@ public class Holiday extends PWItem {
 	 */
 	@Override
 	public Object getValue(String fieldName) throws PWError {
-		// TODO Auto-generated method stub
-		return null;
+		return PWItem.getValue(this, fieldName);
 	}
 
 	/* (non-Javadoc)
@@ -124,8 +125,7 @@ public class Holiday extends PWItem {
 	 */
 	@Override
 	public void setValue(String fieldName, Object value) throws PWError {
-		// TODO Auto-generated method stub
-		
+		PWItem.setValue(this, fieldName, value);
 	}
 
 }

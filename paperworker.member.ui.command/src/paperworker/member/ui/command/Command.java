@@ -48,8 +48,8 @@ public class Command extends MasterCommand<Member, MemberController> {
 	}
 
 	@Override
-	protected List<PWAction<MemberController>> getActions() {
-		List<PWAction<MemberController>> actions = new ArrayList<PWAction<MemberController>>();
+	protected List<PWAction<Member, MemberController>> getActions() {
+		List<PWAction<Member, MemberController>> actions = new ArrayList<PWAction<Member, MemberController>>();
 		actions.add(new ListAction());
 		actions.add(new AddAction());
 		actions.add(new DetailAction());
@@ -59,7 +59,7 @@ public class Command extends MasterCommand<Member, MemberController> {
 	}
 
 	@Override
-	protected MemberController getController() throws PWError, PWWarning {
+	protected MemberController createController() throws PWError, PWWarning {
 		return new MemberController();
 	}
 }

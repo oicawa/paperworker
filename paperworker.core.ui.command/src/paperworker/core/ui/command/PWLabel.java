@@ -1,5 +1,5 @@
 /*
- *  $Id: MasterCommand.java 2013/09/21 3:03:36 Masamitsu Oikawa $
+ *  $Id: PWRenderer.java 2013/09/23 20:48:38 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,28 +26,47 @@
  *  ===============================================================================
  */
 
-package paperworker.master.ui.command;
+package paperworker.core.ui.command;
+
+import java.text.SimpleDateFormat;
 
 import paperworker.core.PWError;
-import paperworker.core.PWWarning;
-import paperworker.core.ui.command.PWCommand;
-import paperworker.master.core.MasterController;
-import paperworker.master.core.MasterItem;
+import paperworker.core.PWField;
+import paperworker.core.PWItem;
 
-public abstract class MasterCommand<TItem extends MasterItem, TController extends MasterController<TItem>>
-							extends PWCommand<TItem, TController> {
+/**
+ * @author masamitsu
+ *
+ */
+public abstract class PWLabel<TItem extends PWItem> {
 	
-	protected MasterController<TItem> controller;
+	private String[] fieldNames;
+	private String format;
+	private TItem item;
 	
-	public MasterCommand() throws PWError, PWWarning {
-		super();
-		
-		MasterDeleteAction<TItem, TController> deleteAction = (MasterDeleteAction<TItem, TController>)getAction("delete");
-		MasterDetailAction<TItem, TController> detailAction = (MasterDetailAction<TItem, TController>)getAction("detail");
-		deleteAction.setDetailAction(detailAction);
+	public PWLabel(TItem item, String format, String... fieldNames) {
+		this.item = item;
+		this.format = format;
+		this.fieldNames = fieldNames;
+	}
+	
+	public String getText() throws PWError {
+		Object[] values = new Object[fieldNames.length];
+		for (int i = 0; i < fieldNames.length; i++) {
+			PWField field = PWField.getField(item.getClass(), fieldNames[i]);
+			if (field.isDate()) {
+				Object value = field.getValue(item);
+				if (value == null) {
+					values[i] = "";
+				} else {
+					SimpleDateFormat formatter = new SimpleDateFormat(field.getDateTimeFormat());
+					values[i] = formatter.format(value);
+				}
+			} else {
+				values[i] = field.getValue(item);
+			}
+		}
+		return String.format(format, values);
 	}
 
-	protected String getDescription() {
-		return String.format("Maintenance tool for %s master.", getName());
-	}
 }

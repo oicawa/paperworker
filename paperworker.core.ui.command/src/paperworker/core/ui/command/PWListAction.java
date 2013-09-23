@@ -1,5 +1,5 @@
 /*
- *  $Id: MasterCommand.java 2013/09/21 3:03:36 Masamitsu Oikawa $
+ *  $Id: PWListAction.java 2013/09/23 14:04:06 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,28 +26,40 @@
  *  ===============================================================================
  */
 
-package paperworker.master.ui.command;
+package paperworker.core.ui.command;
 
+import java.util.List;
+
+import paperworker.core.PWBasicController;
 import paperworker.core.PWError;
+import paperworker.core.PWItem;
 import paperworker.core.PWWarning;
-import paperworker.core.ui.command.PWCommand;
-import paperworker.master.core.MasterController;
-import paperworker.master.core.MasterItem;
 
-public abstract class MasterCommand<TItem extends MasterItem, TController extends MasterController<TItem>>
-							extends PWCommand<TItem, TController> {
+/**
+ * @author masamitsu
+ *
+ */
+public abstract class PWListAction<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWAction<TItem, TController> {
 	
-	protected MasterController<TItem> controller;
-	
-	public MasterCommand() throws PWError, PWWarning {
-		super();
-		
-		MasterDeleteAction<TItem, TController> deleteAction = (MasterDeleteAction<TItem, TController>)getAction("delete");
-		MasterDetailAction<TItem, TController> detailAction = (MasterDetailAction<TItem, TController>)getAction("detail");
-		deleteAction.setDetailAction(detailAction);
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getName()
+	 */
+	@Override
+	public String getName() {
+		return "list";
 	}
 
-	protected String getDescription() {
-		return String.format("Maintenance tool for %s master.", getName());
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#run(java.lang.String[])
+	 */
+	@Override
+	public void run(String[] args) throws PWError, PWWarning {
+		List<TItem> items = controller.get();
+		for (TItem item : items) {
+			printItem(item);
+		}
 	}
+	
+	protected abstract void printItem(TItem item) throws PWError, PWWarning;
+
 }

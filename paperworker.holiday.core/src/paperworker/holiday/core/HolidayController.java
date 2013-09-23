@@ -28,22 +28,21 @@
 
 package paperworker.holiday.core;
 
-import java.util.Date;
-
-import paperworker.core.PWController;
+import paperworker.core.PWBasicController;
 import paperworker.core.PWError;
-import paperworker.core.PWField;
-import paperworker.core.PWQuery;
 import paperworker.core.PWWarning;
+import paperworker.holidaydivision.core.HolidayDivision;
 import paperworker.holidaydivision.core.HolidayDivisionController;
+import paperworker.member.core.Member;
 import paperworker.member.core.MemberController;
+import paperworker.organization.core.Organization;
 import paperworker.organization.core.OrganizationController;
 
 /**
  * @author masamitsu
  *
  */
-public class HolidayController extends PWController {
+public class HolidayController extends PWBasicController<Holiday> {
 
 	private HolidayDivisionController holidayDivisionController;
 	private MemberController memberController;
@@ -58,41 +57,32 @@ public class HolidayController extends PWController {
 		holidayDivisionController = new HolidayDivisionController();
 		memberController = new MemberController();
 		organizationController = new OrganizationController();
-		
-		String tableName = PWQuery.getTableName(Holiday.class);
-		if (!accesser.existTable(tableName)) {
-			create();
-		}
-	}
-	
-	private void create() throws PWError, PWWarning {
-    	PWQuery query = PWQuery.getCreateTableQuery(Holiday.class);
-		accesser.execute(query);
-	}
-	
-	public void get(String creatorId, Date startDate, Date endDate) throws PWError, PWWarning {
-    	PWQuery query = PWQuery.getSelectQueryByKeys(Holiday.class, PWField.KeyType.Unique, creatorId, startDate, endDate);
-		accesser.execute(query);
-	}
-	
-	public void add(String creatorId, Date startDate, Date endDate) throws PWError, PWWarning {
-    	PWQuery query = PWQuery.getInsertQuery(Holiday.class, creatorId, startDate, endDate);
-		accesser.execute(query);
-	}
-	
-	public void update(String creatorId, Date startDate, Date endDate) throws PWError, PWWarning {
-    	Holiday holiday = new Holiday();
-    	holiday.setCreatorId(creatorId);
-    	holiday.setStartDate(startDate);
-    	holiday.setEndDate(endDate);
-    	
-    	PWQuery query = PWQuery.getUpdateQueryByKey(holiday, PWField.KeyType.Unique);
-		accesser.execute(query);
-	}
-	
-	public void delete(String creatorId, Date startDate, Date endDate) throws PWError, PWWarning {
-    	PWQuery query = PWQuery.getDeleteQueryByKey(Holiday.class, PWField.KeyType.Unique, creatorId, startDate, endDate);
-		accesser.execute(query);
 	}
 
+	/* (non-Javadoc)
+	 * @see paperworker.core.PWBasicController#getItemType()
+	 */
+	@Override
+	protected Class<Holiday> getItemType() {
+		return Holiday.class;
+	}
+
+	public Member getCreator(String creatorId) throws PWError, PWWarning {
+		Member creator = memberController.get(creatorId);
+		return creator;
+	}
+
+	public HolidayDivision getDivision(String holidayDivisionId) throws PWError, PWWarning {
+		HolidayDivision division = holidayDivisionController.get(holidayDivisionId);
+		return division;
+	}
+	
+	public Organization getOrganization(String creatorId) throws PWError, PWWarning {
+		Member creator = memberController.get(creatorId);
+		if (creator == null) {
+			return null;
+		}
+		Organization organization = organizationController.get(creator.getGroupId());
+		return organization;
+	}
 }

@@ -38,7 +38,9 @@ import paperworker.core.PWField;
 import paperworker.core.PWError;
 import paperworker.core.PWWarning;
 
-public abstract class PWAction<TController extends PWController> {
+public abstract class PWAction<TItem extends PWItem, TController extends PWController> {
+	
+	protected final int ACTION_ARG_START_INDEX = 2;	// 2 is 'command' and 'action'.
 	
 	protected TController controller;
 	
@@ -53,6 +55,12 @@ public abstract class PWAction<TController extends PWController> {
 	public abstract String[] getDescription();
 	public abstract void run(String[] args) throws PWError, PWWarning;
 	protected abstract String getRegexForParse();
+	protected abstract Class<TItem> getItemType();
+	protected abstract String getTitle(List<PWField> fields, Object... keyValues);
+
+	public String getCommandName() {
+		return getItemType().getSimpleName().toLowerCase();
+	}
 	
 	public boolean parse(String[] args) {
 		StringBuffer buffer = new StringBuffer();
@@ -64,22 +72,33 @@ public abstract class PWAction<TController extends PWController> {
 		return Pattern.matches(regexp, commandLine);
 	}
 	
-	public static void printField(PWItem item, String fieldName, int captionLength) throws PWError {
-		PWField fieldInfo = PWField.getField(item.getClass(), fieldName);
-		String caption = fieldInfo.getCaption();
-		String format = String.format("    %%-%ds : %%s", captionLength);
+	public static <TItem extends PWItem> void printField(TItem item, String fieldName, int captionLength) throws PWError {
+		printField(item, fieldName, captionLength, null);
+	}
+	
+	public static <TItem extends PWItem> void printField(TItem item, String fieldName, int captionLength, String label) throws PWError {
+		PWField field = PWField.getField(item.getClass(), fieldName);
+		String caption = field.getCaption();
+		String format = String.format("%%-%ds : %%s", captionLength);
 		try {
-			if (fieldInfo.isDate()) {
-				Object value = fieldInfo.getValue(item);
-				if (value == null) {
-					PaperWorker.message(format, caption, null);
-				} else {
-					SimpleDateFormat formatter = new SimpleDateFormat(fieldInfo.getDateTimeFormat());
-					PaperWorker.message(format, caption, formatter.format(value));
-				}
-			} else {
-				PaperWorker.message(format, caption, fieldInfo.getValue(item));
+			if (label != null) {
+				PaperWorker.message(format, caption, label);
+				return;
 			}
+			
+			Object value = field.getValue(item);
+			if (!field.isDate()) {
+				PaperWorker.message(format, caption, value);
+				return;
+			}
+			
+			if (value == null) {
+				PaperWorker.message(format, caption, null);
+				return;
+			}
+			
+			SimpleDateFormat formatter = new SimpleDateFormat(field.getDateTimeFormat());
+			PaperWorker.message(format, caption, formatter.format(value));
 		} catch (PWError e) {
 			PaperWorker.error(e);
 		}
@@ -87,7 +106,7 @@ public abstract class PWAction<TController extends PWController> {
 	
 	public static void promptField(PWItem dst, PWItem src, PWField fieldInfo, int captionLength) throws PWError {
 		String caption = fieldInfo.getCaption();
-		String format = String.format("  %%-%ds >> ", captionLength);
+		String format = String.format("%%-%ds >> ", captionLength);
 		
 		String input = PaperWorker.prompt(format, caption);
 		try {

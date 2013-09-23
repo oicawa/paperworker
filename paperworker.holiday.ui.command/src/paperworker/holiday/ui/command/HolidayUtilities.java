@@ -1,5 +1,5 @@
 /*
- *  $Id: MasterCommand.java 2013/09/21 3:03:36 Masamitsu Oikawa $
+ *  $Id: HolidayAction.java 2013/09/23 8:42:06 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,28 +26,28 @@
  *  ===============================================================================
  */
 
-package paperworker.master.ui.command;
+package paperworker.holiday.ui.command;
 
-import paperworker.core.PWError;
-import paperworker.core.PWWarning;
-import paperworker.core.ui.command.PWCommand;
-import paperworker.master.core.MasterController;
-import paperworker.master.core.MasterItem;
-
-public abstract class MasterCommand<TItem extends MasterItem, TController extends MasterController<TItem>>
-							extends PWCommand<TItem, TController> {
+/**
+ * @author masamitsu
+ *
+ */
+public class HolidayUtilities {
 	
-	protected MasterController<TItem> controller;
-	
-	public MasterCommand() throws PWError, PWWarning {
-		super();
-		
-		MasterDeleteAction<TItem, TController> deleteAction = (MasterDeleteAction<TItem, TController>)getAction("delete");
-		MasterDetailAction<TItem, TController> detailAction = (MasterDetailAction<TItem, TController>)getAction("detail");
-		deleteAction.setDetailAction(detailAction);
+	public static String[] getDescription(String mainMassage, String actionName) {
+		final String[] description = {
+				mainMassage,
+				"  ---------",
+				String.format("  FORMAT > holiday %s [ID] [StartDate]", actionName),
+				String.format("  FORMAT > holiday %s [ID] [StartDate] [EndDate]", actionName),
+				"  * The format of StartDate and EndDate are 'yyyy-MM-dd'.",
+				"  * If you input only StartDate, the EndDate is set by the same date as the StartDate."
+			};
+		return description;
 	}
 
-	protected String getDescription() {
-		return String.format("Maintenance tool for %s master.", getName());
+	protected static String getRegexForParse(String actionName) {
+		return String.format("^holiday %s [0-9a-zA-Z]+( [\\d]{4}-[\\d]{2}-[\\d]{2}){1,2}", actionName);
 	}
+
 }

@@ -37,4 +37,12 @@ public class HolidayDivisionController extends MasterController<HolidayDivision>
 	public HolidayDivisionController() throws PWError, PWWarning {
 		super();
 	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.PWBasicController#getItemType()
+	 */
+	@Override
+	protected Class<HolidayDivision> getItemType() {
+		return HolidayDivision.class;
+	}
 }

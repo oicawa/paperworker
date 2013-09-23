@@ -1,5 +1,5 @@
 /*
- *  $Id: Command.java 2013/09/21 3:03:36 Masamitsu Oikawa $
+ *  $Id: Command.java 2013/09/22 20:51:46 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,7 +26,7 @@
  *  ===============================================================================
  */
 
-package paperworker.holidaydivision.ui.command;
+package paperworker.holiday.ui.command;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,22 +34,59 @@ import java.util.List;
 import paperworker.core.PWError;
 import paperworker.core.PWWarning;
 import paperworker.core.ui.command.PWAction;
-import paperworker.holidaydivision.core.HolidayDivision;
-import paperworker.holidaydivision.core.HolidayDivisionController;
-import paperworker.master.ui.command.MasterCommand;
+import paperworker.core.ui.command.PWCommand;
+import paperworker.holiday.core.Holiday;
+import paperworker.holiday.core.HolidayController;
 
-public class Command extends MasterCommand<HolidayDivision, HolidayDivisionController> {
+/**
+ * @author masamitsu
+ *
+ */
+public class Command extends PWCommand<Holiday, HolidayController> {
+
+	/**
+	 * @throws PWError
+	 * @throws PWWarning
+	 */
 	public Command() throws PWError, PWWarning {
 		super();
-	}
-	
-	protected String getName() {
-		return "holidaydivision";
+		
+		// TODO: Move to PWCommand, and Delete Master packages.
+		DeleteAction deleteAction = (DeleteAction)getAction("delete");
+		DetailAction detailAction = (DetailAction)getAction("detail");
+		deleteAction.setDetailAction(detailAction);
 	}
 
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWCommand#getName()
+	 */
 	@Override
-	protected List<PWAction<HolidayDivision, HolidayDivisionController>> getActions() {
-		List<PWAction<HolidayDivision, HolidayDivisionController>> actions = new ArrayList<PWAction<HolidayDivision, HolidayDivisionController>>();
+	protected String getName() {
+		return "holiday";
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWCommand#getDescription()
+	 */
+	@Override
+	protected String getDescription() {
+		return String.format("Holiday request tool.");
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWCommand#getController()
+	 */
+	@Override
+	protected HolidayController createController() throws PWError, PWWarning {
+		return new HolidayController();
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWCommand#getActions()
+	 */
+	@Override
+	protected List<PWAction<Holiday, HolidayController>> getActions() {
+		List<PWAction<Holiday, HolidayController>> actions = new ArrayList<PWAction<Holiday, HolidayController>>();
 		actions.add(new ListAction());
 		actions.add(new AddAction());
 		actions.add(new DetailAction());
@@ -58,8 +95,4 @@ public class Command extends MasterCommand<HolidayDivision, HolidayDivisionContr
 		return actions;
 	}
 
-	@Override
-	protected HolidayDivisionController createController() throws PWError, PWWarning {
-		return new HolidayDivisionController();
-	}
 }

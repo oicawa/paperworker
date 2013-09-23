@@ -32,18 +32,19 @@ import java.io.Closeable;
 import java.util.HashMap;
 import java.util.List;
 
-import paperworker.core.PWController;
+import paperworker.core.PWBasicController;
 import paperworker.core.PWError;
+import paperworker.core.PWItem;
 import paperworker.core.PWWarning;
 
-public abstract class PWCommand<T extends PWController> implements Closeable {
+public abstract class PWCommand<TItem extends PWItem, TController extends PWBasicController<TItem>> implements Closeable {
 
-	private T controller;
-	private HashMap<String, PWAction<T>> actions = new HashMap<String, PWAction<T>>();
+	private TController controller;
+	private HashMap<String, PWAction<TItem, TController>> actions = new HashMap<String, PWAction<TItem, TController>>();
 	
 	public PWCommand() throws PWError, PWWarning {
-		this.controller = getController();
-		for (PWAction<T> action : getActions()) {
+		this.controller = createController();
+		for (PWAction<TItem, TController> action : getActions()) {
 			action.setController(controller);
 			actions.put(action.getName(), action);
 		}
@@ -53,11 +54,11 @@ public abstract class PWCommand<T extends PWController> implements Closeable {
 	
 	protected abstract String getDescription();
 	
-	protected abstract T getController() throws PWError, PWWarning;
+	protected abstract TController createController() throws PWError, PWWarning;
 	
-	protected abstract List<PWAction<T>> getActions();
+	protected abstract List<PWAction<TItem, TController>> getActions();
 	
-	public PWAction<T> getAction(String actionName) {
+	public PWAction<TItem, TController> getAction(String actionName) {
 		if (actions.containsKey(actionName)) {
 			return actions.get(actionName);
 		}
@@ -66,7 +67,7 @@ public abstract class PWCommand<T extends PWController> implements Closeable {
 	
 	public void printActionList() {
 		PaperWorker.message("  --------------------------------------------------");
-		for (PWAction<T> action : actions.values()) {
+		for (PWAction<TItem, TController> action : actions.values()) {
 			PaperWorker.message("  %s", action.getName());
 			for (String line : action.getDescription()) {
 				PaperWorker.message("      %s", line);
@@ -83,7 +84,7 @@ public abstract class PWCommand<T extends PWController> implements Closeable {
 			return;
 		}
 		
-		for (PWAction<T> action : actions.values()) {
+		for (PWAction<TItem, TController> action : actions.values()) {
 			if (action.parse(args)) {
 				action.run(args);
 				return;

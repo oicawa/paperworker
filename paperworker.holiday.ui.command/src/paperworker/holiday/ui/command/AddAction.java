@@ -1,5 +1,5 @@
 /*
- *  $Id: MasterCommand.java 2013/09/21 3:03:36 Masamitsu Oikawa $
+ *  $Id: AddAction.java 2013/09/22 21:00:31 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,28 +26,51 @@
  *  ===============================================================================
  */
 
-package paperworker.master.ui.command;
+package paperworker.holiday.ui.command;
 
-import paperworker.core.PWError;
-import paperworker.core.PWWarning;
-import paperworker.core.ui.command.PWCommand;
-import paperworker.master.core.MasterController;
-import paperworker.master.core.MasterItem;
+import java.util.List;
 
-public abstract class MasterCommand<TItem extends MasterItem, TController extends MasterController<TItem>>
-							extends PWCommand<TItem, TController> {
-	
-	protected MasterController<TItem> controller;
-	
-	public MasterCommand() throws PWError, PWWarning {
-		super();
-		
-		MasterDeleteAction<TItem, TController> deleteAction = (MasterDeleteAction<TItem, TController>)getAction("delete");
-		MasterDetailAction<TItem, TController> detailAction = (MasterDetailAction<TItem, TController>)getAction("detail");
-		deleteAction.setDetailAction(detailAction);
+import paperworker.core.PWField;
+import paperworker.core.ui.command.PWAddAction;
+import paperworker.holiday.core.Holiday;
+import paperworker.holiday.core.HolidayController;
+
+/**
+ * @author masamitsu
+ *
+ */
+public class AddAction extends PWAddAction<Holiday, HolidayController> {
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getRegexForParse()
+	 */
+	@Override
+	protected String getRegexForParse() {
+		return HolidayUtilities.getRegexForParse(getName());
 	}
 
-	protected String getDescription() {
-		return String.format("Maintenance tool for %s master.", getName());
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getDescription()
+	 */
+	@Override
+	public String[] getDescription() {
+		return HolidayUtilities.getDescription("Create a new holiday request item.", getName());
 	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getTitle(java.util.List, java.lang.Object[])
+	 */
+	@Override
+	protected String getTitle(List<PWField> fields, Object... keyValues) {
+		String title = String.format("[%s, (%s - %s)]", keyValues);
+		return title;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getItemType()
+	 */
+	@Override
+	protected Class<Holiday> getItemType() {
+		return Holiday.class;
+	}
+
 }

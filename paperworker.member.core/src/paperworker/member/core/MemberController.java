@@ -37,4 +37,12 @@ public class MemberController extends MasterController<Member> {
 	public MemberController() throws PWError, PWWarning {
 		super();
 	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.PWBasicController#getItemType()
+	 */
+	@Override
+	protected Class<Member> getItemType() {
+		return Member.class;
+	}
 }

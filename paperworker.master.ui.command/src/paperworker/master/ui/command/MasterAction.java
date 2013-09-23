@@ -28,12 +28,15 @@
 
 package paperworker.master.ui.command;
 
+import java.util.List;
+
+import paperworker.core.PWField;
 import paperworker.core.ui.command.PWAction;
 import paperworker.master.core.MasterController;
 import paperworker.master.core.MasterItem;
 
 public abstract class MasterAction<TItem extends MasterItem, TController extends MasterController<TItem>>
-							extends PWAction<TController> {
+							extends PWAction<TItem, TController> {
 	
 	public MasterAction() {
 		super();
@@ -44,4 +47,13 @@ public abstract class MasterAction<TItem extends MasterItem, TController extends
 	}
 	
 	protected abstract Class<TItem> getItemType();
+	
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getTitle(java.util.List, java.lang.Object[])
+	 */
+	@Override
+	protected String getTitle(List<PWField> fields, Object... keyValues) {
+		return "";
+	}
 }

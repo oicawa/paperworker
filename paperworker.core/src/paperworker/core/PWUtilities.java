@@ -28,6 +28,8 @@
 
 package paperworker.core;
 
+import java.util.List;
+
 public class PWUtilities {
 	public static <T> T createInstance(Class<T> type) throws PWError {
 		try {
@@ -55,5 +57,19 @@ public class PWUtilities {
 		}
 		
 		return commandName;
+	}
+
+	public static <TItem extends PWItem> Object[] getKeyValuesFromArgumants(List<PWField> primaryFields, int from, String[] args, String... defaultValues) throws PWError {
+		int size = args.length - from;
+		assert(size + defaultValues.length == primaryFields.size());
+		
+		Object[] keyValues = new Object[primaryFields.size()];
+		
+		for (int i = 0; i < primaryFields.size(); i++) {
+			PWField primaryField = primaryFields.get(i);
+			String value = i < size ? args[from + i] : defaultValues[i - size];
+			keyValues[i] = primaryField.parse(value);
+		}
+		return keyValues;
 	}
 }

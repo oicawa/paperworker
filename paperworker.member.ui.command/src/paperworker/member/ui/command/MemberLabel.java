@@ -1,5 +1,5 @@
 /*
- *  $Id: MasterCommand.java 2013/09/21 3:03:36 Masamitsu Oikawa $
+ *  $Id: MemberLabel.java 2013/09/23 21:01:07 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,28 +26,22 @@
  *  ===============================================================================
  */
 
-package paperworker.master.ui.command;
+package paperworker.member.ui.command;
 
-import paperworker.core.PWError;
-import paperworker.core.PWWarning;
-import paperworker.core.ui.command.PWCommand;
-import paperworker.master.core.MasterController;
-import paperworker.master.core.MasterItem;
+import paperworker.core.ui.command.PWLabel;
+import paperworker.member.core.Member;
 
-public abstract class MasterCommand<TItem extends MasterItem, TController extends MasterController<TItem>>
-							extends PWCommand<TItem, TController> {
-	
-	protected MasterController<TItem> controller;
-	
-	public MasterCommand() throws PWError, PWWarning {
-		super();
-		
-		MasterDeleteAction<TItem, TController> deleteAction = (MasterDeleteAction<TItem, TController>)getAction("delete");
-		MasterDetailAction<TItem, TController> detailAction = (MasterDetailAction<TItem, TController>)getAction("detail");
-		deleteAction.setDetailAction(detailAction);
-	}
+/**
+ * @author masamitsu
+ *
+ */
+public class MemberLabel extends PWLabel<Member> {
 
-	protected String getDescription() {
-		return String.format("Maintenance tool for %s master.", getName());
+	/**
+	 * @param format
+	 * @param fieldNames
+	 */
+	public MemberLabel(Member member) {
+		super(member, "%s %s %s", "memberId", "familyName", "firstName");
 	}
 }

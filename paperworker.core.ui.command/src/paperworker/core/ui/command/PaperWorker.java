@@ -37,12 +37,13 @@ import java.util.HashMap;
 
 import paperworker.core.PWController;
 import paperworker.core.PWError;
+import paperworker.core.PWItem;
 import paperworker.core.PWUtilities;
 import paperworker.core.PWWarning;
 
 public class PaperWorker implements Closeable {
 	
-	private HashMap<String, PWCommand<? extends PWController>> commands = new HashMap<String, PWCommand<? extends PWController>>();
+	private HashMap<String, PWCommand<? extends PWItem, ? extends PWController>> commands = new HashMap<String, PWCommand<? extends PWItem, ? extends PWController>>();
 
 	public static void main(String[] args) {
 		PaperWorker paperworker = new PaperWorker();
@@ -56,7 +57,7 @@ public class PaperWorker implements Closeable {
 	}
 	
 	public void close() {
-		for (PWCommand<? extends PWController> command : commands.values()) {
+		for (PWCommand<? extends PWItem, ? extends PWController> command : commands.values()) {
 			command.close();
 		}
 	}
@@ -90,7 +91,7 @@ public class PaperWorker implements Closeable {
 			String[] commandLine = input.split(" ");
 			String commandName = commandLine[0];
 			
-			PWCommand<? extends PWController> command = commands.get(commandName);
+			PWCommand<? extends PWItem, ? extends PWController> command = commands.get(commandName);
 			if (command == null) {
 				continue;
 			}
@@ -124,7 +125,7 @@ public class PaperWorker implements Closeable {
 			}
 			
 			String packageName = path.substring(startsWith.length() + 1, path.length() - endTrim.length());
-			PWCommand<? extends PWController> command = createCommand(packageName);
+			PWCommand<? extends PWItem, ? extends PWController> command = createCommand(packageName);
 			if (command == null) {
 				continue;
 			}
@@ -133,12 +134,12 @@ public class PaperWorker implements Closeable {
 		}
 	}
 
-	private PWCommand<? extends PWController> createCommand(String packageName) throws PWError {
+	private PWCommand<? extends PWItem, ? extends PWController> createCommand(String packageName) throws PWError {
 		String classPath = String.format("%s.Command", packageName);
 		try {
 			@SuppressWarnings("unchecked")
-			Class<PWCommand<? extends PWController>> commandClass = (Class<PWCommand<? extends PWController>>)Class.forName(classPath);
-			PWCommand<? extends PWController> command = PWUtilities.createInstance(commandClass);
+			Class<PWCommand<? extends PWItem, ? extends PWController>> commandClass = (Class<PWCommand<? extends PWItem, ? extends PWController>>)Class.forName(classPath);
+			PWCommand<? extends PWItem, ? extends PWController> command = PWUtilities.createInstance(commandClass);
 			return command;
 		} catch (ClassNotFoundException e) {
 			return null;

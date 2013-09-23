@@ -37,4 +37,12 @@ public class OrganizationController extends MasterController<Organization> {
 	public OrganizationController() throws PWError, PWWarning {
 		super();
 	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.PWBasicController#getItemType()
+	 */
+	@Override
+	protected Class<Organization> getItemType() {
+		return Organization.class;
+	}
 }
