@@ -34,7 +34,7 @@ import java.util.List;
 import paperworker.core.PWError;
 import paperworker.core.PWWarning;
 import paperworker.core.ui.command.PWAction;
-import paperworker.master.ui.command.MasterCommand;
+import paperworker.core.ui.command.PWCommand;
 import paperworker.organization.core.Organization;
 import paperworker.organization.core.OrganizationController;
 
@@ -42,7 +42,7 @@ import paperworker.organization.core.OrganizationController;
  * @author masamitsu
  *
  */
-public class Command extends MasterCommand<Organization, OrganizationController> {
+public class Command extends PWCommand<Organization, OrganizationController> {
 
 	/**
 	 * @throws PWError
@@ -80,6 +80,14 @@ public class Command extends MasterCommand<Organization, OrganizationController>
 		actions.add(new UpdateAction());
 		actions.add(new DeleteAction());
 		return actions;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWCommand#getDescription()
+	 */
+	@Override
+	protected String getDescription() {
+		return String.format("Maintenance tool for %s master.", getName());
 	}
 
 }

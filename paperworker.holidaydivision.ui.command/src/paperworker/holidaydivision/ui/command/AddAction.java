@@ -28,11 +28,14 @@
 
 package paperworker.holidaydivision.ui.command;
 
+import java.util.List;
+
+import paperworker.core.PWField;
+import paperworker.core.ui.command.PWAddAction;
 import paperworker.holidaydivision.core.HolidayDivision;
 import paperworker.holidaydivision.core.HolidayDivisionController;
-import paperworker.master.ui.command.MasterAddAction;
 
-public class AddAction extends MasterAddAction<HolidayDivision, HolidayDivisionController> {
+public class AddAction extends PWAddAction<HolidayDivision, HolidayDivisionController> {
 
 	public AddAction() {
 		super();
@@ -41,5 +44,34 @@ public class AddAction extends MasterAddAction<HolidayDivision, HolidayDivisionC
 	@Override
 	protected Class<HolidayDivision> getItemType() {
 		return HolidayDivision.class;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getDescription()
+	 */
+	@Override
+	public String[] getDescription() {
+		final String[] description = {
+			String.format("Create a new %s record.", getCommandName()),
+			"  ---------",
+			String.format("  FORMAT > %s add [ID]", getCommandName(), getName())
+		};
+		return description;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getRegexForParse()
+	 */
+	@Override
+	protected String getRegexForParse() {
+		return String.format("^%s %s [0-9a-zA-Z]+", getCommandName(), getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getTitle(java.util.List, java.lang.Object[])
+	 */
+	@Override
+	protected String getTitle(List<PWField> fields, Object... keyValues) {
+		return "";
 	}
 }

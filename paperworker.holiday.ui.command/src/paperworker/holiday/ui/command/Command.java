@@ -50,11 +50,6 @@ public class Command extends PWCommand<Holiday, HolidayController> {
 	 */
 	public Command() throws PWError, PWWarning {
 		super();
-		
-		// TODO: Move to PWCommand, and Delete Master packages.
-		DeleteAction deleteAction = (DeleteAction)getAction("delete");
-		DetailAction detailAction = (DetailAction)getAction("detail");
-		deleteAction.setDetailAction(detailAction);
 	}
 
 	/* (non-Javadoc)

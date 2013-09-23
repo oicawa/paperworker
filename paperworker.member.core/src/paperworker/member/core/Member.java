@@ -36,10 +36,9 @@ import paperworker.core.PWError;
 import paperworker.core.annotation.PWFieldBasicInfo;
 import paperworker.core.annotation.DateTimeInfo;
 import paperworker.core.annotation.PWItemBasicInfo;
-import paperworker.master.core.MasterItem;
 
 @PWItemBasicInfo(caption = "Members", tableName = "Members")
-public class Member extends MasterItem {
+public class Member extends PWItem {
 	
 	@PWFieldBasicInfo(caption = "Member ID", type = "varchar(100)", primary = true)
 	private String memberId;
@@ -196,15 +195,5 @@ public class Member extends MasterItem {
 		Calendar base = Calendar.getInstance();
 		base.setTime(date);
 		return now.get(Calendar.YEAR) - base.get(Calendar.YEAR);
-	}
-
-	@Override
-	public String getId() {
-		return memberId;
-	}
-
-	@Override
-	public void setId(String itemId) {
-		memberId = itemId;
 	}
 }

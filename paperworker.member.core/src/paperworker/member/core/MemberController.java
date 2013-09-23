@@ -28,11 +28,11 @@
 
 package paperworker.member.core;
 
+import paperworker.core.PWBasicController;
 import paperworker.core.PWError;
 import paperworker.core.PWWarning;
-import paperworker.master.core.MasterController;
 
-public class MemberController extends MasterController<Member> {
+public class MemberController extends PWBasicController<Member> {
 
 	public MemberController() throws PWError, PWWarning {
 		super();

@@ -28,14 +28,17 @@
 
 package paperworker.holidaydivision.ui.command;
 
+import java.util.List;
+
 import paperworker.core.PWError;
+import paperworker.core.PWField;
 import paperworker.core.ui.command.PWAction;
+import paperworker.core.ui.command.PWDetailAction;
 import paperworker.core.ui.command.PaperWorker;
 import paperworker.holidaydivision.core.HolidayDivision;
 import paperworker.holidaydivision.core.HolidayDivisionController;
-import paperworker.master.ui.command.MasterDetailAction;
 
-public class DetailAction extends MasterDetailAction<HolidayDivision, HolidayDivisionController> {
+public class DetailAction extends PWDetailAction<HolidayDivision, HolidayDivisionController> {
 
 	public DetailAction() {
 		super();
@@ -55,5 +58,34 @@ public class DetailAction extends MasterDetailAction<HolidayDivision, HolidayDiv
 	@Override
 	protected Class<HolidayDivision> getItemType() {
 		return HolidayDivision.class;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getDescription()
+	 */
+	@Override
+	public String[] getDescription() {
+		final String[] description = {
+			String.format("Delete a %s record by specified ID.", getCommandName()),
+			"  ---------",
+			String.format("  FORMAT > %s %s [ID]", getCommandName(), getName()),
+		};
+		return description;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getRegexForParse()
+	 */
+	@Override
+	protected String getRegexForParse() {
+		return String.format("^%s %s [0-9a-zA-Z]+", getCommandName(), getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getTitle(java.util.List, java.lang.Object[])
+	 */
+	@Override
+	protected String getTitle(List<PWField> fields, Object... keyValues) {
+		return "";
 	}
 }

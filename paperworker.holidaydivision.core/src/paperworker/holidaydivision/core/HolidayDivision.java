@@ -32,10 +32,9 @@ import paperworker.core.PWItem;
 import paperworker.core.PWError;
 import paperworker.core.annotation.PWFieldBasicInfo;
 import paperworker.core.annotation.PWItemBasicInfo;
-import paperworker.master.core.MasterItem;
 
 @PWItemBasicInfo(caption = "Holiday Divisions", tableName = "HolidayDivisions")
-public class HolidayDivision extends MasterItem {
+public class HolidayDivision extends PWItem {
 	
 	public String getDivisionId() {
 		return divisionId;
@@ -69,16 +68,6 @@ public class HolidayDivision extends MasterItem {
 	
 	@PWFieldBasicInfo(caption = "Holiday Division Short Name", type = "varchar(100)")
 	private String shortName;
-	
-	@Override
-	public String getId() {
-		return divisionId;
-	}
-
-	@Override
-	public void setId(String itemId) {
-		divisionId = itemId;
-	}
 
 	/* (non-Javadoc)
 	 * @see paperworker.core.PWItem#getValue(java.lang.String)

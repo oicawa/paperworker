@@ -28,11 +28,14 @@
 
 package paperworker.organization.ui.command;
 
-import paperworker.master.ui.command.MasterAddAction;
+import java.util.List;
+
+import paperworker.core.PWField;
+import paperworker.core.ui.command.PWAddAction;
 import paperworker.organization.core.Organization;
 import paperworker.organization.core.OrganizationController;
 
-public class AddAction extends MasterAddAction<Organization, OrganizationController> {
+public class AddAction extends PWAddAction<Organization, OrganizationController> {
 
 	public AddAction() {
 		super();
@@ -41,5 +44,34 @@ public class AddAction extends MasterAddAction<Organization, OrganizationControl
 	@Override
 	protected Class<Organization> getItemType() {
 		return Organization.class;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getDescription()
+	 */
+	@Override
+	public String[] getDescription() {
+		final String[] description = {
+			String.format("Create a new %s record.", getCommandName()),
+			"  ---------",
+			String.format("  FORMAT > %s add [ID]", getCommandName(), getName())
+		};
+		return description;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getRegexForParse()
+	 */
+	@Override
+	protected String getRegexForParse() {
+		return String.format("^%s %s [0-9a-zA-Z]+", getCommandName(), getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getTitle(java.util.List, java.lang.Object[])
+	 */
+	@Override
+	protected String getTitle(List<PWField> fields, Object... keyValues) {
+		return "";
 	}
 }

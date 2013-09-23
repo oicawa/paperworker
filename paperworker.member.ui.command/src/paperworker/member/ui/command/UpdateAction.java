@@ -28,50 +28,46 @@
 
 package paperworker.member.ui.command;
 
-import paperworker.master.ui.command.MasterUpdateAction;
+import java.util.List;
+
+import paperworker.core.PWField;
+import paperworker.core.ui.command.PWUpdateAction;
 import paperworker.member.core.Member;
 import paperworker.member.core.MemberController;
 
-public class UpdateAction extends MasterUpdateAction<Member, MemberController> {
+public class UpdateAction extends PWUpdateAction<Member, MemberController> {
 
 	@Override
 	protected Class<Member> getItemType() {
 		return Member.class;
 	}
-//
-//	public static void update(MemberController controller, String memberId) throws PWError, PWWarning {
-//		Member src = controller.get(memberId);
-//		if (src == null) {
-//			PaperWorker.message("The member is not found. [memberId: %s]", memberId);
-//			return;
-//		}
-//		Member dst = new Member();
-//		dst.setMemberId(src.getMemberId());
-//
-//		int maxLength = Action.getMaxLengthOfCaptions(Member.class);
-//		
-//		List<PWField> fieldInfos = PWItem.getFields(Member.class);
-//		for (int i = 1; i < fieldInfos.size(); i++) {
-//			promptField(dst, src, fieldInfos.get(i), maxLength);
-//		}
-//		
-//		PaperWorker.message("  ------------------------------");
-//		if (PaperWorker.confirm("  Do you save? [Y/N] >> ", "  *** Input 'Y' or 'N'. ***", "Y", "N")) {
-//			controller.update(dst);
-//			PaperWorker.message("");
-//			PaperWorker.message("  Saved.");
-//		} else {
-//			PaperWorker.message("");
-//			PaperWorker.message("  Canceled.");
-//		}
-//	}
-//
-//	@Override
-//	public void run(String[] args) throws PWError, PWWarning {
-//		String memberId = args[2];
-//		PWField fieldInfo = PWField.getField(Member.class, "memberId");
-//		PaperWorker.message("  << UPDATE >> [%s: %s]", fieldInfo.getCaption(), memberId);
-//		PaperWorker.message("  * If you input no value (just only the ENTER key), the field value doesn't change.");
-//		update(controller, memberId);
-//	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getDescription()
+	 */
+	@Override
+	public String[] getDescription() {
+		final String[] description = {
+				String.format("Update a %s information by specified ID.", getCommandName()),
+				"  ---------",
+				String.format("  FORMAT > %s %s [ID]", getCommandName(), getName())
+			};
+		return description;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getRegexForParse()
+	 */
+	@Override
+	protected String getRegexForParse() {
+		return String.format("^%s %s [0-9a-zA-Z]+", getCommandName(), getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getTitle(java.util.List, java.lang.Object[])
+	 */
+	@Override
+	protected String getTitle(List<PWField> fields, Object... keyValues) {
+		return "";
+	}
 }

@@ -34,11 +34,11 @@ import java.util.List;
 import paperworker.core.PWError;
 import paperworker.core.PWWarning;
 import paperworker.core.ui.command.PWAction;
+import paperworker.core.ui.command.PWCommand;
 import paperworker.holidaydivision.core.HolidayDivision;
 import paperworker.holidaydivision.core.HolidayDivisionController;
-import paperworker.master.ui.command.MasterCommand;
 
-public class Command extends MasterCommand<HolidayDivision, HolidayDivisionController> {
+public class Command extends PWCommand<HolidayDivision, HolidayDivisionController> {
 	public Command() throws PWError, PWWarning {
 		super();
 	}
@@ -61,5 +61,13 @@ public class Command extends MasterCommand<HolidayDivision, HolidayDivisionContr
 	@Override
 	protected HolidayDivisionController createController() throws PWError, PWWarning {
 		return new HolidayDivisionController();
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWCommand#getDescription()
+	 */
+	@Override
+	protected String getDescription() {
+		return String.format("Maintenance tool for %s master.", getName());
 	}
 }

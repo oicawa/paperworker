@@ -28,12 +28,15 @@
 
 package paperworker.member.ui.command;
 
+import java.util.List;
+
+import paperworker.core.PWField;
+import paperworker.core.ui.command.PWListAction;
 import paperworker.core.ui.command.PaperWorker;
-import paperworker.master.ui.command.MasterListAction;
 import paperworker.member.core.Member;
 import paperworker.member.core.MemberController;
 
-public class ListAction extends MasterListAction<Member, MemberController> {
+public class ListAction extends PWListAction<Member, MemberController> {
 
 	public ListAction() {
 		super();
@@ -52,5 +55,34 @@ public class ListAction extends MasterListAction<Member, MemberController> {
 	@Override
 	protected Class<Member> getItemType() {
 		return Member.class;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getDescription()
+	 */
+	@Override
+	public String[] getDescription() {
+		final String[] description = {
+				String.format("Print all %ss information.", getCommandName()),
+				"  ---------",
+				String.format("  FORMAT > %s list", getCommandName())
+			};
+		return description;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getRegexForParse()
+	 */
+	@Override
+	protected String getRegexForParse() {
+		return String.format("^%s %s", getCommandName(), getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getTitle(java.util.List, java.lang.Object[])
+	 */
+	@Override
+	protected String getTitle(List<PWField> fields, Object... keyValues) {
+		return "";
 	}
 }

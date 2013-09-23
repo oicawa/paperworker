@@ -32,10 +32,9 @@ import paperworker.core.PWError;
 import paperworker.core.PWItem;
 import paperworker.core.annotation.PWFieldBasicInfo;
 import paperworker.core.annotation.PWItemBasicInfo;
-import paperworker.master.core.MasterItem;
 
 @PWItemBasicInfo(caption = "Organizations", tableName = "Organizations")
-public class Organization extends MasterItem {
+public class Organization extends PWItem {
 
 	@PWFieldBasicInfo(caption = "Organization ID", type = "varchar(100)", primary = true)
 	private String organizationId;
@@ -112,16 +111,6 @@ public class Organization extends MasterItem {
 
 	public void setDivision(OrganizationDivision division) {
 		this.division = division;
-	}
-	
-	@Override
-	public String getId() {
-		return organizationId;
-	}
-
-	@Override
-	public void setId(String itemId) {
-		organizationId = itemId;
 	}
 
 	@Override

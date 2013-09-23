@@ -28,14 +28,46 @@
 
 package paperworker.holidaydivision.ui.command;
 
+import java.util.List;
+
+import paperworker.core.PWField;
+import paperworker.core.ui.command.PWUpdateAction;
 import paperworker.holidaydivision.core.HolidayDivision;
 import paperworker.holidaydivision.core.HolidayDivisionController;
-import paperworker.master.ui.command.MasterUpdateAction;
 
-public class UpdateAction extends MasterUpdateAction<HolidayDivision, HolidayDivisionController> {
+public class UpdateAction extends PWUpdateAction<HolidayDivision, HolidayDivisionController> {
 
 	@Override
 	protected Class<HolidayDivision> getItemType() {
 		return HolidayDivision.class;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getDescription()
+	 */
+	@Override
+	public String[] getDescription() {
+		final String[] description = {
+			String.format("Update a %s information by specified ID.", getCommandName()),
+			"  ---------",
+			String.format("  FORMAT > %s %s [ID]", getCommandName(), getName())
+		};
+		return description;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getRegexForParse()
+	 */
+	@Override
+	protected String getRegexForParse() {
+		return String.format("^%s %s [0-9a-zA-Z]+", getCommandName(), getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getTitle(java.util.List, java.lang.Object[])
+	 */
+	@Override
+	protected String getTitle(List<PWField> fields, Object... keyValues) {
+		return "";
 	}
 }

@@ -34,11 +34,11 @@ import java.util.List;
 import paperworker.core.PWError;
 import paperworker.core.PWWarning;
 import paperworker.core.ui.command.PWAction;
-import paperworker.master.ui.command.MasterCommand;
+import paperworker.core.ui.command.PWCommand;
 import paperworker.member.core.Member;
 import paperworker.member.core.MemberController;
 
-public class Command extends MasterCommand<Member, MemberController> {
+public class Command extends PWCommand<Member, MemberController> {
 	public Command() throws PWError, PWWarning {
 		super();
 	}
@@ -61,5 +61,13 @@ public class Command extends MasterCommand<Member, MemberController> {
 	@Override
 	protected MemberController createController() throws PWError, PWWarning {
 		return new MemberController();
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWCommand#getDescription()
+	 */
+	@Override
+	protected String getDescription() {
+		return String.format("Maintenance tool for %s master.", getName());
 	}
 }

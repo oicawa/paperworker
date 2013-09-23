@@ -28,14 +28,17 @@
 
 package paperworker.member.ui.command;
 
+import java.util.List;
+
 import paperworker.core.PWError;
+import paperworker.core.PWField;
 import paperworker.core.ui.command.PWAction;
+import paperworker.core.ui.command.PWDetailAction;
 import paperworker.core.ui.command.PaperWorker;
-import paperworker.master.ui.command.MasterDetailAction;
 import paperworker.member.core.Member;
 import paperworker.member.core.MemberController;
 
-public class DetailAction extends MasterDetailAction<Member, MemberController> {
+public class DetailAction extends PWDetailAction<Member, MemberController> {
 
 	public DetailAction() {
 		super();
@@ -60,5 +63,34 @@ public class DetailAction extends MasterDetailAction<Member, MemberController> {
 	@Override
 	protected Class<Member> getItemType() {
 		return Member.class;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getDescription()
+	 */
+	@Override
+	public String[] getDescription() {
+		final String[] description = {
+				String.format("Print a %s information by specified ID.", getCommandName()),
+				"  ---------",
+				String.format("  FORMAT > %s %s [ID]", getCommandName(), getName()),
+			};
+			return description;
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getRegexForParse()
+	 */
+	@Override
+	protected String getRegexForParse() {
+		return String.format("^%s %s [0-9a-zA-Z]+", getCommandName(), getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#getTitle(java.util.List, java.lang.Object[])
+	 */
+	@Override
+	protected String getTitle(List<PWField> fields, Object... keyValues) {
+		return "";
 	}
 }
