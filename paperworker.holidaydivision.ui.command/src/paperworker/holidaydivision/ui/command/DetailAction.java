@@ -49,7 +49,7 @@ public class DetailAction extends PWDetailAction<HolidayDivision, HolidayDivisio
 		String[] fieldNames = { "name", "shortName" };
 		int maxLength = PWAction.getMaxLengthOfCaptions(HolidayDivision.class);
 		
-		PaperWorker.message("  [%s]", item.getDivisionId());
+		PaperWorker.message("[%s]", item.getDivisionId());
 		for (String fieldName : fieldNames) {
 			printField(item, fieldName, maxLength);
 		}

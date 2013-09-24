@@ -123,4 +123,12 @@ public class Organization extends PWItem {
 		PWItem.setValue(this, fieldName, value);
 	}
 
+	/* (non-Javadoc)
+	 * @see paperworker.core.PWItem#getId()
+	 */
+	@Override
+	public String getId() {
+		return organizationId;
+	}
+
 }

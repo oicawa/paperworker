@@ -49,7 +49,7 @@ public class DetailAction extends PWDetailAction<Member, MemberController> {
 		String[] fieldNames = { "groupId", "birthday", "enteredDate", "gender", "telephone", "address", "email" };
 		int maxLength = PWAction.getMaxLengthOfCaptions(Member.class);
 		
-		PaperWorker.message("  [%s] %s %s (%s %s)",
+		PaperWorker.message("[%s] %s %s (%s %s)",
 				item.getMemberId(),
 				item.getFamilyName(),
 				item.getFirstName(),

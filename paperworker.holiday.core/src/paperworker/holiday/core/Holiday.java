@@ -29,6 +29,7 @@
 package paperworker.holiday.core;
 
 import java.util.Date;
+import java.util.UUID;
 
 import paperworker.core.PWError;
 import paperworker.core.PWItem;
@@ -63,6 +64,9 @@ public class Holiday extends PWItem {
 	@PWFieldBasicInfo(caption = "Submitted Date", type = "datetime")
 	@DateTimeInfo(format = "yyyy-MM-dd")
 	private Date submittedDate;
+
+	@PWFieldBasicInfo(caption = "UUID", type = "varchar(100)")
+	private UUID uuid;
 	
 	public String getCreatorId() {
 		return creatorId;
@@ -112,6 +116,14 @@ public class Holiday extends PWItem {
 		this.reason = reason;
 	}
 
+	public UUID getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(UUID uuid) {
+		this.uuid = uuid;
+	}
+
 	/* (non-Javadoc)
 	 * @see paperworker.core.PWItem#getValue(java.lang.String)
 	 */
@@ -126,6 +138,14 @@ public class Holiday extends PWItem {
 	@Override
 	public void setValue(String fieldName, Object value) throws PWError {
 		PWItem.setValue(this, fieldName, value);
+	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.PWItem#getId()
+	 */
+	@Override
+	public String getId() {
+		return uuid.toString();
 	}
 
 }

@@ -196,4 +196,12 @@ public class Member extends PWItem {
 		base.setTime(date);
 		return now.get(Calendar.YEAR) - base.get(Calendar.YEAR);
 	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.PWItem#getId()
+	 */
+	@Override
+	public String getId() {
+		return memberId;
+	}
 }

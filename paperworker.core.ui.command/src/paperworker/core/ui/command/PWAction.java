@@ -104,16 +104,26 @@ public abstract class PWAction<TItem extends PWItem, TController extends PWContr
 		}
 	}
 	
-	public static void promptField(PWItem dst, PWItem src, PWField fieldInfo, int captionLength) throws PWError {
-		String caption = fieldInfo.getCaption();
-		String format = String.format("%%-%ds >> ", captionLength);
-		
-		String input = PaperWorker.prompt(format, caption);
+	public static void promptField(PWItem dst, PWItem src, PWField field, int captionLength) throws PWError {
+		promptField(dst, src, field, captionLength, null);
+	}
+	
+	public static void promptField(PWItem dst, PWItem src, PWField field, int captionLength, PWSelector selector) throws PWError {
+		String caption = field.getCaption();
+		String value = PWItem.getValueAsString(src, field.getName());
+		String format = String.format("%%-%ds [%%s]", captionLength);
+		PaperWorker.message(format, caption, value);
+		String input;
+		if (selector == null) {
+			input = PaperWorker.prompt("  >> ");
+		} else {
+			input = selector.prompt("  >> ");
+		}
 		try {
 			if (input.equals("")) {
-				dst.setValue(fieldInfo.getName(), src.getValue(fieldInfo.getName()));
+				dst.setValue(field.getName(), src.getValue(field.getName()));
 			} else {
-				dst.setValue(fieldInfo.getName(), fieldInfo.parse(input));
+				dst.setValue(field.getName(), field.parse(input));
 			}
 		} catch (PWError e) {
 			PaperWorker.error(e);

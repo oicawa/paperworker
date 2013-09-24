@@ -30,20 +30,43 @@ package paperworker.core;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import paperworker.core.annotation.PWItemBasicInfo;
 
 public abstract class PWItem {
 	
+	public abstract String getId();
+	
 	public abstract Object getValue(String fieldName) throws PWError;
 	
 	public abstract void setValue(String fieldName, Object value) throws PWError;
 	
-	protected static Object getValue(PWItem item, String fieldName) throws PWError {
+	public static Object getValue(PWItem item, String fieldName) throws PWError {
 		PWField fieldInfo = PWField.getField(item.getClass(), fieldName);
 		return fieldInfo.getValue(item);
+	}
+	
+	public static String getValueAsString(PWItem item, String fieldName) throws PWError {
+		PWField field = PWField.getField(item.getClass(), fieldName);
+		Object value = field.getValue(item);
+		if (value == null) {
+			return "";
+		} else if (field.isDate()) {
+			SimpleDateFormat formatter = new SimpleDateFormat(field.getDateTimeFormat());
+			return formatter.format((Date)value);
+		} else if (field.isInteger()){
+			return String.format("%d", value);
+		} else if (field.isReal()){
+			return String.format("%f", value);
+		} else if (field.isEnum()){
+			return value.toString();
+		} else {
+			return (String)value;
+		}
 	}
 	
 	public static List<PWField> getFields(Class<? extends PWItem> itemType) {

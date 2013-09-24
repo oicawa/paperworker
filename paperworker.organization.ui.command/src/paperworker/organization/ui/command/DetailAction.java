@@ -49,7 +49,7 @@ public class DetailAction extends PWDetailAction<Organization, OrganizationContr
 		String[] fieldNames = { "parentOrganizationId", "leaderId", "subleaderId", "division" };
 		int maxLength = PWAction.getMaxLengthOfCaptions(Organization.class);
 		
-		PaperWorker.message("  [%s] %s (%s)",
+		PaperWorker.message("[%s] %s (%s)",
 				item.getOrganizationId(),
 				item.getName(),
 				item.getShortName());

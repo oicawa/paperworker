@@ -84,4 +84,12 @@ public class HolidayDivision extends PWItem {
 	public void setValue(String fieldName, Object value) throws PWError {
 		PWItem.setValue(this, fieldName, value);
 	}
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.PWItem#getId()
+	 */
+	@Override
+	public String getId() {
+		return divisionId;
+	}
 }

@@ -1,5 +1,5 @@
 /*
- *  $Id: PWRenderer.java 2013/09/23 20:48:38 masamitsu $
+ *  $Id: PWSelector.java 2013/09/24 22:59:09 masamitsu $
  *
  *  ===============================================================================
  *
@@ -28,48 +28,12 @@
 
 package paperworker.core.ui.command;
 
-import java.text.SimpleDateFormat;
-
 import paperworker.core.PWError;
-import paperworker.core.PWField;
-import paperworker.core.PWItem;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWLabel<TItem extends PWItem> {
-	
-	private String[] fieldNames;
-	private String format;
-	private TItem item;
-	
-	public PWLabel(TItem item, String format, String... fieldNames) {
-		this.item = item;
-		this.format = format;
-		this.fieldNames = fieldNames;
-	}
-	
-	public String getText() throws PWError {
-		Object[] values = new Object[fieldNames.length];
-		for (int i = 0; i < fieldNames.length; i++) {
-			PWField field = PWField.getField(item.getClass(), fieldNames[i]);
-			if (field.isDate()) {
-				Object value = field.getValue(item);
-				if (value == null) {
-					values[i] = "";
-				} else {
-					SimpleDateFormat formatter = new SimpleDateFormat(field.getDateTimeFormat());
-					values[i] = formatter.format(value);
-				}
-			} else {
-				values[i] = field.getValue(item);
-			}
-		}
-		return String.format(format, values);
-	}
-
-	public String getId() {
-		return item.getId();
-	}
+public interface PWSelector {
+	public String prompt(String prompt) throws PWError;
 }

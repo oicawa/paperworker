@@ -1,5 +1,5 @@
 /*
- *  $Id: PWRenderer.java 2013/09/23 20:48:38 masamitsu $
+ *  $Id: PWSingleSelector.java 2013/09/24 23:04:48 masamitsu $
  *
  *  ===============================================================================
  *
@@ -28,48 +28,49 @@
 
 package paperworker.core.ui.command;
 
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import paperworker.core.PWError;
-import paperworker.core.PWField;
 import paperworker.core.PWItem;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWLabel<TItem extends PWItem> {
-	
-	private String[] fieldNames;
-	private String format;
-	private TItem item;
-	
-	public PWLabel(TItem item, String format, String... fieldNames) {
-		this.item = item;
-		this.format = format;
-		this.fieldNames = fieldNames;
+public class PWSingleSelector<TItem extends PWItem, TLabel extends PWLabel<TItem>> implements PWSelector {
+
+	private List<TLabel> labels = new ArrayList<TLabel>();
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWSelector#prompt(java.lang.String)
+	 */
+	@Override
+	public String prompt(String prompt) throws PWError {
+		int size = labels.size();
+		int decimal = String.format("%d", size).length();
+		String format = String.format("  %%%dd. %%s", decimal);
+		
+		PaperWorker.message("Select a number.");
+		for (int i = 0; i < size; i++) {
+			TLabel label = labels.get(i);
+			PaperWorker.message(format, i, label.getText());
+		}
+		
+		int index = -1;
+		while (true) {
+			String input = PaperWorker.prompt(prompt);
+			index = Integer.valueOf(input);
+			if (0 <= index && index < size) {
+				break;
+			}
+			PaperWorker.message("* Input number from 0 to %d.", size - 1);
+		}
+		
+		return labels.get(index).getId();
 	}
 	
-	public String getText() throws PWError {
-		Object[] values = new Object[fieldNames.length];
-		for (int i = 0; i < fieldNames.length; i++) {
-			PWField field = PWField.getField(item.getClass(), fieldNames[i]);
-			if (field.isDate()) {
-				Object value = field.getValue(item);
-				if (value == null) {
-					values[i] = "";
-				} else {
-					SimpleDateFormat formatter = new SimpleDateFormat(field.getDateTimeFormat());
-					values[i] = formatter.format(value);
-				}
-			} else {
-				values[i] = field.getValue(item);
-			}
-		}
-		return String.format(format, values);
+	public void add(TLabel label) {
+		labels.add(label);
 	}
 
-	public String getId() {
-		return item.getId();
-	}
 }

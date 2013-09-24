@@ -1,5 +1,5 @@
 /*
- *  $Id: PWRenderer.java 2013/09/23 20:48:38 masamitsu $
+ *  $Id: HolidayDivisionLabel.java 2013/09/24 23:40:12 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,50 +26,24 @@
  *  ===============================================================================
  */
 
-package paperworker.core.ui.command;
+package paperworker.holidaydivision.ui.command;
 
-import java.text.SimpleDateFormat;
-
-import paperworker.core.PWError;
-import paperworker.core.PWField;
-import paperworker.core.PWItem;
+import paperworker.core.ui.command.PWLabel;
+import paperworker.holidaydivision.core.HolidayDivision;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWLabel<TItem extends PWItem> {
-	
-	private String[] fieldNames;
-	private String format;
-	private TItem item;
-	
-	public PWLabel(TItem item, String format, String... fieldNames) {
-		this.item = item;
-		this.format = format;
-		this.fieldNames = fieldNames;
-	}
-	
-	public String getText() throws PWError {
-		Object[] values = new Object[fieldNames.length];
-		for (int i = 0; i < fieldNames.length; i++) {
-			PWField field = PWField.getField(item.getClass(), fieldNames[i]);
-			if (field.isDate()) {
-				Object value = field.getValue(item);
-				if (value == null) {
-					values[i] = "";
-				} else {
-					SimpleDateFormat formatter = new SimpleDateFormat(field.getDateTimeFormat());
-					values[i] = formatter.format(value);
-				}
-			} else {
-				values[i] = field.getValue(item);
-			}
-		}
-		return String.format(format, values);
+public class HolidayDivisionLabel extends PWLabel<HolidayDivision> {
+
+	/**
+	 * @param item
+	 * @param format
+	 * @param fieldNames
+	 */
+	public HolidayDivisionLabel(HolidayDivision item) {
+		super(item, "%s", "shortName");
 	}
 
-	public String getId() {
-		return item.getId();
-	}
 }

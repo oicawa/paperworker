@@ -61,9 +61,9 @@ public abstract class PWAddAction<TItem extends PWItem, TController extends PWBa
 		
 		controller.add(keyValues);
 
-		PaperWorker.message("  Created a new %s. [%s]", getCommandName(), getTitle(fields, keyValues));
-		PaperWorker.message("  Input detail information below.");
-		PaperWorker.message("  --------------------------------------------------");
+		PaperWorker.message("Created a new %s. [%s]", getCommandName(), getTitle(fields, keyValues));
+		PaperWorker.message("Input detail information below.");
+		PaperWorker.message("--------------------------------------------------");
 		PWUpdateAction.update(controller, keyValues);
 	}
 }

@@ -91,7 +91,7 @@ public abstract class PWUpdateAction<TItem extends PWItem, TController extends P
 		}
 		
 		PaperWorker.message("------------------------------");
-		if (PaperWorker.confirm("Do you save? [Y/N] >> ", "  *** Input 'Y' or 'N'. ***", "Y", "N")) {
+		if (PaperWorker.confirm("Do you save? [Y/N] >> ", "*** Input 'Y' or 'N'. ***", "Y", "N")) {
 			controller.update(dst);
 			PaperWorker.message("");
 			PaperWorker.message("Saved.");
