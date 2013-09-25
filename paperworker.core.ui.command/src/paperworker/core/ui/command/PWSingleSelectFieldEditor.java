@@ -1,5 +1,5 @@
 /*
- *  $Id: MemberLabel.java 2013/09/23 21:01:07 masamitsu $
+ *  $Id: PWSingleSelectFieldEditor.java 2013/09/25 6:17:56 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,22 +26,56 @@
  *  ===============================================================================
  */
 
-package paperworker.member.ui.command;
+package paperworker.core.ui.command;
 
-import paperworker.core.ui.command.PWLabel;
-import paperworker.member.core.Member;
+import java.util.ArrayList;
+import java.util.List;
+
+import paperworker.core.PWError;
+import paperworker.core.PWField;
 
 /**
  * @author masamitsu
  *
  */
-public class MemberLabel extends PWLabel {
+public class PWSingleSelectFieldEditor extends PWAbstractFieldEditor {
 
+	private List<PWLabel> labels = new ArrayList<PWLabel>();
+	
 	/**
-	 * @param format
-	 * @param fieldNames
+	 * @param field
+	 * @param captionLength
 	 */
-	public MemberLabel(Member member) {
-		super(member, "%s %s %s", "memberId", "familyName", "firstName");
+	public PWSingleSelectFieldEditor(PWField field, int captionLength) {
+		super(field, captionLength);
 	}
+	
+	public String prompt(String prompt) throws PWError {
+		int size = labels.size();
+		int decimal = String.format("%d", size).length();
+		String format = String.format("  %%%dd. %%s", decimal);
+		
+		PaperWorker.message("Select a number.");
+		for (int i = 0; i < size; i++) {
+			PWLabel label = labels.get(i);
+			PaperWorker.message(format, i, label.getText());
+		}
+		
+		int index = -1;
+		while (true) {
+			String input = PaperWorker.prompt(prompt);
+			index = Integer.valueOf(input);
+			if (0 <= index && index < size) {
+				break;
+			}
+			PaperWorker.message("* Input number from 0 to %d.", size - 1);
+		}
+		
+		return labels.get(index).getId();
+	}
+	
+	public void add(PWLabel label) {
+		labels.add(label);
+	}
+
 }

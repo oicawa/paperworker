@@ -1,5 +1,5 @@
 /*
- *  $Id: MemberLabel.java 2013/09/23 21:01:07 masamitsu $
+ *  $Id: PWStringFieldEditor.java 2013/09/25 5:44:33 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,22 +26,26 @@
  *  ===============================================================================
  */
 
-package paperworker.member.ui.command;
+package paperworker.core.ui.command;
 
-import paperworker.core.ui.command.PWLabel;
-import paperworker.member.core.Member;
+import paperworker.core.PWError;
+import paperworker.core.PWField;
 
 /**
  * @author masamitsu
  *
  */
-public class MemberLabel extends PWLabel {
+public class PWStringFieldEditor extends PWAbstractFieldEditor {
 
 	/**
-	 * @param format
-	 * @param fieldNames
+	 * @param field
+	 * @param captionLength
 	 */
-	public MemberLabel(Member member) {
-		super(member, "%s %s %s", "memberId", "familyName", "firstName");
+	public PWStringFieldEditor(PWField field, int captionLength) {
+		super(field, captionLength);
+	}
+
+	public String prompt(String prompt) throws PWError {
+		return PaperWorker.prompt("  >> ");
 	}
 }

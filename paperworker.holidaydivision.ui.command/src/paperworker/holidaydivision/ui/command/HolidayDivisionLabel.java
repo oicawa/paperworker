@@ -35,7 +35,7 @@ import paperworker.holidaydivision.core.HolidayDivision;
  * @author masamitsu
  *
  */
-public class HolidayDivisionLabel extends PWLabel<HolidayDivision> {
+public class HolidayDivisionLabel extends PWLabel {
 
 	/**
 	 * @param item

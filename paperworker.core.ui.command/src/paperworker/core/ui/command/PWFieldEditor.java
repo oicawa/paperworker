@@ -1,5 +1,5 @@
 /*
- *  $Id: MemberLabel.java 2013/09/23 21:01:07 masamitsu $
+ *  $Id: PWFieldEditor.java 2013/09/25 6:56:17 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,22 +26,21 @@
  *  ===============================================================================
  */
 
-package paperworker.member.ui.command;
+package paperworker.core.ui.command;
 
-import paperworker.core.ui.command.PWLabel;
-import paperworker.member.core.Member;
+import paperworker.core.PWError;
+import paperworker.core.PWField;
+import paperworker.core.PWItem;
 
 /**
  * @author masamitsu
  *
  */
-public class MemberLabel extends PWLabel {
+public interface PWFieldEditor {
+	public PWField getField();
+	
+	public void print(PWItem src, PWItem dst, String prompt) throws PWError;
+	
+	public String prompt(String prompt) throws PWError;
 
-	/**
-	 * @param format
-	 * @param fieldNames
-	 */
-	public MemberLabel(Member member) {
-		super(member, "%s %s %s", "memberId", "familyName", "firstName");
-	}
 }

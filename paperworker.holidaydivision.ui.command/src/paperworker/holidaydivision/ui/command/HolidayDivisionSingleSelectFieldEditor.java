@@ -1,5 +1,5 @@
 /*
- *  $Id: MemberLabel.java 2013/09/23 21:01:07 masamitsu $
+ *  $Id: HolidayDivisionSingleSelectFieldEditor.java 2013/09/25 6:38:48 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,22 +26,38 @@
  *  ===============================================================================
  */
 
-package paperworker.member.ui.command;
+package paperworker.holidaydivision.ui.command;
 
-import paperworker.core.ui.command.PWLabel;
-import paperworker.member.core.Member;
+import java.util.List;
+
+import paperworker.core.PWError;
+import paperworker.core.PWField;
+import paperworker.core.PWWarning;
+import paperworker.core.ui.command.PWSingleSelectFieldEditor;
+import paperworker.holidaydivision.core.HolidayDivision;
+import paperworker.holidaydivision.core.HolidayDivisionController;
 
 /**
  * @author masamitsu
  *
  */
-public class MemberLabel extends PWLabel {
+public class HolidayDivisionSingleSelectFieldEditor extends
+		PWSingleSelectFieldEditor {
 
 	/**
-	 * @param format
-	 * @param fieldNames
+	 * @param field
+	 * @param captionLength
+	 * @throws PWWarning 
+	 * @throws PWError 
 	 */
-	public MemberLabel(Member member) {
-		super(member, "%s %s %s", "memberId", "familyName", "firstName");
+	public HolidayDivisionSingleSelectFieldEditor(PWField field, int captionLength) throws PWError, PWWarning {
+		super(field, captionLength);
+		
+		HolidayDivisionController controller = new HolidayDivisionController();
+		List<HolidayDivision> divisions = controller.get();
+		for (HolidayDivision division : divisions) {
+			this.add(new HolidayDivisionLabel(division));
+		}
 	}
+
 }

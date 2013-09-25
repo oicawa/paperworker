@@ -1,5 +1,5 @@
 /*
- *  $Id: MemberLabel.java 2013/09/23 21:01:07 masamitsu $
+ *  $Id: PWFieldEditor.java 2013/09/25 5:43:12 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,22 +26,46 @@
  *  ===============================================================================
  */
 
-package paperworker.member.ui.command;
+package paperworker.core.ui.command;
 
-import paperworker.core.ui.command.PWLabel;
-import paperworker.member.core.Member;
+import paperworker.core.PWError;
+import paperworker.core.PWField;
+import paperworker.core.PWItem;
 
 /**
  * @author masamitsu
  *
  */
-public class MemberLabel extends PWLabel {
-
-	/**
-	 * @param format
-	 * @param fieldNames
-	 */
-	public MemberLabel(Member member) {
-		super(member, "%s %s %s", "memberId", "familyName", "firstName");
+public abstract class PWAbstractFieldEditor implements PWFieldEditor {
+	
+	protected PWField field;
+	protected int captionLength;
+	
+	public PWAbstractFieldEditor(PWField field, int captionLength) {
+		this.field = field;
+		this.captionLength = captionLength;
 	}
+	
+	public PWField getField() {
+		return field;
+	}
+	
+	public void print(PWItem src, PWItem dst, String prompt) throws PWError {
+		String caption = field.getCaption();
+		String value = PWItem.getValueAsString(src, field.getName());
+		String format = String.format("%%-%ds [%%s]", captionLength);
+		PaperWorker.message(format, caption, value);
+		String input = prompt("  >> ");
+		try {
+			if (input.equals("")) {
+				dst.setValue(field.getName(), src.getValue(field.getName()));
+			} else {
+				dst.setValue(field.getName(), field.parse(input));
+			}
+		} catch (PWError e) {
+			PaperWorker.error(e);
+		}
+	}
+	
+	public abstract String prompt(String prompt) throws PWError;
 }
