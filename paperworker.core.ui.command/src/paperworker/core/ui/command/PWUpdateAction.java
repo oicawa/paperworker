@@ -28,6 +28,7 @@
 
 package paperworker.core.ui.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import paperworker.core.PWBasicController;
@@ -61,17 +62,16 @@ public abstract class PWUpdateAction<TItem extends PWItem, TController extends P
 		
 		PaperWorker.message("<< UPDATE >>" + getTitle(fields, keyValues));
 		PaperWorker.message("* If you input no value (just only the ENTER key), the field value doesn't change.");
-		update(controller, keyValues);
+		update(PWField.KeyType.Primary, keyValues);
 	}
 
-	public static <TItem extends PWItem, TController extends PWBasicController<TItem>> void update(TController controller, Object... keyValues) throws PWError, PWWarning {
-		TItem src = controller.get(keyValues);
+	public void update(PWField.KeyType keyType, Object... keyValues) throws PWError, PWWarning {
+		TItem src = controller.get(keyType, keyValues);
 		if (src == null) {
 			PaperWorker.message("The target item is not found.");
 			return;
 		}
-		@SuppressWarnings("unchecked")
-		Class<TItem> itemType = (Class<TItem>) src.getClass();
+		Class<TItem> itemType = getItemType();
 		
 		TItem dst = (TItem) PWUtilities.createInstance(itemType);
 		List<PWField> primaryFields = PWItem.getPrimaryFields(itemType);
@@ -79,20 +79,17 @@ public abstract class PWUpdateAction<TItem extends PWItem, TController extends P
 			Object value = src.getValue(primaryField.getName());
 			dst.setValue(primaryField.getName(), value);
 		}
-
-		int maxLength = PWAction.getMaxLengthOfCaptions(itemType);
 		
-		List<PWField> fields = PWItem.getFields(itemType);
-		for (PWField field : fields) {
-			if (field.isPrimary()) {
+		for (PWFieldEditor editor : getFieldEditors()) {
+			if (editor.getField().isPrimary()) {
 				continue;
 			}
-			promptField(dst, src, field, maxLength);
+			editor.print(src, dst, "  >> ");
 		}
 		
 		PaperWorker.message("------------------------------");
 		if (PaperWorker.confirm("Do you save? [Y/N] >> ", "*** Input 'Y' or 'N'. ***", "Y", "N")) {
-			controller.update(dst);
+			controller.update(keyType, dst);
 			PaperWorker.message("");
 			PaperWorker.message("Saved.");
 		} else {
@@ -100,4 +97,42 @@ public abstract class PWUpdateAction<TItem extends PWItem, TController extends P
 			PaperWorker.message("Canceled.");
 		}
 	}
+	
+	public List<PWFieldEditor> getFieldEditors() throws PWError, PWWarning {
+		List<PWFieldEditor> editors = new ArrayList<PWFieldEditor>();
+		List<PWField> fields = PWItem.getFields(getItemType());
+		int maxLength = getMaxLengthOfCaptions(getItemType());
+		for (PWField field : fields) {
+			PWFieldEditor editor = new PWStringFieldEditor(field, maxLength);
+			editors.add(editor);
+		}
+		return editors;
+	}
+	
+	public static void promptField(PWItem dst, PWItem src, PWField field, int captionLength) throws PWError {
+		promptField(dst, src, field, captionLength, null);
+	}
+	
+	public static void promptField(PWItem dst, PWItem src, PWField field, int captionLength, PWSelector selector) throws PWError {
+		String caption = field.getCaption();
+		String value = PWItem.getValueAsString(src, field.getName());
+		String format = String.format("%%-%ds [%%s]", captionLength);
+		PaperWorker.message(format, caption, value);
+		String input;
+		if (selector == null) {
+			input = PaperWorker.prompt("  >> ");
+		} else {
+			input = selector.prompt("  >> ");
+		}
+		try {
+			if (input.equals("")) {
+				dst.setValue(field.getName(), src.getValue(field.getName()));
+			} else {
+				dst.setValue(field.getName(), field.parse(input));
+			}
+		} catch (PWError e) {
+			PaperWorker.error(e);
+		}
+	}
+	
 }

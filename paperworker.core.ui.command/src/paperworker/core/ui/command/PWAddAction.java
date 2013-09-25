@@ -43,6 +43,8 @@ import paperworker.core.PWWarning;
  */
 public abstract class PWAddAction<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWAction<TItem, TController> {
 
+	protected PWUpdateAction<TItem, TController> updateAction;
+	
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWAction#getName()
 	 */
@@ -59,11 +61,15 @@ public abstract class PWAddAction<TItem extends PWItem, TController extends PWBa
 		List<PWField> fields = PWItem.getPrimaryFields(getItemType());
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(fields, ACTION_ARG_START_INDEX, args);
 		
-		controller.add(keyValues);
+		controller.add(PWField.KeyType.Primary, keyValues);
 
 		PaperWorker.message("Created a new %s. [%s]", getCommandName(), getTitle(fields, keyValues));
 		PaperWorker.message("Input detail information below.");
 		PaperWorker.message("--------------------------------------------------");
-		PWUpdateAction.update(controller, keyValues);
+		updateAction.update(PWField.KeyType.Primary, keyValues);
+	}
+	
+	public void setUpdateAction(PWUpdateAction<TItem, TController> updateAction) {
+		this.updateAction = updateAction;
 	}
 }

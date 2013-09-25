@@ -28,18 +28,40 @@
 
 package paperworker.holiday.ui.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import paperworker.core.PWError;
 import paperworker.core.PWField;
+import paperworker.core.PWItem;
+import paperworker.core.PWUtilities;
+import paperworker.core.PWWarning;
+import paperworker.core.ui.command.PWFieldEditor;
+import paperworker.core.ui.command.PWStringFieldEditor;
 import paperworker.core.ui.command.PWUpdateAction;
+import paperworker.core.ui.command.PaperWorker;
 import paperworker.holiday.core.Holiday;
 import paperworker.holiday.core.HolidayController;
+import paperworker.holidaydivision.ui.command.HolidayDivisionSingleSelectFieldEditor;
 
 /**
  * @author masamitsu
  *
  */
 public class UpdateAction extends PWUpdateAction<Holiday, HolidayController> {
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#run(java.lang.String[])
+	 */
+	@Override
+	public void run(String[] args) throws PWError, PWWarning {
+		List<PWField> fields = PWItem.getUniqueFields(getItemType());
+		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(fields, ACTION_ARG_START_INDEX, args);
+		
+		PaperWorker.message("<< UPDATE >>" + getTitle(fields, keyValues));
+		PaperWorker.message("* If you input no value (just only the ENTER key), the field value doesn't change.");
+		update(PWField.KeyType.Unique, keyValues);
+	}
 
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWUpdateAction#getTitle(java.util.List, java.lang.Object[])
@@ -72,6 +94,26 @@ public class UpdateAction extends PWUpdateAction<Holiday, HolidayController> {
 	@Override
 	protected String getRegexForParse() {
 		return HolidayUtilities.getRegexForParse(getName());
+	}
+	
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWUpdateAction#getFieldEditors()
+	 */
+	@Override
+	public List<PWFieldEditor> getFieldEditors() throws PWError, PWWarning {
+		List<PWFieldEditor> editors = new ArrayList<PWFieldEditor>();
+		List<PWField> fields = PWItem.getFields(getItemType());
+		int maxLength = getMaxLengthOfCaptions(getItemType());
+		for (PWField field : fields) {
+			if (field.getName().equals("divisionId")) {
+				PWFieldEditor editor = new HolidayDivisionSingleSelectFieldEditor(field, maxLength);
+				editors.add(editor);
+			} else {
+				PWFieldEditor editor = new PWStringFieldEditor(field, maxLength);
+				editors.add(editor);
+			}
+		}
+		return editors;
 	}
 
 }

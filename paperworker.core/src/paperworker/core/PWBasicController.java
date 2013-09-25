@@ -64,8 +64,8 @@ public abstract class PWBasicController<TItem extends PWItem> extends PWControll
         accesser.execute(query);
 	}
 
-	public TItem get(Object... keyValues) throws PWError, PWWarning {
-    	PWQuery query = PWQuery.getSelectQueryByKeys(itemType, PWField.KeyType.Primary, keyValues);
+	public TItem get(PWField.KeyType keyType, Object... keyValues) throws PWError, PWWarning {
+    	PWQuery query = PWQuery.getSelectQueryByKeys(itemType, keyType, keyValues);
     	PWAfterSqlQuery<TItem> afterQuery = new PWAfterSqlQuery<TItem>(itemType);
         accesser.select(query, afterQuery);
         return afterQuery.getItemList().size() == 0 ? null : afterQuery.getItemList().get(0);
@@ -83,13 +83,13 @@ public abstract class PWBasicController<TItem extends PWItem> extends PWControll
 		return null;
 	}
 	
-	public void update(TItem item) throws PWError, PWWarning {
-		PWQuery query = PWQuery.getUpdateQueryByKey(item, PWField.KeyType.Primary);
+	public void update(PWField.KeyType keyType, TItem item) throws PWError, PWWarning {
+		PWQuery query = PWQuery.getUpdateQueryByKey(item, keyType);
 		accesser.execute(query);
 	}
 	
-	public void delete(Object... keyValues) throws PWError, PWWarning {
-		PWQuery query = PWQuery.getDeleteQueryByKey(itemType, PWField.KeyType.Primary, keyValues);
+	public void delete(PWField.KeyType keyType, Object... keyValues) throws PWError, PWWarning {
+		PWQuery query = PWQuery.getDeleteQueryByKey(itemType, keyType, keyValues);
         accesser.execute(query);
 	}
 

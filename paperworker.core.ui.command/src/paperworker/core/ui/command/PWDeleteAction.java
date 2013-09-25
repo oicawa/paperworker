@@ -60,16 +60,16 @@ public abstract class PWDeleteAction<TItem extends PWItem, TController extends P
 	public void run(String[] args) throws PWError, PWWarning {
 		List<PWField> fields = PWItem.getPrimaryFields(getItemType());
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(fields, ACTION_ARG_START_INDEX, args);
-		delete(controller, keyValues);
+		delete(controller, PWField.KeyType.Primary, keyValues);
 	}
 
-	public void delete(TController controller, Object... keyValues) throws PWError, PWWarning {
+	public void delete(TController controller, PWField.KeyType keyType, Object... keyValues) throws PWError, PWWarning {
 		PaperWorker.message("<< DELETE >>");
-		detailAction.print(keyValues);
+		detailAction.print(keyType, keyValues);
 		
 		PaperWorker.message("------------------------------");
 		if (PaperWorker.confirm("Do you delete? [Y/N] >> ", "*** Input 'Y' or 'N'. ***", "Y", "N")) {
-			controller.delete(keyValues);
+			controller.delete(keyType, keyValues);
 			PaperWorker.message("Deleted.");
 		} else {
 			PaperWorker.message("Canceled.");

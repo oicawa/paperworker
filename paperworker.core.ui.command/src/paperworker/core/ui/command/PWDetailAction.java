@@ -58,11 +58,11 @@ public abstract class PWDetailAction<TItem extends PWItem, TController extends P
 	public void run(String[] args) throws PWError, PWWarning {
 		List<PWField> fields = PWItem.getPrimaryFields(getItemType());
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(fields, ACTION_ARG_START_INDEX, args);
-		print(keyValues);
+		print(PWField.KeyType.Primary, keyValues);
 	}
 	
-	public void print(Object... keyValues) throws PWError, PWWarning {
-		TItem item = controller.get(keyValues);
+	public void print(PWField.KeyType keyType, Object... keyValues) throws PWError, PWWarning {
+		TItem item = controller.get(keyType, keyValues);
 		if (item == null) {
 			List<PWField> fields = PWItem.getPrimaryFields(getItemType());
 			PaperWorker.message("The %s is not found. [%s]", getCommandName(), getTitle(fields, keyValues));

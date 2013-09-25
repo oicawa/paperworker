@@ -32,6 +32,8 @@ import java.util.List;
 
 import paperworker.core.PWError;
 import paperworker.core.PWField;
+import paperworker.core.PWItem;
+import paperworker.core.PWUtilities;
 import paperworker.core.PWWarning;
 import paperworker.core.ui.command.PWAction;
 import paperworker.core.ui.command.PWDetailAction;
@@ -46,6 +48,16 @@ import paperworker.member.ui.command.MemberLabel;
  *
  */
 public class DetailAction extends PWDetailAction<Holiday, HolidayController> {
+
+	/* (non-Javadoc)
+	 * @see paperworker.core.ui.command.PWAction#run(java.lang.String[])
+	 */
+	@Override
+	public void run(String[] args) throws PWError, PWWarning {
+		List<PWField> fields = PWItem.getUniqueFields(getItemType());
+		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(fields, ACTION_ARG_START_INDEX, args);
+		print(PWField.KeyType.Unique, keyValues);
+	}
 
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWAction#getDescription()

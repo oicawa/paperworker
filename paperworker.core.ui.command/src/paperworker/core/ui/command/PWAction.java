@@ -104,32 +104,6 @@ public abstract class PWAction<TItem extends PWItem, TController extends PWContr
 		}
 	}
 	
-	public static void promptField(PWItem dst, PWItem src, PWField field, int captionLength) throws PWError {
-		promptField(dst, src, field, captionLength, null);
-	}
-	
-	public static void promptField(PWItem dst, PWItem src, PWField field, int captionLength, PWSelector selector) throws PWError {
-		String caption = field.getCaption();
-		String value = PWItem.getValueAsString(src, field.getName());
-		String format = String.format("%%-%ds [%%s]", captionLength);
-		PaperWorker.message(format, caption, value);
-		String input;
-		if (selector == null) {
-			input = PaperWorker.prompt("  >> ");
-		} else {
-			input = selector.prompt("  >> ");
-		}
-		try {
-			if (input.equals("")) {
-				dst.setValue(field.getName(), src.getValue(field.getName()));
-			} else {
-				dst.setValue(field.getName(), field.parse(input));
-			}
-		} catch (PWError e) {
-			PaperWorker.error(e);
-		}
-	}
-	
 	public static int getMaxLengthOfCaptions(Class<? extends PWItem> type) {
 		List<String> captions = PWItem.getCaptions(type);
 		int max = 0;

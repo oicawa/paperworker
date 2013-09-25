@@ -49,7 +49,10 @@ public abstract class PWCommand<TItem extends PWItem, TController extends PWBasi
 			actions.put(action.getName(), action);
 		}
 		
-		// TODO: Move to PWCommand, and Delete Master packages.
+		PWAddAction<TItem, TController> addAction = (PWAddAction<TItem, TController>)getAction("add");
+		PWUpdateAction<TItem, TController> updateAction = (PWUpdateAction<TItem, TController>)getAction("update");
+		addAction.setUpdateAction(updateAction);
+		
 		PWDeleteAction<TItem, TController> deleteAction = (PWDeleteAction<TItem, TController>)getAction("delete");
 		PWDetailAction<TItem, TController> detailAction = (PWDetailAction<TItem, TController>)getAction("detail");
 		deleteAction.setDetailAction(detailAction);

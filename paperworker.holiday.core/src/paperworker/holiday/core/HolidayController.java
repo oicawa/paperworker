@@ -30,6 +30,7 @@ package paperworker.holiday.core;
 
 import paperworker.core.PWBasicController;
 import paperworker.core.PWError;
+import paperworker.core.PWField;
 import paperworker.core.PWWarning;
 import paperworker.holidaydivision.core.HolidayDivision;
 import paperworker.holidaydivision.core.HolidayDivisionController;
@@ -68,21 +69,21 @@ public class HolidayController extends PWBasicController<Holiday> {
 	}
 
 	public Member getCreator(String creatorId) throws PWError, PWWarning {
-		Member creator = memberController.get(creatorId);
+		Member creator = memberController.get(PWField.KeyType.Primary, creatorId);
 		return creator;
 	}
 
 	public HolidayDivision getDivision(String holidayDivisionId) throws PWError, PWWarning {
-		HolidayDivision division = holidayDivisionController.get(holidayDivisionId);
+		HolidayDivision division = holidayDivisionController.get(PWField.KeyType.Primary, holidayDivisionId);
 		return division;
 	}
 	
 	public Organization getOrganization(String creatorId) throws PWError, PWWarning {
-		Member creator = memberController.get(creatorId);
+		Member creator = memberController.get(PWField.KeyType.Primary, creatorId);
 		if (creator == null) {
 			return null;
 		}
-		Organization organization = organizationController.get(creator.getGroupId());
+		Organization organization = organizationController.get(PWField.KeyType.Primary, creator.getGroupId());
 		return organization;
 	}
 }

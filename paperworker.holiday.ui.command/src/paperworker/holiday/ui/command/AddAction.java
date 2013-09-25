@@ -29,9 +29,14 @@
 package paperworker.holiday.ui.command;
 
 import java.util.List;
+import java.util.UUID;
 
+import paperworker.core.PWError;
 import paperworker.core.PWField;
+import paperworker.core.PWUtilities;
+import paperworker.core.PWWarning;
 import paperworker.core.ui.command.PWAddAction;
+import paperworker.core.ui.command.PaperWorker;
 import paperworker.holiday.core.Holiday;
 import paperworker.holiday.core.HolidayController;
 
@@ -45,7 +50,18 @@ public class AddAction extends PWAddAction<Holiday, HolidayController> {
 	 */
 	@Override
 	protected String getRegexForParse() {
-		return HolidayUtilities.getRegexForParse(getName());
+		return "^holiday add$";
+	}
+	
+	@Override
+	public void run(String[] args) throws PWError, PWWarning {
+		UUID uuid = PWUtilities.createNewUuid();
+		controller.add(uuid);
+
+		PaperWorker.message("Created a new %s. [%s]", getCommandName(), uuid.toString());
+		PaperWorker.message("Input detail information below.");
+		PaperWorker.message("--------------------------------------------------");
+		updateAction.update(PWField.KeyType.Primary, uuid);
 	}
 
 	/* (non-Javadoc)
