@@ -29,6 +29,7 @@
 package paperworker.core;
 
 import java.util.List;
+import java.util.UUID;
 
 public class PWUtilities {
 	public static <T> T createInstance(Class<T> type) throws PWError {
@@ -59,17 +60,22 @@ public class PWUtilities {
 		return commandName;
 	}
 
-	public static <TItem extends PWItem> Object[] getKeyValuesFromArgumants(List<PWField> primaryFields, int from, String[] args, String... defaultValues) throws PWError {
+	public static <TItem extends PWItem> Object[] getKeyValuesFromArgumants(List<PWField> keyFields, int from, String[] args, String... defaultValues) throws PWError {
 		int size = args.length - from;
-		assert(size + defaultValues.length == primaryFields.size());
+		assert(size + defaultValues.length == keyFields.size());
 		
-		Object[] keyValues = new Object[primaryFields.size()];
+		Object[] keyValues = new Object[keyFields.size()];
 		
-		for (int i = 0; i < primaryFields.size(); i++) {
-			PWField primaryField = primaryFields.get(i);
+		for (int i = 0; i < keyFields.size(); i++) {
+			PWField keyField = keyFields.get(i);
 			String value = i < size ? args[from + i] : defaultValues[i - size];
-			keyValues[i] = primaryField.parse(value);
+			keyValues[i] = keyField.parse(value);
 		}
 		return keyValues;
+	}
+	
+	public static UUID createNewUuid() {
+		// TODO: Must decides what version UUID to use.
+		return UUID.randomUUID();
 	}
 }

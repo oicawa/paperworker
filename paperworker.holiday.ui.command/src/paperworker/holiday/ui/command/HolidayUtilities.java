@@ -47,7 +47,7 @@ public class HolidayUtilities {
 	}
 
 	protected static String getRegexForParse(String actionName) {
-		return String.format("^holiday %s [0-9a-zA-Z]+( [\\d]{4}-[\\d]{2}-[\\d]{2}){1,2}", actionName);
+		return String.format("^holiday %s( [0-9a-zA-Z]+( [\\d]{4}-[\\d]{2}-[\\d]{2}){1,2})$", actionName);
 	}
 
 }
