@@ -38,13 +38,13 @@ import paperworker.core.PWItem;
  * @author masamitsu
  *
  */
-public abstract class PWLabel<TItem extends PWItem> {
+public abstract class PWLabel {
 	
 	private String[] fieldNames;
 	private String format;
-	private TItem item;
+	private PWItem item;
 	
-	public PWLabel(TItem item, String format, String... fieldNames) {
+	public PWLabel(PWItem item, String format, String... fieldNames) {
 		this.item = item;
 		this.format = format;
 		this.fieldNames = fieldNames;

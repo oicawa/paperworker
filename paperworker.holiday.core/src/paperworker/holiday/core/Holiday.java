@@ -44,14 +44,17 @@ import paperworker.core.annotation.PWItemBasicInfo;
 @PWItemBasicInfo(caption = "Holidays", tableName = "Holidays")
 public class Holiday extends PWItem {
 
-	@PWFieldBasicInfo(caption = "Creator ID", type = "varchar(100)", primary = true)
+	@PWFieldBasicInfo(caption = "UUID", type = "uuid", primary = true)
+	private UUID uuid;
+
+	@PWFieldBasicInfo(caption = "Creator ID", type = "varchar(100)", unique = true)
 	private String creatorId;
 	
-	@PWFieldBasicInfo(caption = "Start Date", type = "datetime", primary = true)
+	@PWFieldBasicInfo(caption = "Start Date", type = "datetime", unique = true)
 	@DateTimeInfo(format = "yyyy-MM-dd")
 	private Date startDate;
 	
-	@PWFieldBasicInfo(caption = "End Date", type = "datetime", primary = true)
+	@PWFieldBasicInfo(caption = "End Date", type = "datetime", unique = true)
 	@DateTimeInfo(format = "yyyy-MM-dd")
 	private Date endDate;
 	
@@ -64,9 +67,6 @@ public class Holiday extends PWItem {
 	@PWFieldBasicInfo(caption = "Submitted Date", type = "datetime")
 	@DateTimeInfo(format = "yyyy-MM-dd")
 	private Date submittedDate;
-
-	@PWFieldBasicInfo(caption = "UUID", type = "varchar(100)")
-	private UUID uuid;
 	
 	public String getCreatorId() {
 		return creatorId;
