@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>paperworker.member.ui.command</name>
+	<name>pw.member.ui.command</name>
 	<comment></comment>
 	<projects>
 		<project>paperworker.core.ui.command</project>
