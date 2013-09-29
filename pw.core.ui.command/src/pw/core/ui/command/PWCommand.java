@@ -33,28 +33,31 @@ import java.util.HashMap;
 import java.util.List;
 
 import pw.core.PWBasicController;
-import pw.core.PWError;
 import pw.core.PWItem;
-import pw.core.PWWarning;
+import pw.core.ui.command.operation.PWAddOperation;
+import pw.core.ui.command.operation.PWDeleteOperation;
+import pw.core.ui.command.operation.PWDetailOperation;
+import pw.core.ui.command.operation.PWOperation;
+import pw.core.ui.command.operation.PWUpdateOperation;
 
 public abstract class PWCommand<TItem extends PWItem, TController extends PWBasicController<TItem>> implements Closeable {
 
 	private TController controller;
-	private HashMap<String, PWAction<TItem, TController>> actions = new HashMap<String, PWAction<TItem, TController>>();
+	private HashMap<String, PWOperation<TItem, TController>> actions = new HashMap<String, PWOperation<TItem, TController>>();
 	
-	public PWCommand() throws PWError, PWWarning {
+	public PWCommand() {
 		this.controller = createController();
-		for (PWAction<TItem, TController> action : getActions()) {
+		for (PWOperation<TItem, TController> action : getActions()) {
 			action.setController(controller);
 			actions.put(action.getName(), action);
 		}
 		
-		PWAddAction<TItem, TController> addAction = (PWAddAction<TItem, TController>)getAction("add");
-		PWUpdateAction<TItem, TController> updateAction = (PWUpdateAction<TItem, TController>)getAction("update");
+		PWAddOperation<TItem, TController> addAction = (PWAddOperation<TItem, TController>)getAction("add");
+		PWUpdateOperation<TItem, TController> updateAction = (PWUpdateOperation<TItem, TController>)getAction("update");
 		addAction.setUpdateAction(updateAction);
 		
-		PWDeleteAction<TItem, TController> deleteAction = (PWDeleteAction<TItem, TController>)getAction("delete");
-		PWDetailAction<TItem, TController> detailAction = (PWDetailAction<TItem, TController>)getAction("detail");
+		PWDeleteOperation<TItem, TController> deleteAction = (PWDeleteOperation<TItem, TController>)getAction("delete");
+		PWDetailOperation<TItem, TController> detailAction = (PWDetailOperation<TItem, TController>)getAction("detail");
 		deleteAction.setDetailAction(detailAction);
 	}
 	
@@ -62,11 +65,11 @@ public abstract class PWCommand<TItem extends PWItem, TController extends PWBasi
 	
 	protected abstract String getDescription();
 	
-	protected abstract TController createController() throws PWError, PWWarning;
+	protected abstract TController createController();
 	
-	protected abstract List<PWAction<TItem, TController>> getActions();
+	protected abstract List<PWOperation<TItem, TController>> getActions();
 	
-	public PWAction<TItem, TController> getAction(String actionName) {
+	public PWOperation<TItem, TController> getAction(String actionName) {
 		if (actions.containsKey(actionName)) {
 			return actions.get(actionName);
 		}
@@ -75,7 +78,7 @@ public abstract class PWCommand<TItem extends PWItem, TController extends PWBasi
 	
 	public void printActionList() {
 		PaperWorker.message("  --------------------------------------------------");
-		for (PWAction<TItem, TController> action : actions.values()) {
+		for (PWOperation<TItem, TController> action : actions.values()) {
 			PaperWorker.message("  %s", action.getName());
 			for (String line : action.getDescription()) {
 				PaperWorker.message("      %s", line);
@@ -86,13 +89,13 @@ public abstract class PWCommand<TItem extends PWItem, TController extends PWBasi
 		PaperWorker.message("");
 	}
 	
-	public void run(String[] args) throws PWError, PWWarning {
+	public void run(String[] args) {
 		if (args.length == 0) {
 			printActionList();
 			return;
 		}
 		
-		for (PWAction<TItem, TController> action : actions.values()) {
+		for (PWOperation<TItem, TController> action : actions.values()) {
 			if (action.parse(args)) {
 				action.run(args);
 				return;

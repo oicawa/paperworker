@@ -29,12 +29,10 @@
 package pw.member.core;
 
 import pw.core.PWBasicController;
-import pw.core.PWError;
-import pw.core.PWWarning;
 
 public class MemberController extends PWBasicController<Member> {
 
-	public MemberController() throws PWError, PWWarning {
+	public MemberController() {
 		super();
 	}
 

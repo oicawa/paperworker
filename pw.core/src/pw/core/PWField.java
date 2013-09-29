@@ -50,7 +50,7 @@ public class PWField {
 		this.field = field;
 	}
 	
-	public static PWField getField(Class<? extends PWItem> type, String fieldName) throws PWError {
+	public static PWField getField(Class<? extends PWItem> type, String fieldName) {
 		Field field;
 		try {
 			field = type.getDeclaredField(fieldName);
@@ -110,7 +110,7 @@ public class PWField {
 		return datetimeInfo == null ? null : datetimeInfo.format();
 	}
 
-	public Object parse(String input) throws PWError {
+	public Object parse(String input) {
 		if (isString()) {
 			// TODO: Should be the value checked by 'length' of annotation?
 			return input;
@@ -125,7 +125,7 @@ public class PWField {
 		}
 	}
 	
-	private Object parseAsNumber(String input) throws PWError {
+	private Object parseAsNumber(String input) {
 		try {
 			return Long.parseLong(input);
 		} catch (NumberFormatException e) {
@@ -133,7 +133,7 @@ public class PWField {
 		}
 	}
 	
-	private Object parseAsDate(String input) throws PWError {
+	private Object parseAsDate(String input) {
 		// TODO: should this field be checked 'Date' field?
 		DateTimeInfo dateTimeInfo = field.getAnnotation(DateTimeInfo.class);
 		String format = dateTimeInfo.format();
@@ -154,7 +154,7 @@ public class PWField {
 		}
 	}
 
-	public void setValue(Object object, Object value) throws PWError {
+	public void setValue(Object object, Object value) {
 		try {
 			if (isEnum()) {
 				String input = value == null ? null : value.toString();
@@ -175,7 +175,7 @@ public class PWField {
 			throw new PWError(e, "The field couldn't be access. [field name: '%s']", field.getName());
 		}
 	}
-	public Object getValue(Object object) throws PWError {
+	public Object getValue(Object object) {
 		try {
 			return field.get(object);
 		} catch (IllegalArgumentException e) {

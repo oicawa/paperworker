@@ -31,15 +31,13 @@ package pw.member.ui.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import pw.core.PWError;
-import pw.core.PWWarning;
-import pw.core.ui.command.PWAction;
 import pw.core.ui.command.PWCommand;
+import pw.core.ui.command.operation.PWOperation;
 import pw.member.core.Member;
 import pw.member.core.MemberController;
 
 public class Command extends PWCommand<Member, MemberController> {
-	public Command() throws PWError, PWWarning {
+	public Command() {
 		super();
 	}
 	
@@ -48,8 +46,8 @@ public class Command extends PWCommand<Member, MemberController> {
 	}
 
 	@Override
-	protected List<PWAction<Member, MemberController>> getActions() {
-		List<PWAction<Member, MemberController>> actions = new ArrayList<PWAction<Member, MemberController>>();
+	protected List<PWOperation<Member, MemberController>> getActions() {
+		List<PWOperation<Member, MemberController>> actions = new ArrayList<PWOperation<Member, MemberController>>();
 		actions.add(new ListAction());
 		actions.add(new AddAction());
 		actions.add(new DetailAction());
@@ -59,7 +57,7 @@ public class Command extends PWCommand<Member, MemberController> {
 	}
 
 	@Override
-	protected MemberController createController() throws PWError, PWWarning {
+	protected MemberController createController() {
 		return new MemberController();
 	}
 

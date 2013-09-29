@@ -29,12 +29,10 @@
 package pw.organization.core;
 
 import pw.core.PWBasicController;
-import pw.core.PWError;
-import pw.core.PWWarning;
 
 public class OrganizationController extends PWBasicController<Organization> {
 
-	public OrganizationController() throws PWError, PWWarning {
+	public OrganizationController() {
 		super();
 	}
 

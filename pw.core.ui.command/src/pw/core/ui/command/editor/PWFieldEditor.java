@@ -26,9 +26,8 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command;
+package pw.core.ui.command.editor;
 
-import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
 
@@ -39,8 +38,8 @@ import pw.core.PWItem;
 public interface PWFieldEditor {
 	public PWField getField();
 	
-	public void print(PWItem src, PWItem dst, String prompt) throws PWError;
+	public void print(PWItem src, PWItem dst, String prompt);
 	
-	public String prompt(String prompt) throws PWError;
+	public String prompt(String prompt);
 
 }

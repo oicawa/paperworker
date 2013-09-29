@@ -31,12 +31,10 @@ package pw.holiday.ui.command;
 import java.util.List;
 import java.util.UUID;
 
-import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWUtilities;
-import pw.core.PWWarning;
-import pw.core.ui.command.PWAddAction;
 import pw.core.ui.command.PaperWorker;
+import pw.core.ui.command.operation.PWAddOperation;
 import pw.holiday.core.Holiday;
 import pw.holiday.core.HolidayController;
 
@@ -44,7 +42,7 @@ import pw.holiday.core.HolidayController;
  * @author masamitsu
  *
  */
-public class AddAction extends PWAddAction<Holiday, HolidayController> {
+public class AddAction extends PWAddOperation<Holiday, HolidayController> {
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWAction#getRegexForParse()
 	 */
@@ -54,7 +52,7 @@ public class AddAction extends PWAddAction<Holiday, HolidayController> {
 	}
 	
 	@Override
-	public void run(String[] args) throws PWError, PWWarning {
+	public void run(String[] args) {
 		UUID uuid = PWUtilities.createNewUuid();
 		controller.add(uuid);
 

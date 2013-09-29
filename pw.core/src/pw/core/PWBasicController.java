@@ -28,6 +28,7 @@
 
 package pw.core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,10 +40,9 @@ public abstract class PWBasicController<TItem extends PWItem> extends PWControll
 	private Class<TItem> itemType;
 
 	/**
-	 * @throws PWError
-	 * @throws PWWarning 
+	 * 
 	 */
-	public PWBasicController() throws PWError, PWWarning {
+	public PWBasicController() {
 		super();
 		
 		this.itemType = getItemType();
@@ -54,41 +54,49 @@ public abstract class PWBasicController<TItem extends PWItem> extends PWControll
 	
 	protected abstract Class<TItem> getItemType();
 	
-	private void create() throws PWError, PWWarning {
+	private void create() {
     	PWQuery query = PWQuery.getCreateTableQuery(itemType);
 		accesser.execute(query);
 	}
 
-	public void add(Object... keyValues) throws PWError, PWWarning {
-		PWQuery query = PWQuery.getInsertQuery(itemType, keyValues);
+	public void add(Object... keyValues) {
+		PWQuery query = PWQuery.getInsertQueryOnlyKeyValues(itemType, keyValues);
         accesser.execute(query);
 	}
 
-	public TItem get(PWField.KeyType keyType, Object... keyValues) throws PWError, PWWarning {
+	public TItem get(PWField.KeyType keyType, Object... keyValues) {
     	PWQuery query = PWQuery.getSelectQueryByKeys(itemType, keyType, keyValues);
-    	PWAfterSqlQuery<TItem> afterQuery = new PWAfterSqlQuery<TItem>(itemType);
+    	PWAfterSqlQuery afterQuery = new PWAfterSqlQuery(itemType);
         accesser.select(query, afterQuery);
-        return afterQuery.getItemList().size() == 0 ? null : afterQuery.getItemList().get(0);
+    	@SuppressWarnings("unchecked")
+		TItem item = (TItem)(afterQuery.getItemList().size() == 0 ? null : (TItem)afterQuery.getItemList().get(0));
+        return item;
 	}
 
-	public List<TItem> get() throws PWError, PWWarning {
+	public List<TItem> get() {
     	PWQuery query = PWQuery.getSelectQueryByKeys(itemType, PWField.KeyType.Primary);
-    	PWAfterSqlQuery<TItem> afterQuery = new PWAfterSqlQuery<TItem>(itemType);
+    	PWAfterSqlQuery afterQuery = new PWAfterSqlQuery(itemType);
         accesser.select(query, afterQuery);
-        return afterQuery.getItemList();
+        List<TItem> items = new ArrayList<TItem>();
+        for (Object object : afterQuery.getItemList()) {
+        	@SuppressWarnings("unchecked")
+			TItem item = (TItem)object;
+			items.add(item);
+        }
+        return items;
 	}
 	
-	public TItem[] get(PWFilter<TItem> filter) throws PWError, PWWarning {
+	public TItem[] get(PWFilter<TItem> filter) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
-	public void update(PWField.KeyType keyType, TItem item) throws PWError, PWWarning {
+	public void update(PWField.KeyType keyType, TItem item) {
 		PWQuery query = PWQuery.getUpdateQueryByKey(item, keyType);
 		accesser.execute(query);
 	}
 	
-	public void delete(PWField.KeyType keyType, Object... keyValues) throws PWError, PWWarning {
+	public void delete(PWField.KeyType keyType, Object... keyValues) {
 		PWQuery query = PWQuery.getDeleteQueryByKey(itemType, keyType, keyValues);
         accesser.execute(query);
 	}

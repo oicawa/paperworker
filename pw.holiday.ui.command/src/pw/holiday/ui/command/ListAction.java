@@ -31,11 +31,9 @@ package pw.holiday.ui.command;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import pw.core.PWError;
 import pw.core.PWField;
-import pw.core.PWWarning;
-import pw.core.ui.command.PWListAction;
 import pw.core.ui.command.PaperWorker;
+import pw.core.ui.command.operation.PWListOperation;
 import pw.holiday.core.Holiday;
 import pw.holiday.core.HolidayController;
 import pw.holidaydivision.core.HolidayDivision;
@@ -45,7 +43,7 @@ import pw.member.core.Member;
  * @author masamitsu
  *
  */
-public class ListAction extends PWListAction<Holiday, HolidayController> {
+public class ListAction extends PWListOperation<Holiday, HolidayController> {
 
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWAction#getDescription()
@@ -84,7 +82,7 @@ public class ListAction extends PWListAction<Holiday, HolidayController> {
 	 * @see paperworker.core.ui.command.PWListAction#printItem(paperworker.core.PWItem)
 	 */
 	@Override
-	protected void printItem(Holiday item) throws PWError, PWWarning {
+	protected void printItem(Holiday item) {
 		PWField startDateField = PWField.getField(Holiday.class, "startDate");
 		SimpleDateFormat startDateFormat = new SimpleDateFormat(startDateField.getDateTimeFormat());
 		

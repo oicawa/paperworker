@@ -26,24 +26,23 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command;
+package pw.core.ui.command.operation;
 
 import java.util.List;
 
 import pw.core.PWBasicController;
-import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.PWUtilities;
-import pw.core.PWWarning;
+import pw.core.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWAddAction<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWAction<TItem, TController> {
+public abstract class PWAddOperation<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWOperation<TItem, TController> {
 
-	protected PWUpdateAction<TItem, TController> updateAction;
+	protected PWUpdateOperation<TItem, TController> updateAction;
 	
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWAction#getName()
@@ -57,7 +56,7 @@ public abstract class PWAddAction<TItem extends PWItem, TController extends PWBa
 	 * @see paperworker.core.ui.command.PWAction#run(java.lang.String[])
 	 */
 	@Override
-	public void run(String[] args) throws PWError, PWWarning {
+	public void run(String[] args) {
 		List<PWField> fields = PWItem.getPrimaryFields(getItemType());
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(fields, ACTION_ARG_START_INDEX, args);
 		
@@ -69,7 +68,7 @@ public abstract class PWAddAction<TItem extends PWItem, TController extends PWBa
 		updateAction.update(PWField.KeyType.Primary, keyValues);
 	}
 	
-	public void setUpdateAction(PWUpdateAction<TItem, TController> updateAction) {
+	public void setUpdateAction(PWUpdateOperation<TItem, TController> updateAction) {
 		this.updateAction = updateAction;
 	}
 }

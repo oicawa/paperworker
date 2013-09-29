@@ -26,7 +26,7 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command;
+package pw.core.ui.command.operation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +36,16 @@ import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.PWUtilities;
-import pw.core.PWWarning;
+import pw.core.ui.command.PWSelector;
+import pw.core.ui.command.PaperWorker;
+import pw.core.ui.command.editor.PWFieldEditor;
+import pw.core.ui.command.editor.PWStringFieldEditor;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWUpdateAction<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWAction<TItem, TController> {
+public abstract class PWUpdateOperation<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWOperation<TItem, TController> {
 
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWAction#getName()
@@ -56,7 +59,7 @@ public abstract class PWUpdateAction<TItem extends PWItem, TController extends P
 	 * @see paperworker.core.ui.command.PWAction#run(java.lang.String[])
 	 */
 	@Override
-	public void run(String[] args) throws PWError, PWWarning {
+	public void run(String[] args) {
 		List<PWField> fields = PWItem.getPrimaryFields(getItemType());
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(fields, ACTION_ARG_START_INDEX, args);
 		
@@ -65,7 +68,7 @@ public abstract class PWUpdateAction<TItem extends PWItem, TController extends P
 		update(PWField.KeyType.Primary, keyValues);
 	}
 
-	public void update(PWField.KeyType keyType, Object... keyValues) throws PWError, PWWarning {
+	public void update(PWField.KeyType keyType, Object... keyValues) {
 		TItem src = controller.get(keyType, keyValues);
 		if (src == null) {
 			PaperWorker.message("The target item is not found.");
@@ -76,8 +79,8 @@ public abstract class PWUpdateAction<TItem extends PWItem, TController extends P
 		TItem dst = (TItem) PWUtilities.createInstance(itemType);
 		List<PWField> primaryFields = PWItem.getPrimaryFields(itemType);
 		for (PWField primaryField : primaryFields) {
-			Object value = src.getValue(primaryField.getName());
-			dst.setValue(primaryField.getName(), value);
+			Object value = PWItem.getValue(src, primaryField.getName());
+			PWItem.setValue(dst, primaryField.getName(), value);
 		}
 		
 		for (PWFieldEditor editor : getFieldEditors()) {
@@ -98,7 +101,7 @@ public abstract class PWUpdateAction<TItem extends PWItem, TController extends P
 		}
 	}
 	
-	public List<PWFieldEditor> getFieldEditors() throws PWError, PWWarning {
+	public List<PWFieldEditor> getFieldEditors() {
 		List<PWFieldEditor> editors = new ArrayList<PWFieldEditor>();
 		List<PWField> fields = PWItem.getFields(getItemType());
 		int maxLength = getMaxLengthOfCaptions(getItemType());
@@ -109,11 +112,11 @@ public abstract class PWUpdateAction<TItem extends PWItem, TController extends P
 		return editors;
 	}
 	
-	public static void promptField(PWItem dst, PWItem src, PWField field, int captionLength) throws PWError {
+	public static void promptField(PWItem dst, PWItem src, PWField field, int captionLength) {
 		promptField(dst, src, field, captionLength, null);
 	}
 	
-	public static void promptField(PWItem dst, PWItem src, PWField field, int captionLength, PWSelector selector) throws PWError {
+	public static void promptField(PWItem dst, PWItem src, PWField field, int captionLength, PWSelector selector) {
 		String caption = field.getCaption();
 		String value = PWItem.getValueAsString(src, field.getName());
 		String format = String.format("%%-%ds [%%s]", captionLength);
@@ -126,9 +129,10 @@ public abstract class PWUpdateAction<TItem extends PWItem, TController extends P
 		}
 		try {
 			if (input.equals("")) {
-				dst.setValue(field.getName(), src.getValue(field.getName()));
+				Object srcValue = PWItem.getValue(src, field.getName());
+				PWItem.setValue(dst, field.getName(), srcValue);
 			} else {
-				dst.setValue(field.getName(), field.parse(input));
+				PWItem.setValue(dst, field.getName(), field.parse(input));
 			}
 		} catch (PWError e) {
 			PaperWorker.error(e);

@@ -31,11 +31,11 @@ package pw.holidaydivision.ui.command;
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.ui.command.PWDeleteAction;
+import pw.core.ui.command.operation.PWDeleteOperation;
 import pw.holidaydivision.core.HolidayDivision;
 import pw.holidaydivision.core.HolidayDivisionController;
 
-public class DeleteAction extends PWDeleteAction<HolidayDivision, HolidayDivisionController> {
+public class DeleteAction extends PWDeleteOperation<HolidayDivision, HolidayDivisionController> {
 
 	public DeleteAction() {
 		super();

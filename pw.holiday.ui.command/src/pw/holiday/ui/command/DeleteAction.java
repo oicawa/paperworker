@@ -31,7 +31,7 @@ package pw.holiday.ui.command;
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.ui.command.PWDeleteAction;
+import pw.core.ui.command.operation.PWDeleteOperation;
 import pw.holiday.core.Holiday;
 import pw.holiday.core.HolidayController;
 
@@ -39,7 +39,7 @@ import pw.holiday.core.HolidayController;
  * @author masamitsu
  *
  */
-public class DeleteAction extends PWDeleteAction<Holiday, HolidayController> {
+public class DeleteAction extends PWDeleteOperation<Holiday, HolidayController> {
 
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWAction#getDescription()

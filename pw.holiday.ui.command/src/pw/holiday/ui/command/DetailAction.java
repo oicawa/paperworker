@@ -30,13 +30,11 @@ package pw.holiday.ui.command;
 
 import java.util.List;
 
-import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.PWUtilities;
-import pw.core.PWWarning;
-import pw.core.ui.command.PWAction;
-import pw.core.ui.command.PWDetailAction;
+import pw.core.ui.command.operation.PWDetailOperation;
+import pw.core.ui.command.operation.PWOperation;
 import pw.holiday.core.Holiday;
 import pw.holiday.core.HolidayController;
 import pw.holidaydivision.core.HolidayDivision;
@@ -47,13 +45,13 @@ import pw.member.ui.command.MemberLabel;
  * @author masamitsu
  *
  */
-public class DetailAction extends PWDetailAction<Holiday, HolidayController> {
+public class DetailAction extends PWDetailOperation<Holiday, HolidayController> {
 
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWAction#run(java.lang.String[])
 	 */
 	@Override
-	public void run(String[] args) throws PWError, PWWarning {
+	public void run(String[] args) {
 		List<PWField> fields = PWItem.getUniqueFields(getItemType());
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(fields, ACTION_ARG_START_INDEX, args);
 		print(PWField.KeyType.Unique, keyValues);
@@ -96,8 +94,8 @@ public class DetailAction extends PWDetailAction<Holiday, HolidayController> {
 	 * @see paperworker.core.ui.command.PWDetailAction#printDetail(paperworker.core.PWItem)
 	 */
 	@Override
-	protected void printDetail(Holiday item) throws PWError, PWWarning {
-		int maxLength = PWAction.getMaxLengthOfCaptions(Holiday.class);
+	protected void printDetail(Holiday item) {
+		int maxLength = PWOperation.getMaxLengthOfCaptions(Holiday.class);
 		
 		Member creator = controller.getCreator(item.getCreatorId());
 		MemberLabel creatorLabel = new MemberLabel(creator);

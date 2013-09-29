@@ -31,7 +31,6 @@ package pw.holiday.core;
 import java.util.Date;
 import java.util.UUID;
 
-import pw.core.PWError;
 import pw.core.PWItem;
 import pw.core.annotation.DateTimeInfo;
 import pw.core.annotation.PWFieldBasicInfo;
@@ -123,29 +122,4 @@ public class Holiday extends PWItem {
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
 	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.PWItem#getValue(java.lang.String)
-	 */
-	@Override
-	public Object getValue(String fieldName) throws PWError {
-		return PWItem.getValue(this, fieldName);
-	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.PWItem#setValue(java.lang.String, java.lang.Object)
-	 */
-	@Override
-	public void setValue(String fieldName, Object value) throws PWError {
-		PWItem.setValue(this, fieldName, value);
-	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.PWItem#getId()
-	 */
-	@Override
-	public String getId() {
-		return uuid.toString();
-	}
-
 }

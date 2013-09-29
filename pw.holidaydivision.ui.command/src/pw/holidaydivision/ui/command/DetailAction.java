@@ -30,24 +30,23 @@ package pw.holidaydivision.ui.command;
 
 import java.util.List;
 
-import pw.core.PWError;
 import pw.core.PWField;
-import pw.core.ui.command.PWAction;
-import pw.core.ui.command.PWDetailAction;
 import pw.core.ui.command.PaperWorker;
+import pw.core.ui.command.operation.PWDetailOperation;
+import pw.core.ui.command.operation.PWOperation;
 import pw.holidaydivision.core.HolidayDivision;
 import pw.holidaydivision.core.HolidayDivisionController;
 
-public class DetailAction extends PWDetailAction<HolidayDivision, HolidayDivisionController> {
+public class DetailAction extends PWDetailOperation<HolidayDivision, HolidayDivisionController> {
 
 	public DetailAction() {
 		super();
 	}
 	
 	@Override
-	protected void printDetail(HolidayDivision item) throws PWError {
+	protected void printDetail(HolidayDivision item) {
 		String[] fieldNames = { "name", "shortName" };
-		int maxLength = PWAction.getMaxLengthOfCaptions(HolidayDivision.class);
+		int maxLength = PWOperation.getMaxLengthOfCaptions(HolidayDivision.class);
 		
 		PaperWorker.message("[%s]", item.getDivisionId());
 		for (String fieldName : fieldNames) {

@@ -29,12 +29,10 @@
 package pw.holidaydivision.core;
 
 import pw.core.PWBasicController;
-import pw.core.PWError;
-import pw.core.PWWarning;
 
 public class HolidayDivisionController extends PWBasicController<HolidayDivision> {
 
-	public HolidayDivisionController() throws PWError, PWWarning {
+	public HolidayDivisionController() {
 		super();
 	}
 

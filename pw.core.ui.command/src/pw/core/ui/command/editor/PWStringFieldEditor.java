@@ -26,10 +26,10 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command;
+package pw.core.ui.command.editor;
 
-import pw.core.PWError;
 import pw.core.PWField;
+import pw.core.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
@@ -45,7 +45,7 @@ public class PWStringFieldEditor extends PWAbstractFieldEditor {
 		super(field, captionLength);
 	}
 
-	public String prompt(String prompt) throws PWError {
+	public String prompt(String prompt) {
 		return PaperWorker.prompt("  >> ");
 	}
 }

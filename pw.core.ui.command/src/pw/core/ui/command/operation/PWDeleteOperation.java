@@ -26,24 +26,23 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command;
+package pw.core.ui.command.operation;
 
 import java.util.List;
 
 import pw.core.PWBasicController;
-import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.PWUtilities;
-import pw.core.PWWarning;
+import pw.core.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWDeleteAction<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWAction<TItem, TController> {
+public abstract class PWDeleteOperation<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWOperation<TItem, TController> {
 
-	private PWDetailAction<TItem, TController> detailAction;
+	private PWDetailOperation<TItem, TController> detailAction;
 	
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWAction#getName()
@@ -57,13 +56,13 @@ public abstract class PWDeleteAction<TItem extends PWItem, TController extends P
 	 * @see paperworker.core.ui.command.PWAction#run(java.lang.String[])
 	 */
 	@Override
-	public void run(String[] args) throws PWError, PWWarning {
+	public void run(String[] args) {
 		List<PWField> fields = PWItem.getPrimaryFields(getItemType());
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(fields, ACTION_ARG_START_INDEX, args);
 		delete(controller, PWField.KeyType.Primary, keyValues);
 	}
 
-	public void delete(TController controller, PWField.KeyType keyType, Object... keyValues) throws PWError, PWWarning {
+	public void delete(TController controller, PWField.KeyType keyType, Object... keyValues) {
 		PaperWorker.message("<< DELETE >>");
 		detailAction.print(keyType, keyValues);
 		
@@ -76,7 +75,7 @@ public abstract class PWDeleteAction<TItem extends PWItem, TController extends P
 		}
 	}
 	
-	public void setDetailAction(PWDetailAction<TItem, TController> detailAction) {
+	public void setDetailAction(PWDetailOperation<TItem, TController> detailAction) {
 		this.detailAction = detailAction;
 	}
 }

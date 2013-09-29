@@ -33,8 +33,8 @@ import java.util.List;
 
 public class PWQuery {
 
-	private static final String COMMA = ",";
-	private static final String AND = " and ";
+	public static final String COMMA = ",";
+	public static final String AND = " and ";
 	
 	private String query;
 	
@@ -56,13 +56,13 @@ public class PWQuery {
 		values.add(value);
 	}
 	
-	public static <TItem extends PWItem> String getTableName(Class<TItem> type) throws PWError {
+	public static <TItem extends PWItem> String getTableName(Class<TItem> type) {
 		
 		String tableName = PWItem.getTableName(type);
 		return tableName;
 	}
 	
-	public static <TItem extends PWItem> PWQuery getCreateTableQuery(Class<TItem> itemType) throws PWError {
+	public static <TItem extends PWItem> PWQuery getCreateTableQuery(Class<TItem> itemType) {
     	List<PWField> fields = PWItem.getFields(itemType);
     	
     	// Create the fields part of query
@@ -100,7 +100,7 @@ public class PWQuery {
     	return query;
 	}
 	
-	public static <TItem extends PWItem> PWQuery getSelectQueryByKeys(Class<TItem> itemType, PWField.KeyType keyType, Object... keyValues) throws PWError {
+	public static <TItem extends PWItem> PWQuery getSelectQueryByKeys(Class<TItem> itemType, PWField.KeyType keyType, Object... keyValues) {
 		// Create all query
 		String allQuery;
 		if (keyValues.length == 0) {
@@ -121,7 +121,7 @@ public class PWQuery {
 		return query;
 	}
 	
-	public static <TItem extends PWItem> PWQuery getInsertQuery(Class<TItem> itemType, Object... keyValues) throws PWError, PWWarning {
+	public static <TItem extends PWItem> PWQuery getInsertQueryOnlyKeyValues(Class<TItem> itemType, Object... keyValues) {
     	List<PWField> fields = PWItem.getFields(itemType);
     	
     	// Create the fields part of query
@@ -151,7 +151,7 @@ public class PWQuery {
     	return query;
 	}
 	
-	public static <TItem extends PWItem> PWQuery getUpdateQueryByKey(TItem item, PWField.KeyType keyType) throws PWError {
+	public static <TItem extends PWItem> PWQuery getUpdateQueryByKey(TItem item, PWField.KeyType keyType) {
 		@SuppressWarnings("unchecked")
 		Class<TItem> itemType = (Class<TItem>)item.getClass() ;
     	List<PWField> fields = PWItem.getFields(itemType);
@@ -194,7 +194,7 @@ public class PWQuery {
     	return query;
 	}
 
-	public static <TItem extends PWItem> PWQuery getDeleteQueryByKey(Class<TItem> itemType, PWField.KeyType keyType, Object... keyValues) throws PWError {
+	public static <TItem extends PWItem> PWQuery getDeleteQueryByKey(Class<TItem> itemType, PWField.KeyType keyType, Object... keyValues) {
     	// Create all query
 		String allQuery = String.format("delete from %s where %s;",
 				PWQuery.getTableName(itemType),

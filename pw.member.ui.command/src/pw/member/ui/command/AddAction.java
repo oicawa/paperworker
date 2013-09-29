@@ -31,11 +31,11 @@ package pw.member.ui.command;
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.ui.command.PWAddAction;
+import pw.core.ui.command.operation.PWAddOperation;
 import pw.member.core.Member;
 import pw.member.core.MemberController;
 
-public class AddAction extends PWAddAction<Member, MemberController> {
+public class AddAction extends PWAddOperation<Member, MemberController> {
 
 	public AddAction() {
 		super();

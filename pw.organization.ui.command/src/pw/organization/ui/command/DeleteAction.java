@@ -31,11 +31,11 @@ package pw.organization.ui.command;
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.ui.command.PWDeleteAction;
+import pw.core.ui.command.operation.PWDeleteOperation;
 import pw.organization.core.Organization;
 import pw.organization.core.OrganizationController;
 
-public class DeleteAction extends PWDeleteAction<Organization, OrganizationController> {
+public class DeleteAction extends PWDeleteOperation<Organization, OrganizationController> {
 
 	public DeleteAction() {
 		super();

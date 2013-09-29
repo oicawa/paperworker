@@ -31,11 +31,11 @@ package pw.member.ui.command;
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.ui.command.PWDeleteAction;
+import pw.core.ui.command.operation.PWDeleteOperation;
 import pw.member.core.Member;
 import pw.member.core.MemberController;
 
-public class DeleteAction extends PWDeleteAction<Member, MemberController> {
+public class DeleteAction extends PWDeleteOperation<Member, MemberController> {
 
 	public DeleteAction() {
 		super();

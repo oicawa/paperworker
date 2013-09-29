@@ -26,11 +26,12 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command;
+package pw.core.ui.command.editor;
 
 import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
+import pw.core.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
@@ -50,7 +51,7 @@ public abstract class PWAbstractFieldEditor implements PWFieldEditor {
 		return field;
 	}
 	
-	public void print(PWItem src, PWItem dst, String prompt) throws PWError {
+	public void print(PWItem src, PWItem dst, String prompt) {
 		String caption = field.getCaption();
 		String value = PWItem.getValueAsString(src, field.getName());
 		String format = String.format("%%-%ds [%%s]", captionLength);
@@ -58,14 +59,15 @@ public abstract class PWAbstractFieldEditor implements PWFieldEditor {
 		String input = prompt("  >> ");
 		try {
 			if (input.equals("")) {
-				dst.setValue(field.getName(), src.getValue(field.getName()));
+				Object srcValue = PWItem.getValue(src, field.getName());
+				PWItem.setValue(dst, field.getName(), srcValue);
 			} else {
-				dst.setValue(field.getName(), field.parse(input));
+				PWItem.setValue(dst, field.getName(), field.parse(input));
 			}
 		} catch (PWError e) {
 			PaperWorker.error(e);
 		}
 	}
 	
-	public abstract String prompt(String prompt) throws PWError;
+	public abstract String prompt(String prompt) ;
 }

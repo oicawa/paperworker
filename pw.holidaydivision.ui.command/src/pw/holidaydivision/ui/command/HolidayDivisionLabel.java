@@ -28,6 +28,7 @@
 
 package pw.holidaydivision.ui.command;
 
+import pw.core.PWField;
 import pw.core.ui.command.PWLabel;
 import pw.holidaydivision.core.HolidayDivision;
 
@@ -43,7 +44,7 @@ public class HolidayDivisionLabel extends PWLabel {
 	 * @param fieldNames
 	 */
 	public HolidayDivisionLabel(HolidayDivision item) {
-		super(item, "%s", "shortName");
+		super(item, PWField.KeyType.Primary, "%s", "shortName");
 	}
 
 }

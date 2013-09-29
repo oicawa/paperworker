@@ -39,18 +39,29 @@ import pw.core.annotation.PWItemBasicInfo;
 
 public abstract class PWItem {
 	
-	public abstract String getId();
-	
-	public abstract Object getValue(String fieldName) throws PWError;
-	
-	public abstract void setValue(String fieldName, Object value) throws PWError;
-	
-	public static Object getValue(PWItem item, String fieldName) throws PWError {
-		PWField fieldInfo = PWField.getField(item.getClass(), fieldName);
-		return fieldInfo.getValue(item);
+	public Object[] getKeyValues(Class<? extends PWItem> itemType, PWField.KeyType keyType) {
+		List<PWField> keyFields = PWItem.getFields(itemType, keyType);
+		Object[] keyValues = new Object[keyFields.size()];
+		for (int i = 0; i < keyFields.size(); i++) {
+			PWField keyField = keyFields.get(i);
+			keyValues[i] = keyField.getValue(this);
+		}
+		return keyValues;
 	}
 	
-	public static String getValueAsString(PWItem item, String fieldName) throws PWError {
+	public static Object getValue(PWItem item, String fieldName) {
+		if (item == null) {
+			return null;
+		}
+		PWField field = PWField.getField(item.getClass(), fieldName);
+		return field.getValue(item);
+	}
+	
+	public static String getValueAsString(PWItem item, String fieldName) {
+		if (item == null) {
+			return null;
+		}
+		
 		PWField field = PWField.getField(item.getClass(), fieldName);
 		Object value = field.getValue(item);
 		if (value == null) {
@@ -111,31 +122,31 @@ public abstract class PWItem {
 		return captions;
 	}
 	
-	protected static void setValue(PWItem item, String fieldName, Object value) throws PWError {
+	public static void setValue(PWItem item, String fieldName, Object value) {
 		PWField fieldInfo = PWField.getField(item.getClass(), fieldName);
 		fieldInfo.setValue(item, value);
 	}
 
-	public static Object parse(PWItem object, String fieldName, String input) throws PWError {
+	public static Object parse(PWItem object, String fieldName, String input) {
 		PWField fieldInfo = PWField.getField(object.getClass(), fieldName);
 		return fieldInfo.parse(input);
 	}
 
-	public static String getCaption(Class<? extends PWItem> type) throws PWError {
+	public static String getCaption(Class<? extends PWItem> type) {
 		PWItemBasicInfo info = type.getAnnotation(PWItemBasicInfo.class);
 		return info == null ? null : info.caption();
 	}
 
-	public static String getTableName(Class<? extends PWItem> type) throws PWError {
+	public static String getTableName(Class<? extends PWItem> type) {
 		PWItemBasicInfo info = type.getAnnotation(PWItemBasicInfo.class);
 		return info == null ? null : info.tableName();
 	}
 	
-	public static List<PWField> getPrimaryFields(Class<? extends PWItem> itemType) throws PWError {
+	public static List<PWField> getPrimaryFields(Class<? extends PWItem> itemType) {
 		return getFields(itemType, PWField.KeyType.Primary);
 	}
 	
-	public static List<PWField> getUniqueFields(Class<? extends PWItem> itemType) throws PWError {
+	public static List<PWField> getUniqueFields(Class<? extends PWItem> itemType) {
 		return getFields(itemType, PWField.KeyType.Unique);
 	}
 }

@@ -31,11 +31,11 @@ package pw.holidaydivision.ui.command;
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.ui.command.PWAddAction;
+import pw.core.ui.command.operation.PWAddOperation;
 import pw.holidaydivision.core.HolidayDivision;
 import pw.holidaydivision.core.HolidayDivisionController;
 
-public class AddAction extends PWAddAction<HolidayDivision, HolidayDivisionController> {
+public class AddAction extends PWAddOperation<HolidayDivision, HolidayDivisionController> {
 
 	public AddAction() {
 		super();

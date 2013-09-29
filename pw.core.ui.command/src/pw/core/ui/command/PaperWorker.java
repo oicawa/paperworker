@@ -39,7 +39,6 @@ import pw.core.PWController;
 import pw.core.PWError;
 import pw.core.PWItem;
 import pw.core.PWUtilities;
-import pw.core.PWWarning;
 
 public class PaperWorker implements Closeable {
 	
@@ -62,7 +61,7 @@ public class PaperWorker implements Closeable {
 		}
 	}
 	
-	private void run(String[] args) throws PWError {
+	private void run(String[] args) {
 		registCommands();
 		message("==================================================");
 		message("PaperWorker");
@@ -106,13 +105,11 @@ public class PaperWorker implements Closeable {
 				command.run(commandLine);
 			} catch (PWError e) {
 				error("*** ERROR *** %s", e.getMessage());
-			} catch (PWWarning e) {
-				message(e.getMessage());
 			}
 		}
 	}
 	
-	private void registCommands() throws PWError {
+	private void registCommands() {
 		final String endsWith = ".ui.command/bin"; // TODO Confirm in case *.jar
 		final String endTrim = "/bin"; // TODO Confirm in case *.jar
 		File directory = (new File(".")).getAbsoluteFile().getParentFile().getParentFile();
@@ -134,7 +131,7 @@ public class PaperWorker implements Closeable {
 		}
 	}
 
-	private PWCommand<? extends PWItem, ? extends PWController> createCommand(String packageName) throws PWError {
+	private PWCommand<? extends PWItem, ? extends PWController> createCommand(String packageName) {
 		String classPath = String.format("%s.Command", packageName);
 		try {
 			@SuppressWarnings("unchecked")

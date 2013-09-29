@@ -31,12 +31,12 @@ package pw.holidaydivision.ui.command;
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.ui.command.PWListAction;
 import pw.core.ui.command.PaperWorker;
+import pw.core.ui.command.operation.PWListOperation;
 import pw.holidaydivision.core.HolidayDivision;
 import pw.holidaydivision.core.HolidayDivisionController;
 
-public class ListAction extends PWListAction<HolidayDivision, HolidayDivisionController> {
+public class ListAction extends PWListOperation<HolidayDivision, HolidayDivisionController> {
 
 	public ListAction() {
 		super();

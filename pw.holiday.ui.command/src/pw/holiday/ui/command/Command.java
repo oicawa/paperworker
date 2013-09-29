@@ -31,10 +31,8 @@ package pw.holiday.ui.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import pw.core.PWError;
-import pw.core.PWWarning;
-import pw.core.ui.command.PWAction;
 import pw.core.ui.command.PWCommand;
+import pw.core.ui.command.operation.PWOperation;
 import pw.holiday.core.Holiday;
 import pw.holiday.core.HolidayController;
 
@@ -45,10 +43,9 @@ import pw.holiday.core.HolidayController;
 public class Command extends PWCommand<Holiday, HolidayController> {
 
 	/**
-	 * @throws PWError
-	 * @throws PWWarning
+	 * 
 	 */
-	public Command() throws PWError, PWWarning {
+	public Command() {
 		super();
 	}
 
@@ -72,7 +69,7 @@ public class Command extends PWCommand<Holiday, HolidayController> {
 	 * @see paperworker.core.ui.command.PWCommand#getController()
 	 */
 	@Override
-	protected HolidayController createController() throws PWError, PWWarning {
+	protected HolidayController createController() {
 		return new HolidayController();
 	}
 
@@ -80,8 +77,8 @@ public class Command extends PWCommand<Holiday, HolidayController> {
 	 * @see paperworker.core.ui.command.PWCommand#getActions()
 	 */
 	@Override
-	protected List<PWAction<Holiday, HolidayController>> getActions() {
-		List<PWAction<Holiday, HolidayController>> actions = new ArrayList<PWAction<Holiday, HolidayController>>();
+	protected List<PWOperation<Holiday, HolidayController>> getActions() {
+		List<PWOperation<Holiday, HolidayController>> actions = new ArrayList<PWOperation<Holiday, HolidayController>>();
 		actions.add(new ListAction());
 		actions.add(new AddAction());
 		actions.add(new DetailAction());

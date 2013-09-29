@@ -28,18 +28,42 @@
 
 package pw.core;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.UUID;
 
 public class PWUtilities {
-	public static <T> T createInstance(Class<T> type) throws PWError {
+	
+	public static final String LINE_SEPARATOR_PATTERN =  "\r\n|[\n\r\u2028\u2029\u0085]";
+
+	public static <T> T createInstance(Class<T> type, Object... args) {
 		try {
-			return type.newInstance();
+			Constructor<T> constructor = type.getConstructor();
+			return constructor.newInstance(args);
 		} catch (InstantiationException e) {
-			throw new PWError(e, "The class could not be instantiate. [%s]", type.getName());
+			throw new PWError(e, e.getMessage());
 		} catch (IllegalAccessException e) {
-			throw new PWError(e, "The class was accessed illegally. [%s]", type.getName());
+			throw new PWError(e, e.getMessage());
+		} catch (IllegalArgumentException e) {
+			throw new PWError(e, e.getMessage());
+		} catch (InvocationTargetException e) {
+			throw new PWError(e, e.getMessage());
+		} catch (SecurityException e) {
+			throw new PWError(e, e.getMessage());
+		} catch (NoSuchMethodException e) {
+			throw new PWError(e, e.getMessage());
 		}
+	}
+	
+	public static Class<?> getClass(String classPath) {
+		Class<?> type;
+		try {
+			type = (Class<?>)Class.forName(classPath);
+		} catch (ClassNotFoundException e) {
+			throw new PWError(e, e.getMessage());
+		}
+		return type;
 	}
 
 	public static String getCommandName(String packageName) {
@@ -60,7 +84,7 @@ public class PWUtilities {
 		return commandName;
 	}
 
-	public static <TItem extends PWItem> Object[] getKeyValuesFromArgumants(List<PWField> keyFields, int from, String[] args, String... defaultValues) throws PWError {
+	public static <TItem extends PWItem> Object[] getKeyValuesFromArgumants(List<PWField> keyFields, int from, String[] args, String... defaultValues) {
 		int size = args.length - from;
 		assert(size + defaultValues.length == keyFields.size());
 		

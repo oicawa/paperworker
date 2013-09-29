@@ -35,33 +35,41 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Properties;
 
 public class SqlAccesser implements Closeable {
 	
 	private Connection connection;
+	private static HashMap<String, SqlAccesser> connections = new HashMap<String, SqlAccesser>();
 	
-	public static SqlAccesser getAccesser(String connectionString) throws PWError{
-		String driverClassPath = "org.h2.Driver"; 
+	public static SqlAccesser getAccesser(String userId) {
+		
+		if (connections.containsKey(userId)) {
+			return connections.get(userId);
+		}
+		
+		String driverClassPath = "org.h2.Driver";	// TODO: Get from resources.
 		try {
 			Class.forName(driverClassPath).newInstance();
 		} catch (InstantiationException e) {
-			throw new PWError(e, "JDBC Driver class could not be instantiate. [%s]", driverClassPath);
+			throw new PWError(e, e.getMessage());
 		} catch (IllegalAccessException e) {
-			throw new PWError(e, "JDBC Driver class was accessed illegally. [%s]", driverClassPath);
+			throw new PWError(e, e.getMessage());
 		} catch (ClassNotFoundException e) {
-			throw new PWError(e, "JDBC Driver class was not found [%s]", driverClassPath);
+			throw new PWError(e, e.getMessage());
 		}
 		
 		Properties properties = new Properties();
 //		props.put("user", "sa");
 //		props.put("password", "");
-//		Connection connection = DriverManager.getConnection("jdbc:h2:tcp://localhost:9092/MyDB", props);
 		Connection connection;
 		try {
+			// TODO: SQL Driver class path must be get from System property or some outer resources?
+			String connectionString = "jdbc:h2:tcp://localhost/~/paperworker.db";
 			connection = DriverManager.getConnection(connectionString, properties);
 		} catch (SQLException e) {
-			throw new PWError(e, "SQL Connection could not be open. [%s]", connectionString);
+			throw new PWError(e, e.getMessage());
 		}
 		
 		boolean autoCommit = false;
@@ -71,7 +79,9 @@ public class SqlAccesser implements Closeable {
 			throw new PWError(e, "SQL Connection could not be set 'AutoCommit'. [value = %s]", autoCommit);
 		}
 		
-		return new SqlAccesser(connection);
+		connections.put(userId, new SqlAccesser(connection));
+		
+		return connections.get(userId);
 	}
 	
 	private SqlAccesser(Connection connection) {
@@ -86,7 +96,7 @@ public class SqlAccesser implements Closeable {
 		}
 	}
 	
-	public boolean existTable(String tableName) throws PWError {
+	public boolean existTable(String tableName) {
 		DatabaseMetaData metadata;
 		try {
 			metadata = connection.getMetaData();
@@ -104,7 +114,7 @@ public class SqlAccesser implements Closeable {
 		}
 	}
 	
-	public void select(PWQuery query, PWAfterQuery<ResultSet> afterQuery) throws PWError, PWWarning {
+	public void select(PWQuery query, PWAfterQuery<ResultSet> afterQuery) {
         PreparedStatement st;
 		try {
 			st = connection.prepareStatement(query.getQuery());
@@ -117,7 +127,7 @@ public class SqlAccesser implements Closeable {
 		        try {
 		        	afterQuery.run(rs);
 		        } catch (Exception e) {
-					throw new PWWarning(e, e.getMessage());
+					throw new PWError(e, e.getMessage());
 		        } finally {
 		            rs.close();
 		        }
@@ -131,7 +141,7 @@ public class SqlAccesser implements Closeable {
 		}
 	}
 	
-	public void execute(PWQuery... queries) throws PWError, PWWarning {
+	public void execute(PWQuery... queries) {
 		try {
 			for (PWQuery query : queries) {
 				PreparedStatement st;

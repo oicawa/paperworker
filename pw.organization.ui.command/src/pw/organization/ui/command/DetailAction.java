@@ -30,24 +30,23 @@ package pw.organization.ui.command;
 
 import java.util.List;
 
-import pw.core.PWError;
 import pw.core.PWField;
-import pw.core.ui.command.PWAction;
-import pw.core.ui.command.PWDetailAction;
 import pw.core.ui.command.PaperWorker;
+import pw.core.ui.command.operation.PWDetailOperation;
+import pw.core.ui.command.operation.PWOperation;
 import pw.organization.core.Organization;
 import pw.organization.core.OrganizationController;
 
-public class DetailAction extends PWDetailAction<Organization, OrganizationController> {
+public class DetailAction extends PWDetailOperation<Organization, OrganizationController> {
 
 	public DetailAction() {
 		super();
 	}
 	
 	@Override
-	protected void printDetail(Organization item) throws PWError {
+	protected void printDetail(Organization item) {
 		String[] fieldNames = { "parentOrganizationId", "leaderId", "subleaderId", "division" };
-		int maxLength = PWAction.getMaxLengthOfCaptions(Organization.class);
+		int maxLength = PWOperation.getMaxLengthOfCaptions(Organization.class);
 		
 		PaperWorker.message("[%s] %s (%s)",
 				item.getOrganizationId(),

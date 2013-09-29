@@ -26,13 +26,14 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command;
+package pw.core.ui.command.editor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import pw.core.PWError;
 import pw.core.PWField;
+import pw.core.ui.command.PWLabel;
+import pw.core.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
@@ -50,7 +51,7 @@ public class PWSingleSelectFieldEditor extends PWAbstractFieldEditor {
 		super(field, captionLength);
 	}
 	
-	public String prompt(String prompt) throws PWError {
+	public String prompt(String prompt) {
 		int size = labels.size();
 		int decimal = String.format("%d", size).length();
 		String format = String.format("  %%%dd. %%s", decimal);

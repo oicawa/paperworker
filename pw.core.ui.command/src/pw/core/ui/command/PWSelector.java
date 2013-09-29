@@ -28,12 +28,10 @@
 
 package pw.core.ui.command;
 
-import pw.core.PWError;
-
 /**
  * @author masamitsu
  *
  */
 public interface PWSelector {
-	public String prompt(String prompt) throws PWError;
+	public String prompt(String prompt);
 }

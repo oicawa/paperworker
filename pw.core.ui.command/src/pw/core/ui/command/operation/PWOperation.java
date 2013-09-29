@@ -26,7 +26,7 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command;
+package pw.core.ui.command.operation;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -36,15 +36,15 @@ import pw.core.PWController;
 import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
-import pw.core.PWWarning;
+import pw.core.ui.command.PaperWorker;
 
-public abstract class PWAction<TItem extends PWItem, TController extends PWController> {
+public abstract class PWOperation<TItem extends PWItem, TController extends PWController> {
 	
 	protected final int ACTION_ARG_START_INDEX = 2;	// 2 is 'command' and 'action'.
 	
 	protected TController controller;
 	
-	public PWAction() {
+	public PWOperation() {
 	}
 
 	public void setController(TController controller) {
@@ -53,7 +53,7 @@ public abstract class PWAction<TItem extends PWItem, TController extends PWContr
 	
 	public abstract String getName();
 	public abstract String[] getDescription();
-	public abstract void run(String[] args) throws PWError, PWWarning;
+	public abstract void run(String[] args);
 	protected abstract String getRegexForParse();
 	protected abstract Class<TItem> getItemType();
 	protected abstract String getTitle(List<PWField> fields, Object... keyValues);
@@ -72,11 +72,11 @@ public abstract class PWAction<TItem extends PWItem, TController extends PWContr
 		return Pattern.matches(regexp, commandLine);
 	}
 	
-	public static <TItem extends PWItem> void printField(TItem item, String fieldName, int captionLength) throws PWError {
+	public static <TItem extends PWItem> void printField(TItem item, String fieldName, int captionLength) {
 		printField(item, fieldName, captionLength, null);
 	}
 	
-	public static <TItem extends PWItem> void printField(TItem item, String fieldName, int captionLength, String label) throws PWError {
+	public static <TItem extends PWItem> void printField(TItem item, String fieldName, int captionLength, String label) {
 		PWField field = PWField.getField(item.getClass(), fieldName);
 		String caption = field.getCaption();
 		String format = String.format("%%-%ds : %%s", captionLength);

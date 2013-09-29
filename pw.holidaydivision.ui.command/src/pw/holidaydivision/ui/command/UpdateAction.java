@@ -31,11 +31,11 @@ package pw.holidaydivision.ui.command;
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.ui.command.PWUpdateAction;
+import pw.core.ui.command.operation.PWUpdateOperation;
 import pw.holidaydivision.core.HolidayDivision;
 import pw.holidaydivision.core.HolidayDivisionController;
 
-public class UpdateAction extends PWUpdateAction<HolidayDivision, HolidayDivisionController> {
+public class UpdateAction extends PWUpdateOperation<HolidayDivision, HolidayDivisionController> {
 
 	@Override
 	protected Class<HolidayDivision> getItemType() {

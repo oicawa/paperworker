@@ -29,8 +29,8 @@
 package pw.core.ui.command;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
-import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
 
@@ -43,14 +43,16 @@ public abstract class PWLabel {
 	private String[] fieldNames;
 	private String format;
 	private PWItem item;
+	private PWField.KeyType keyType;
 	
-	public PWLabel(PWItem item, String format, String... fieldNames) {
+	public PWLabel(PWItem item, PWField.KeyType keyType, String format, String... fieldNames) {
 		this.item = item;
+		this.keyType = keyType;
 		this.format = format;
 		this.fieldNames = fieldNames;
 	}
 	
-	public String getText() throws PWError {
+	public String getText() {
 		Object[] values = new Object[fieldNames.length];
 		for (int i = 0; i < fieldNames.length; i++) {
 			PWField field = PWField.getField(item.getClass(), fieldNames[i]);
@@ -70,6 +72,14 @@ public abstract class PWLabel {
 	}
 
 	public String getId() {
-		return item.getId();
+		List<PWField> keyFields = PWItem.getFields(item.getClass(), keyType);
+		StringBuffer buffer = new StringBuffer();
+		final String SEPARATOR = "/";
+		for (PWField keyField : keyFields) {
+			String keyValue = PWItem.getValueAsString(item, keyField.getName());
+			buffer.append(SEPARATOR);
+			buffer.append(keyValue);
+		}
+		return buffer.substring(SEPARATOR.length());
 	}
 }

@@ -28,6 +28,7 @@
 
 package pw.member.ui.command;
 
+import pw.core.PWField;
 import pw.core.ui.command.PWLabel;
 import pw.member.core.Member;
 
@@ -42,6 +43,6 @@ public class MemberLabel extends PWLabel {
 	 * @param fieldNames
 	 */
 	public MemberLabel(Member member) {
-		super(member, "%s %s %s", "memberId", "familyName", "firstName");
+		super(member, PWField.KeyType.Primary, "%s %s %s", "memberId", "familyName", "firstName");
 	}
 }

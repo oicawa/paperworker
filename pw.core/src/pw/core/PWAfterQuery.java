@@ -29,5 +29,5 @@
 package pw.core;
 
 public interface PWAfterQuery<T> {
-	void run(T result) throws PWError, PWWarning;
+	void run(T result);
 }

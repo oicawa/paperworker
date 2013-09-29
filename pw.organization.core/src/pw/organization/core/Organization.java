@@ -28,7 +28,6 @@
 
 package pw.organization.core;
 
-import pw.core.PWError;
 import pw.core.PWItem;
 import pw.core.annotation.PWFieldBasicInfo;
 import pw.core.annotation.PWItemBasicInfo;
@@ -112,23 +111,4 @@ public class Organization extends PWItem {
 	public void setDivision(OrganizationDivision division) {
 		this.division = division;
 	}
-
-	@Override
-	public Object getValue(String fieldName) throws PWError {
-		return PWItem.getValue(this, fieldName);
-	}
-
-	@Override
-	public void setValue(String fieldName, Object value) throws PWError {
-		PWItem.setValue(this, fieldName, value);
-	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.PWItem#getId()
-	 */
-	@Override
-	public String getId() {
-		return organizationId;
-	}
-
 }

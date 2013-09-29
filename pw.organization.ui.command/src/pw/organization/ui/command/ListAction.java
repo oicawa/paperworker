@@ -31,12 +31,12 @@ package pw.organization.ui.command;
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.ui.command.PWListAction;
 import pw.core.ui.command.PaperWorker;
+import pw.core.ui.command.operation.PWListOperation;
 import pw.organization.core.Organization;
 import pw.organization.core.OrganizationController;
 
-public class ListAction extends PWListAction<Organization, OrganizationController> {
+public class ListAction extends PWListOperation<Organization, OrganizationController> {
 
 	public ListAction() {
 		super();

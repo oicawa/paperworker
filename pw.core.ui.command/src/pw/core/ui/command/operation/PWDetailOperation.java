@@ -26,22 +26,21 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command;
+package pw.core.ui.command.operation;
 
 import java.util.List;
 
 import pw.core.PWBasicController;
-import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.PWUtilities;
-import pw.core.PWWarning;
+import pw.core.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWDetailAction<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWAction<TItem, TController> {
+public abstract class PWDetailOperation<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWOperation<TItem, TController> {
 
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWAction#getName()
@@ -55,13 +54,13 @@ public abstract class PWDetailAction<TItem extends PWItem, TController extends P
 	 * @see paperworker.core.ui.command.PWAction#run(java.lang.String[])
 	 */
 	@Override
-	public void run(String[] args) throws PWError, PWWarning {
+	public void run(String[] args) {
 		List<PWField> fields = PWItem.getPrimaryFields(getItemType());
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(fields, ACTION_ARG_START_INDEX, args);
 		print(PWField.KeyType.Primary, keyValues);
 	}
 	
-	public void print(PWField.KeyType keyType, Object... keyValues) throws PWError, PWWarning {
+	public void print(PWField.KeyType keyType, Object... keyValues) {
 		TItem item = controller.get(keyType, keyValues);
 		if (item == null) {
 			List<PWField> fields = PWItem.getPrimaryFields(getItemType());
@@ -72,5 +71,5 @@ public abstract class PWDetailAction<TItem extends PWItem, TController extends P
 		printDetail(item);
 	}
 	
-	protected abstract void printDetail(TItem item) throws PWError, PWWarning;
+	protected abstract void printDetail(TItem item);
 }

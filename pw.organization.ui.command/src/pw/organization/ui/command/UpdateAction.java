@@ -31,11 +31,11 @@ package pw.organization.ui.command;
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.ui.command.PWUpdateAction;
+import pw.core.ui.command.operation.PWUpdateOperation;
 import pw.organization.core.Organization;
 import pw.organization.core.OrganizationController;
 
-public class UpdateAction extends PWUpdateAction<Organization, OrganizationController> {
+public class UpdateAction extends PWUpdateOperation<Organization, OrganizationController> {
 
 	@Override
 	protected Class<Organization> getItemType() {

@@ -29,9 +29,7 @@
 package pw.holiday.core;
 
 import pw.core.PWBasicController;
-import pw.core.PWError;
 import pw.core.PWField;
-import pw.core.PWWarning;
 import pw.holidaydivision.core.HolidayDivision;
 import pw.holidaydivision.core.HolidayDivisionController;
 import pw.member.core.Member;
@@ -50,10 +48,9 @@ public class HolidayController extends PWBasicController<Holiday> {
 	private OrganizationController organizationController;
 	
 	/**
-	 * @throws PWError
-	 * @throws PWWarning 
+	 * 
 	 */
-	public HolidayController() throws PWError, PWWarning {
+	public HolidayController() {
 		super();
 		holidayDivisionController = new HolidayDivisionController();
 		memberController = new MemberController();
@@ -68,17 +65,17 @@ public class HolidayController extends PWBasicController<Holiday> {
 		return Holiday.class;
 	}
 
-	public Member getCreator(String creatorId) throws PWError, PWWarning {
+	public Member getCreator(String creatorId) {
 		Member creator = memberController.get(PWField.KeyType.Primary, creatorId);
 		return creator;
 	}
 
-	public HolidayDivision getDivision(String holidayDivisionId) throws PWError, PWWarning {
+	public HolidayDivision getDivision(String holidayDivisionId) {
 		HolidayDivision division = holidayDivisionController.get(PWField.KeyType.Primary, holidayDivisionId);
 		return division;
 	}
 	
-	public Organization getOrganization(String creatorId) throws PWError, PWWarning {
+	public Organization getOrganization(String creatorId) {
 		Member creator = memberController.get(PWField.KeyType.Primary, creatorId);
 		if (creator == null) {
 			return null;

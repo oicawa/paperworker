@@ -31,15 +31,13 @@ package pw.holiday.ui.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.PWUtilities;
-import pw.core.PWWarning;
-import pw.core.ui.command.PWFieldEditor;
-import pw.core.ui.command.PWStringFieldEditor;
-import pw.core.ui.command.PWUpdateAction;
 import pw.core.ui.command.PaperWorker;
+import pw.core.ui.command.editor.PWFieldEditor;
+import pw.core.ui.command.editor.PWStringFieldEditor;
+import pw.core.ui.command.operation.PWUpdateOperation;
 import pw.holiday.core.Holiday;
 import pw.holiday.core.HolidayController;
 import pw.holidaydivision.ui.command.HolidayDivisionSingleSelectFieldEditor;
@@ -48,13 +46,13 @@ import pw.holidaydivision.ui.command.HolidayDivisionSingleSelectFieldEditor;
  * @author masamitsu
  *
  */
-public class UpdateAction extends PWUpdateAction<Holiday, HolidayController> {
+public class UpdateAction extends PWUpdateOperation<Holiday, HolidayController> {
 
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWAction#run(java.lang.String[])
 	 */
 	@Override
-	public void run(String[] args) throws PWError, PWWarning {
+	public void run(String[] args) {
 		List<PWField> fields = PWItem.getUniqueFields(getItemType());
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(fields, ACTION_ARG_START_INDEX, args);
 		
@@ -100,7 +98,7 @@ public class UpdateAction extends PWUpdateAction<Holiday, HolidayController> {
 	 * @see paperworker.core.ui.command.PWUpdateAction#getFieldEditors()
 	 */
 	@Override
-	public List<PWFieldEditor> getFieldEditors() throws PWError, PWWarning {
+	public List<PWFieldEditor> getFieldEditors() {
 		List<PWFieldEditor> editors = new ArrayList<PWFieldEditor>();
 		List<PWField> fields = PWItem.getFields(getItemType());
 		int maxLength = getMaxLengthOfCaptions(getItemType());

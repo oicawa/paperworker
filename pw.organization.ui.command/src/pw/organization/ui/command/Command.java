@@ -31,10 +31,8 @@ package pw.organization.ui.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import pw.core.PWError;
-import pw.core.PWWarning;
-import pw.core.ui.command.PWAction;
 import pw.core.ui.command.PWCommand;
+import pw.core.ui.command.operation.PWOperation;
 import pw.organization.core.Organization;
 import pw.organization.core.OrganizationController;
 
@@ -45,10 +43,9 @@ import pw.organization.core.OrganizationController;
 public class Command extends PWCommand<Organization, OrganizationController> {
 
 	/**
-	 * @throws PWError
-	 * @throws PWWarning
+	 * 
 	 */
-	public Command() throws PWError, PWWarning {
+	public Command() {
 		super();
 	}
 
@@ -64,7 +61,7 @@ public class Command extends PWCommand<Organization, OrganizationController> {
 	 * @see paperworker.core.ui.command.PWCommand#createController()
 	 */
 	@Override
-	protected OrganizationController createController() throws PWError, PWWarning {
+	protected OrganizationController createController() {
 		return new OrganizationController();
 	}
 
@@ -72,8 +69,8 @@ public class Command extends PWCommand<Organization, OrganizationController> {
 	 * @see paperworker.core.ui.command.PWCommand#getActions()
 	 */
 	@Override
-	protected List<PWAction<Organization, OrganizationController>> getActions() {
-		List<PWAction<Organization, OrganizationController>> actions = new ArrayList<PWAction<Organization, OrganizationController>>();
+	protected List<PWOperation<Organization, OrganizationController>> getActions() {
+		List<PWOperation<Organization, OrganizationController>> actions = new ArrayList<PWOperation<Organization, OrganizationController>>();
 		actions.add(new ListAction());
 		actions.add(new AddAction());
 		actions.add(new DetailAction());

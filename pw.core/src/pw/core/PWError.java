@@ -28,7 +28,7 @@
 
 package pw.core;
 
-public class PWError extends Exception {
+public class PWError extends RuntimeException {
 
 	/**
 	 * 
@@ -43,5 +43,9 @@ public class PWError extends Exception {
 
 	public PWError(String format, Object... args) {
 		super(String.format(format, args));
+	}
+	
+	public Exception getInnerException() {
+		return innerException;
 	}
 }

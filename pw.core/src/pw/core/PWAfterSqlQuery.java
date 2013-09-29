@@ -38,20 +38,20 @@ import java.util.List;
  * @author masamitsu
  *
  */
-public class PWAfterSqlQuery<TItem extends PWItem> implements PWAfterQuery<ResultSet> {
+public class PWAfterSqlQuery implements PWAfterQuery<ResultSet> {
 
-	private List<TItem> items = new ArrayList<TItem>();
-	private Class<TItem> itemType;
+	private List<Object> items = new ArrayList<Object>();
+	private Class<? extends PWItem> itemType;
 	
-	public PWAfterSqlQuery(Class<TItem> itemType) {
+	public PWAfterSqlQuery(Class<? extends PWItem> itemType) {
 		this.itemType = itemType;
 	}
 	
 	@Override
-	public void run(ResultSet resultSet) throws PWWarning, PWError {
+	public void run(ResultSet resultSet) {
         try {
 			while (resultSet.next()) {
-				TItem item = PWUtilities.createInstance(itemType);
+				Object item = PWUtilities.createInstance(itemType);
 	        	List<PWField> fields = PWItem.getFields(itemType);
 		    	for (PWField field : fields) {
 		    		if (field.getType().equals("text")) {
@@ -65,11 +65,11 @@ public class PWAfterSqlQuery<TItem extends PWItem> implements PWAfterQuery<Resul
 		    	items.add(item);
 			}
 		} catch (SQLException e) {
-			throw new PWWarning(e, e.getMessage());
+			throw new PWError(e, e.getMessage());
 		}
 	}
 
-	public List<TItem> getItemList() {
+	public List<Object> getItemList() {
 		return items;
 	}
 

@@ -28,7 +28,6 @@
 
 package pw.holidaydivision.core;
 
-import pw.core.PWError;
 import pw.core.PWItem;
 import pw.core.annotation.PWFieldBasicInfo;
 import pw.core.annotation.PWItemBasicInfo;
@@ -68,28 +67,4 @@ public class HolidayDivision extends PWItem {
 	
 	@PWFieldBasicInfo(caption = "Holiday Division Short Name", type = "varchar(100)")
 	private String shortName;
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.PWItem#getValue(java.lang.String)
-	 */
-	@Override
-	public Object getValue(String fieldName) throws PWError {
-		return PWItem.getValue(this, fieldName);
-	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.PWItem#setValue(java.lang.String, java.lang.Object)
-	 */
-	@Override
-	public void setValue(String fieldName, Object value) throws PWError {
-		PWItem.setValue(this, fieldName, value);
-	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.PWItem#getId()
-	 */
-	@Override
-	public String getId() {
-		return divisionId;
-	}
 }

@@ -30,10 +30,8 @@ package pw.holidaydivision.ui.command;
 
 import java.util.List;
 
-import pw.core.PWError;
 import pw.core.PWField;
-import pw.core.PWWarning;
-import pw.core.ui.command.PWSingleSelectFieldEditor;
+import pw.core.ui.command.editor.PWSingleSelectFieldEditor;
 import pw.holidaydivision.core.HolidayDivision;
 import pw.holidaydivision.core.HolidayDivisionController;
 
@@ -47,10 +45,8 @@ public class HolidayDivisionSingleSelectFieldEditor extends
 	/**
 	 * @param field
 	 * @param captionLength
-	 * @throws PWWarning 
-	 * @throws PWError 
 	 */
-	public HolidayDivisionSingleSelectFieldEditor(PWField field, int captionLength) throws PWError, PWWarning {
+	public HolidayDivisionSingleSelectFieldEditor(PWField field, int captionLength) {
 		super(field, captionLength);
 		
 		HolidayDivisionController controller = new HolidayDivisionController();

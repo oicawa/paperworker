@@ -31,7 +31,6 @@ package pw.member.core;
 import java.util.Calendar;
 import java.util.Date;
 
-import pw.core.PWError;
 import pw.core.PWItem;
 import pw.core.annotation.DateTimeInfo;
 import pw.core.annotation.PWFieldBasicInfo;
@@ -78,11 +77,11 @@ public class Member extends PWItem {
 	@PWFieldBasicInfo(caption = "Email", type = "varchar(100)")
 	private String email;
 	
-	public Object getValue(String fieldName) throws PWError {
+	public Object getValue(String fieldName) {
 		return PWItem.getValue(this, fieldName);
 	}
 	
-	public void setValue(String fieldName, Object value) throws PWError {
+	public void setValue(String fieldName, Object value) {
 		PWItem.setValue(this, fieldName, value);
 	}
 	
@@ -195,13 +194,5 @@ public class Member extends PWItem {
 		Calendar base = Calendar.getInstance();
 		base.setTime(date);
 		return now.get(Calendar.YEAR) - base.get(Calendar.YEAR);
-	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.PWItem#getId()
-	 */
-	@Override
-	public String getId() {
-		return memberId;
 	}
 }

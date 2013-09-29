@@ -26,20 +26,18 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command;
+package pw.core.ui.command.operation;
 
 import java.util.List;
 
 import pw.core.PWBasicController;
-import pw.core.PWError;
 import pw.core.PWItem;
-import pw.core.PWWarning;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWListAction<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWAction<TItem, TController> {
+public abstract class PWListOperation<TItem extends PWItem, TController extends PWBasicController<TItem>> extends PWOperation<TItem, TController> {
 	
 	/* (non-Javadoc)
 	 * @see paperworker.core.ui.command.PWAction#getName()
@@ -53,13 +51,13 @@ public abstract class PWListAction<TItem extends PWItem, TController extends PWB
 	 * @see paperworker.core.ui.command.PWAction#run(java.lang.String[])
 	 */
 	@Override
-	public void run(String[] args) throws PWError, PWWarning {
+	public void run(String[] args) {
 		List<TItem> items = controller.get();
 		for (TItem item : items) {
 			printItem(item);
 		}
 	}
 	
-	protected abstract void printItem(TItem item) throws PWError, PWWarning;
+	protected abstract void printItem(TItem item);
 
 }

@@ -31,15 +31,13 @@ package pw.holidaydivision.ui.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import pw.core.PWError;
-import pw.core.PWWarning;
-import pw.core.ui.command.PWAction;
 import pw.core.ui.command.PWCommand;
+import pw.core.ui.command.operation.PWOperation;
 import pw.holidaydivision.core.HolidayDivision;
 import pw.holidaydivision.core.HolidayDivisionController;
 
 public class Command extends PWCommand<HolidayDivision, HolidayDivisionController> {
-	public Command() throws PWError, PWWarning {
+	public Command() {
 		super();
 	}
 	
@@ -48,8 +46,8 @@ public class Command extends PWCommand<HolidayDivision, HolidayDivisionControlle
 	}
 
 	@Override
-	protected List<PWAction<HolidayDivision, HolidayDivisionController>> getActions() {
-		List<PWAction<HolidayDivision, HolidayDivisionController>> actions = new ArrayList<PWAction<HolidayDivision, HolidayDivisionController>>();
+	protected List<PWOperation<HolidayDivision, HolidayDivisionController>> getActions() {
+		List<PWOperation<HolidayDivision, HolidayDivisionController>> actions = new ArrayList<PWOperation<HolidayDivision, HolidayDivisionController>>();
 		actions.add(new ListAction());
 		actions.add(new AddAction());
 		actions.add(new DetailAction());
@@ -59,7 +57,7 @@ public class Command extends PWCommand<HolidayDivision, HolidayDivisionControlle
 	}
 
 	@Override
-	protected HolidayDivisionController createController() throws PWError, PWWarning {
+	protected HolidayDivisionController createController() {
 		return new HolidayDivisionController();
 	}
 

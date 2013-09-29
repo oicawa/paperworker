@@ -30,24 +30,23 @@ package pw.member.ui.command;
 
 import java.util.List;
 
-import pw.core.PWError;
 import pw.core.PWField;
-import pw.core.ui.command.PWAction;
-import pw.core.ui.command.PWDetailAction;
 import pw.core.ui.command.PaperWorker;
+import pw.core.ui.command.operation.PWDetailOperation;
+import pw.core.ui.command.operation.PWOperation;
 import pw.member.core.Member;
 import pw.member.core.MemberController;
 
-public class DetailAction extends PWDetailAction<Member, MemberController> {
+public class DetailAction extends PWDetailOperation<Member, MemberController> {
 
 	public DetailAction() {
 		super();
 	}
 	
 	@Override
-	protected void printDetail(Member item) throws PWError {
+	protected void printDetail(Member item) {
 		String[] fieldNames = { "groupId", "birthday", "enteredDate", "gender", "telephone", "address", "email" };
-		int maxLength = PWAction.getMaxLengthOfCaptions(Member.class);
+		int maxLength = PWOperation.getMaxLengthOfCaptions(Member.class);
 		
 		PaperWorker.message("[%s] %s %s (%s %s)",
 				item.getMemberId(),
