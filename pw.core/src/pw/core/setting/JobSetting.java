@@ -42,12 +42,6 @@ public class JobSetting extends PWItem {
 	
 	@PWFieldBasicInfo(caption = "Job Name", type = "varchar(100)", primary = true)
 	private String name;
-	
-	@PWFieldBasicInfo(caption = "Job Class Path", type = "varchar(100)")
-	private String classPath;
-
-	@PWFieldBasicInfo(caption = "Default Arguments", type = "text")
-	private String arguments;
 
 	@PWFieldBasicInfo(caption = "Description", type = "text")
 	private String description;
@@ -58,22 +52,6 @@ public class JobSetting extends PWItem {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getClassPath() {
-		return classPath;
-	}
-
-	public void setClassPath(String classPath) {
-		this.classPath = classPath;
-	}
-
-	public String getArguments() {
-		return arguments;
-	}
-
-	public void setArguments(String arguments) {
-		this.arguments = arguments;
 	}
 
 	public String getDescription() {
