@@ -30,7 +30,6 @@ package pw.core;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
 
 /**
  * @author masamitsu
@@ -46,19 +45,11 @@ public class PWGeneralController {
 		this.session = session;
 	}
 	
-	public void registAction(String name, PWAction action) {
+	public void registAction(String name, PWAction action, String... arguments) {
 		assert(session != null);
 		action.setSession(session);
+		action.setParameters(arguments);
 		actions.put(name, action);
-	}
-
-	protected void initializeTable(Class<? extends PWItem> itemType) {
-		if (session.getAccesser().existTable(PWItem.getTableName(itemType))) {
-			return;
-		}
-		
-    	PWQuery query = PWQuery.getCreateTableQuery(itemType);
-    	session.getAccesser().execute(query);
 	}
 	
 	public Object invoke(String actionName, Object... objects) {
@@ -74,7 +65,6 @@ public class PWGeneralController {
 	 */
 	public Collection<String> getActionNames() {
 		return (Collection<String>)actions.keySet();
-		
 	}
 
 	/**

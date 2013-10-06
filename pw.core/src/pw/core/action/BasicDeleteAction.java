@@ -30,6 +30,7 @@ package pw.core.action;
 
 import java.util.List;
 
+import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.PWQuery;
@@ -40,8 +41,8 @@ import pw.core.PWQuery;
  */
 public class BasicDeleteAction extends AbstractBasicAction {
 	
-	public BasicDeleteAction(String... arguments) {
-		super(arguments);
+	public BasicDeleteAction() {
+		super();
 	}
 	
 	/* (non-Javadoc)
@@ -49,28 +50,30 @@ public class BasicDeleteAction extends AbstractBasicAction {
 	 */
 	@Override
 	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item, keyType);
+		PWQuery query = getQuery(itemType, keyType, objects);
 		session.getAccesser().execute(query);
 		return null;
 	}
 
-	public static PWQuery getQuery(PWItem item, PWField.KeyType keyType) {
+	public static PWQuery getQuery(Class<? extends PWItem> itemType, PWField.KeyType keyType, Object... keyValues) {
+		// Check
+		List<PWField> keyFields = PWItem.getFields(itemType, keyType);
+		if (keyFields.size() == 0) {
+			throw new PWError("No '%s' key fields.", keyType.toString());
+		}
+		
+		if (keyFields.size() != keyValues.length) {
+			throw new PWError("The number of key values is different from the number of '%s' key fields.", keyType.toString());
+		}
+		
     	// Create all query
 		String allQuery = String.format("delete from %s where %s;",
-				PWQuery.getTableName(item.getClass()),
-				getWhereQueryByKeys(item.getClass(), keyType));
-		
-		// Get key fields
-		List<PWField> keyFields = PWItem.getFields(item.getClass(), keyType);
+				PWQuery.getTableName(itemType),
+				getWhereQueryByKeys(itemType, keyType));
 		
     	// Create PWQuery
     	PWQuery query = new PWQuery(allQuery);
-    	for (PWField keyField : keyFields) {
-    		Object keyValue = keyField.getValue(item);
+    	for (Object keyValue : keyValues) {
         	query.addValue(keyValue);
     	}
     	return query;

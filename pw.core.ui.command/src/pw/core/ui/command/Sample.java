@@ -1,5 +1,5 @@
 /*
- *  $Id: CommandController.java 2013/09/29 19:04:28 masamitsu $
+ *  $Id: Sample.java 2013/10/05 16:06:19 masamitsu $
  *
  *  ===============================================================================
  *
@@ -28,39 +28,21 @@
 
 package pw.core.ui.command;
 
-import pw.core.PWGeneralController;
-import pw.core.PWSession;
-import pw.core.action.BasicAddAction;
-import pw.core.action.BasicDeleteAction;
-import pw.core.action.BasicDetailAction;
-import pw.core.action.BasicListAction;
-import pw.core.action.BasicUpdateAction;
+import pw.core.PropertyLoader;
 
 /**
  * @author masamitsu
  *
  */
-public class OperationController extends PWGeneralController {
+public class Sample {
 
-	public final static String ADD = "add";
-	public final static String UPDATE = "update";
-	public final static String DELETE = "delete";
-	public final static String DETAIL = "detail";
-	public final static String LIST = "list";
 	/**
-	 * @param session
+	 * @param args
 	 */
-	public OperationController(PWSession session) {
-		super(session);
+	public static void main(String[] args) {
 		
-		String commandSettingClassPath = OperationSetting.class.getName();
-		registAction(ADD, new BasicAddAction(commandSettingClassPath));
-		registAction(UPDATE, new BasicUpdateAction(commandSettingClassPath));
-		registAction(DELETE, new BasicDeleteAction(commandSettingClassPath));
-		registAction(DETAIL, new BasicDetailAction(commandSettingClassPath));
-		registAction(LIST, new BasicListAction(commandSettingClassPath));
-		
-		initializeTable(OperationSetting.class);
+		String editor = PropertyLoader.getValue("command", "editor");
+		System.out.println(editor);
 	}
 
 }

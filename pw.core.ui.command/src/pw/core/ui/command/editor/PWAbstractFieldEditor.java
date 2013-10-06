@@ -51,16 +51,11 @@ public abstract class PWAbstractFieldEditor implements PWFieldEditor {
 		return field;
 	}
 	
-	public void print(PWItem src, PWItem dst, String prompt) {
-		String caption = field.getCaption();
-		String value = PWItem.getValueAsString(src, field.getName());
-		String format = String.format("%%-%ds [%%s]", captionLength);
-		PaperWorker.message(format, caption, value);
-		String input = prompt("  >> ");
+	public void print(PWItem dst, String prompt) {
+		String input = prompt();
 		try {
-			if (input.equals("")) {
-				Object srcValue = PWItem.getValue(src, field.getName());
-				PWItem.setValue(dst, field.getName(), srcValue);
+			if (input == null || input.equals("")) {
+				PWItem.setValue(dst, field.getName(), null);
 			} else {
 				PWItem.setValue(dst, field.getName(), field.parse(input));
 			}
@@ -69,5 +64,9 @@ public abstract class PWAbstractFieldEditor implements PWFieldEditor {
 		}
 	}
 	
-	public abstract String prompt(String prompt) ;
+	public String prompt() {
+		String caption = field.getCaption();
+		String format = String.format("%%-%ds >> ", captionLength);
+		return PaperWorker.prompt(format, caption);
+	}
 }

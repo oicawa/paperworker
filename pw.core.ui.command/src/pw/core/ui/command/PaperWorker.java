@@ -171,6 +171,23 @@ public class PaperWorker implements Closeable {
 		return input;
 	}
 	
+	public static String prompt2(String format, Object... args) {
+		System.out.print(String.format(format, args));
+		flush();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in), 1);
+		String input = "";
+		try {
+			while ((input = reader.readLine()) == null) {
+				
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return input;
+	}
+	
 	public static boolean confirm(String message, String again, String ok, String cancel) {
 		while (true) {
 			String input = PaperWorker.prompt(message).toUpperCase();

@@ -31,6 +31,7 @@ package pw.core.action;
 import java.util.List;
 
 import pw.core.PWAfterSqlQuery;
+import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.PWQuery;
@@ -41,8 +42,8 @@ import pw.core.PWQuery;
  */
 public class BasicDetailAction extends AbstractBasicAction {
 	
-	public BasicDetailAction(String... arguments) {
-		super(arguments);
+	public BasicDetailAction() {
+		super();
 	}
 
 	/* (non-Javadoc)
@@ -54,27 +55,32 @@ public class BasicDetailAction extends AbstractBasicAction {
 		assert(objects.length == 1);
 		assert(objects[0] != null);
 		
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item, keyType);
-		PWAfterSqlQuery afterQuery = new PWAfterSqlQuery(item.getClass());
+		PWQuery query = getQuery(itemType, keyType, objects);
+		PWAfterSqlQuery afterQuery = new PWAfterSqlQuery(itemType);
 		session.getAccesser().select(query, afterQuery);
 		List<Object> list = afterQuery.getItemList();
 		return list.size() == 0 ? null : list.get(0);
 	}
 	
-	public static PWQuery getQuery(PWItem item, PWField.KeyType keyType) {
+	public static PWQuery getQuery(Class<? extends PWItem> itemType, PWField.KeyType keyType, Object... keyValues) {
+		// Get key fields
+		List<PWField> keyFields = PWItem.getFields(itemType, keyType);
+		if (keyFields.size() == 0) {
+			throw new PWError("No '%s' key fields.", keyType.toString());
+		}
+		
+		if (keyFields.size() != keyValues.length) {
+			throw new PWError("The number of key values is different from the number of '%s' key fields.", keyType.toString());
+		}
+		
 		// Create all query
 		String allQuery = String.format("select * from %s where %s;",
-				PWQuery.getTableName(item.getClass()),
-				getWhereQueryByKeys(item.getClass(), keyType));
-		
-		// Get key fields
-		List<PWField> keyFields = PWItem.getFields(item.getClass(), keyType);
+				PWQuery.getTableName(itemType),
+				getWhereQueryByKeys(itemType, keyType));
 		
     	// Create PWQuery
     	PWQuery query = new PWQuery(allQuery);
-    	for (PWField keyField : keyFields) {
-    		Object keyValue = keyField.getValue(item);
+    	for (Object keyValue : keyValues) {
         	query.addValue(keyValue);
     	}
 		

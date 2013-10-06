@@ -29,6 +29,7 @@
 package pw.core.setting;
 
 import pw.core.PWItem;
+import pw.core.PWUtilities;
 import pw.core.annotation.PWFieldBasicInfo;
 import pw.core.annotation.PWItemBasicInfo;
 
@@ -81,6 +82,10 @@ public class JobSetting extends PWItem {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	static {
+		PWUtilities.prepareTable(JobSetting.class);
 	}
 
 }

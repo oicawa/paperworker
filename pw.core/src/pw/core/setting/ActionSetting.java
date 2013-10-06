@@ -98,4 +98,8 @@ public class ActionSetting extends PWItem {
 	public String[] getArgumentArray() {
 		return arguments.split(PWUtilities.LINE_SEPARATOR_PATTERN);
 	}
+	
+	static {
+		PWUtilities.prepareTable(ActionSetting.class);
+	}
 }

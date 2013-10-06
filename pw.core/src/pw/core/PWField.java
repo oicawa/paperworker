@@ -175,6 +175,7 @@ public class PWField {
 			throw new PWError(e, "The field couldn't be access. [field name: '%s']", field.getName());
 		}
 	}
+	
 	public Object getValue(Object object) {
 		try {
 			return field.get(object);
@@ -187,6 +188,23 @@ public class PWField {
 			throw new PWError(e, format, object.getClass().getName(), field.getType().getName(), field.getName());
 		} catch (IllegalAccessException e) {
 			throw new PWError(e, "The field couldn't be access. [field name: '%s']", field.getName());
+		}
+	}
+	
+	public String toString(Object value) {
+		if (value == null) {
+			return "";
+		} else if (isDate()) {
+			SimpleDateFormat formatter = new SimpleDateFormat(getDateTimeFormat());
+			return formatter.format((Date)value);
+		} else if (isInteger()){
+			return String.format("%d", value);
+		} else if (isReal()){
+			return String.format("%f", value);
+		} else if (isEnum()){
+			return value.toString();
+		} else {
+			return (String)value;
 		}
 	}
 	

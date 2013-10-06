@@ -28,8 +28,13 @@
 
 package pw.core.ui.command.operation;
 
-import pw.core.PWGeneralController;
+import java.util.List;
+
+import pw.core.PWError;
+import pw.core.PWField;
 import pw.core.PWItem;
+import pw.core.PWUtilities;
+import pw.core.action.AbstractBasicAction;
 
 /**
  * @author masamitsu
@@ -40,17 +45,30 @@ public class BasicDeleteOperation extends AbstractBasicOperation {
 	/**
 	 * @param itemType
 	 */
-	public BasicDeleteOperation(PWGeneralController controller, Class<? extends PWItem> itemType) {
-		super(controller, itemType);
+	public BasicDeleteOperation(AbstractBasicAction action) {
+		super(action);
 	}
 
 	/* (non-Javadoc)
 	 * @see pw.core.ui.command.PWBasicOperation#run(java.lang.String[])
 	 */
 	@Override
-	public void run(String... argument) {
-		// TODO Auto-generated method stub
-
+	public void run(String... arguments) {
+		if (arguments.length < 3) {
+			throw new PWError("require key field values.");
+		}
+		
+		List<PWField> keyFields = PWItem.getFields(action.getItemType(), action.getKeyType());
+		if (keyFields.size() == 0) {
+			throw new PWError("No '%s' key fields.", action.getKeyType().toString());
+		}
+		
+		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(keyFields, ACTION_ARG_START_INDEX, arguments);
+		if (keyFields.size() != keyValues.length) {
+			throw new PWError("The number of key values is different from the number of '%s' key fields.", action.getKeyType().toString());
+		}
+		
+		action.run(keyValues);
 	}
 
 }

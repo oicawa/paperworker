@@ -34,12 +34,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import pw.core.PWAction;
 import pw.core.PWError;
 import pw.core.PWGeneralController;
+import pw.core.PWItem;
 import pw.core.PWSession;
 import pw.core.PWUtilities;
 import pw.core.SqlAccesser;
@@ -56,6 +56,7 @@ import pw.core.ui.command.operation.BasicDeleteOperation;
 import pw.core.ui.command.operation.BasicDetailOperation;
 import pw.core.ui.command.operation.BasicListOperation;
 import pw.core.ui.command.operation.BasicUpdateOperation;
+import pw.core.ui.command.operation.PWBasicOperation;
 
 /**
  * @author masamitsu
@@ -63,15 +64,16 @@ import pw.core.ui.command.operation.BasicUpdateOperation;
  */
 public class PaperWorker2 implements Closeable {
 	
+	private final String BUILTIN_COMMAND_QUIT = "quit";
+	private final String BUILTIN_COMMAND_JOB = "job";
+	
 	private PWSession session = new PWSession();
-	
-	private HashMap<String, PWGeneralController> jobs = new HashMap<String, PWGeneralController>();
-	
-	private OperationController operationController;
+	SettingController settingController;
 	
 	public PaperWorker2(String userId) {
 		session.setAccesser(SqlAccesser.getAccesser(userId));
 		session.setUserId(userId);
+		settingController = new SettingController(session);
 	}
 	
 	public static void main(String[] args) {
@@ -83,7 +85,6 @@ public class PaperWorker2 implements Closeable {
 
 		try {
 			PaperWorker2 paperworker = new PaperWorker2(userId);
-			paperworker.initialize();
 			try {
 				paperworker.run();
 			} catch (Exception e) {
@@ -100,43 +101,6 @@ public class PaperWorker2 implements Closeable {
 	public void close() {
 		session.getAccesser().close();
 	}
-	
-	public void initialize() {
-		// Load jobs
-		loadJobs();
-	}
-
-	/**
-	 * @throws PWError 
-	 * 
-	 */
-	private void loadJobs() {
-		SettingController settingController = new SettingController(session);
-		jobs.put("job", settingController);
-		operationController = new OperationController(session);
-		jobs.put("command", operationController);
-		
-		// Job
-		@SuppressWarnings("unchecked")
-		List<Object> jobSettingObjects = (List<Object>)settingController.invoke(SettingController.LISTJOB, JobSetting.class);
-		for (Object jobSettingObject : jobSettingObjects) {
-			JobSetting jobSetting = (JobSetting)jobSettingObject;
-			Class<?> controllerType = PWUtilities.getClass(jobSetting.getClassPath());
-			PWGeneralController controller = (PWGeneralController)PWUtilities.createInstance(controllerType);
-			jobs.put(jobSetting.getName(), controller);
-			
-			// Action
-			@SuppressWarnings("unchecked")
-			List<Object> actionSettingObjects = (List<Object>)settingController.invoke(SettingController.LISTACTION, ActionSetting.class);
-			for (Object actionSettingObject : actionSettingObjects) {
-				ActionSetting actionSetting = (ActionSetting)actionSettingObject;
-				Class<?> actionnType = PWUtilities.getClass(actionSetting.getActionClassPath());
-				Object[] arguments = (Object[])actionSetting.getArgumentArray();
-				PWAction action = (PWAction)PWUtilities.createInstance(actionnType, arguments);
-				controller.registAction(actionSetting.getActionName(), action);
-			}
-		}
-	}
 
 	private void run() {
 		message("==================================================");
@@ -145,45 +109,126 @@ public class PaperWorker2 implements Closeable {
 		flush();
 		while (true) {
 			String input = prompt("> ");
-			if (input.equals("quit")) {
-				message("Bye.");
-				return;
-			}
 			
 			if (input.equals("")) {
 				continue;
 			}
 			
+			if (input.equals("quit")) {
+				message("Bye.");
+				return;
+			}
+			
 			if (input.equals("help")) {
-				message("quit");
-				for (String name : jobs.keySet()) {
-					message(name);
-				}
+				printJobs();
 				continue;
 			}
 			
 			String[] commandLine = input.split(" ");
-			String jobName = commandLine[0];
+			String commandName = commandLine[0];
 			
-			PWGeneralController controller = jobs.get(jobName);
-			if (controller == null) {
+			if (commandName.equals("job")) {
+				doJob(commandLine);
 				continue;
 			}
 			
-			int length = commandLine.length;
-			if (length == 1) {
-				printActionList(controller);
-				continue;
-			}
-			
-			String actionName = commandLine[1];
-
-			try {
-				PWBasicOperation operation = getOperation(controller, jobName, actionName);
-				operation.run(commandLine);
-			} catch (PWError e) {
-				error("*** ERROR *** %s", e.getMessage());
-			}
+			doAction(commandLine);
+		}
+	}
+	
+	private int printList(List<Object> list, String keyName, String descriptionName) {
+		List<String> names = new ArrayList<String>();
+		List<String> descriptions = new ArrayList<String>();
+		for (Object object : list) {
+			PWItem item = (PWItem)object;
+			names.add(PWItem.getValueAsString(item, keyName));
+			descriptions.add(PWItem.getValueAsString(item, descriptionName));
+		}
+		
+		int nameMaxLength = PWUtilities.getMaxLength(names);
+		String format = nameMaxLength == 0 ? "%s : %s" : String.format("%%-%ds : %%s", nameMaxLength);
+		for (int i = 0; i < list.size(); i++) {
+			message(format, names.get(i), descriptions.get(i));
+		}
+		return nameMaxLength;
+	}
+	
+	private void printJobs() {
+		PWAction action = settingController.getAction(SettingController.LISTJOB);
+		@SuppressWarnings("unchecked")
+		List<Object> jobSettingObjects = (List<Object>)action.run();
+		
+		// Add BuiltIn commands
+		JobSetting job = new JobSetting();
+		job.setName(BUILTIN_COMMAND_JOB);
+		job.setDescription("Job setting maintenance.");
+		jobSettingObjects.add((Object)job);
+		
+		JobSetting quit = new JobSetting();
+		quit.setName(BUILTIN_COMMAND_QUIT);
+		quit.setDescription("Quit from PaperWorker");
+		jobSettingObjects.add((Object)quit);
+		
+		printList(jobSettingObjects, "name", "description");
+	}
+	
+	private void doJob(String... commandLine) {
+		PWGeneralController controller = settingController;
+		
+		int length = commandLine.length;
+		if (length == 1) {
+			printActionList(controller);
+			return;
+		}
+		
+		String commandName = commandLine[0];
+		String actionName = commandLine[1];
+		PWAction action = controller.getAction(actionName);
+		if (action == null) {
+			error("No such action in '%s'command.", commandName);
+			return;
+		}
+		
+		try {
+			PWBasicOperation operation = getOperation(action);
+			operation.run(commandLine);
+		} catch (PWError e) {
+			error("*** ERROR *** %s", e.getMessage());
+		}
+	}
+	
+	private void doAction(String... commandLine) {
+		
+		// Print actions in this command. 
+		String commandName = commandLine[0];
+		if (commandLine.length == 1) {
+			ActionSetting conditionItem = new ActionSetting();
+			conditionItem.setJobName(commandName);
+			@SuppressWarnings("unchecked")
+			List<Object> list = (List<Object>)settingController.invoke("listaction", conditionItem);
+			printList(list, "actionName", "description");
+			return;
+		}
+		
+		// Get target action setting
+		String actionName = commandLine[1];
+		ActionSetting setting = (ActionSetting)settingController.invoke("detailaction", commandName, actionName);
+		if (setting == null) {
+			throw new PWError("No such action [name: %s]", actionName);
+		}
+		
+		// Create action
+		@SuppressWarnings("unchecked")
+		Class<PWAction> actionType = (Class<PWAction>)PWUtilities.getClass(setting.getActionClassPath());
+		PWAction action = (PWAction)PWUtilities.createInstance(actionType);
+		action.setSession(session);
+		action.setParameters(setting.getArgumentArray());
+		
+		try {
+			PWBasicOperation operation = getOperation(action);
+			operation.run(commandLine);
+		} catch (PWError e) {
+			error("*** ERROR *** %s", e.getMessage());
 		}
 	}
 	
@@ -192,50 +237,21 @@ public class PaperWorker2 implements Closeable {
 	 * @param actionName
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	private PWBasicOperation getOperation(PWGeneralController controller, String jobName, String actionName) {
-		PWAction action = controller.getAction(actionName);
-		if (action == null) {
-			throw new PWError("Not found action.[%s]", actionName);
-		}
-		OperationSetting operationSetting = new OperationSetting();
-		operationSetting.setJobName(jobName);
-		operationSetting.setActionName(actionName);
-		operationSetting = (OperationSetting) operationController.invoke("detail", operationSetting);
-		if (operationSetting == null) {
-			return getDefaultOperation(controller, action);
-		}
-		
-		try {
-			String classPath = operationSetting.getOperationClassPath();
-			Class<? extends PWBasicOperation> operationType;
-			operationType = (Class<? extends PWBasicOperation>)PWUtilities.getClass(classPath);
-			PWBasicOperation operation = PWUtilities.createInstance(operationType, controller);
-			return operation;
-		} catch (PWError e) {
-			return getDefaultOperation(controller, action);
-		}
-	}
-
-	/**
-	 * @param name
-	 * @return
-	 */
-	private PWBasicOperation getDefaultOperation(PWGeneralController controller, PWAction action) {
-		Class<?> class_ = action.getClass();
-		while (class_ != null) {
-			if (class_ == BasicAddAction.class) {
-				return new BasicAddOperation(controller, ((BasicAddAction)action).getItemType());
-			} else if (class_ == BasicDeleteAction.class) {
-				return new BasicDeleteOperation(controller, ((BasicDeleteAction)action).getItemType());
-			} else if (class_ == BasicDetailAction.class) {
-				return new BasicDetailOperation(controller, ((BasicDetailAction)action).getItemType());
-			} else if (class_ == BasicListAction.class) {
-				return new BasicListOperation(controller, ((BasicListAction)action).getItemType());
-			} else if (class_ == BasicUpdateAction.class) {
-				return new BasicUpdateOperation(controller, ((BasicUpdateAction)action).getItemType());
+	private PWBasicOperation getOperation(PWAction action) {
+		Class<?> actionType = action.getClass();
+		while (actionType != null) {
+			if (actionType == BasicAddAction.class) {
+				return new BasicAddOperation((BasicAddAction)action);
+			} else if (actionType == BasicDeleteAction.class) {
+				return new BasicDeleteOperation((BasicDeleteAction)action);
+			} else if (actionType == BasicDetailAction.class) {
+				return new BasicDetailOperation((BasicDetailAction)action);
+			} else if (actionType == BasicListAction.class) {
+				return new BasicListOperation((BasicListAction)action);
+			} else if (actionType == BasicUpdateAction.class) {
+				return new BasicUpdateOperation((BasicUpdateAction)action);
 			} else {
-				class_ = class_.getSuperclass();
+				actionType = actionType.getSuperclass();
 			}
 		}
 		return null;
@@ -259,7 +275,6 @@ public class PaperWorker2 implements Closeable {
 	
 	public static void error(String format, Object... args) {
 		System.err.println(String.format(format, args));
-		System.err.println("");
 		System.err.flush();
 	}
 	
@@ -279,8 +294,7 @@ public class PaperWorker2 implements Closeable {
 		try {
 			input = reader.readLine();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new PWError(e, e.getMessage());
 		}
 		return input;
 	}

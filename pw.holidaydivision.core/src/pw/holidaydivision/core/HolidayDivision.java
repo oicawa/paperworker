@@ -29,6 +29,7 @@
 package pw.holidaydivision.core;
 
 import pw.core.PWItem;
+import pw.core.PWUtilities;
 import pw.core.annotation.PWFieldBasicInfo;
 import pw.core.annotation.PWItemBasicInfo;
 
@@ -67,4 +68,8 @@ public class HolidayDivision extends PWItem {
 	
 	@PWFieldBasicInfo(caption = "Holiday Division Short Name", type = "varchar(100)")
 	private String shortName;
+	
+	static {
+		PWUtilities.prepareTable(HolidayDivision.class);
+	}
 }

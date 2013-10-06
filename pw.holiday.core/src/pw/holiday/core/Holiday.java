@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import pw.core.PWItem;
+import pw.core.PWUtilities;
 import pw.core.annotation.DateTimeInfo;
 import pw.core.annotation.PWFieldBasicInfo;
 import pw.core.annotation.PWItemBasicInfo;
@@ -121,5 +122,9 @@ public class Holiday extends PWItem {
 
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
+	}
+	
+	static {
+		PWUtilities.prepareTable(Holiday.class);
 	}
 }

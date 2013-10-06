@@ -29,6 +29,7 @@
 package pw.organization.core;
 
 import pw.core.PWItem;
+import pw.core.PWUtilities;
 import pw.core.annotation.PWFieldBasicInfo;
 import pw.core.annotation.PWItemBasicInfo;
 
@@ -110,5 +111,9 @@ public class Organization extends PWItem {
 
 	public void setDivision(OrganizationDivision division) {
 		this.division = division;
+	}
+	
+	static {
+		PWUtilities.prepareTable(Organization.class);
 	}
 }

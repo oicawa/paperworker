@@ -87,7 +87,7 @@ public abstract class PWUpdateOperation<TItem extends PWItem, TController extend
 			if (editor.getField().isPrimary()) {
 				continue;
 			}
-			editor.print(src, dst, "  >> ");
+			editor.print(dst, "  >> ");
 		}
 		
 		PaperWorker.message("------------------------------");

@@ -40,8 +40,8 @@ import pw.core.PWQuery;
  */
 public class BasicAddAction extends AbstractBasicAction {
 	
-	public BasicAddAction(String... arguments) {
-		super(arguments);
+	public BasicAddAction() {
+		super();
 	}
 	
 	/* (non-Javadoc)

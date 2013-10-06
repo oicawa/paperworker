@@ -1,5 +1,5 @@
 /*
- *  $Id: BasicListOperation.java 2013/09/29 20:26:26 masamitsu $
+ *  $Id: PropertyLoader.java 2013/10/06 16:02:02 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,51 +26,44 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command.operation;
+package pw.core;
 
-import java.util.List;
-
-import pw.core.PWField;
-import pw.core.PWItem;
-import pw.core.action.AbstractBasicAction;
-import pw.core.ui.command.PaperWorker2;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Properties;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicListOperation extends AbstractBasicOperation {
-
-	/**
-	 * @param itemType
-	 */
-	public BasicListOperation(AbstractBasicAction action) {
-		super(action);
-	}
-
-	/* (non-Javadoc)
-	 * @see pw.core.ui.command.PWBasicOperation#run(java.lang.String[])
-	 */
-	@Override
-	public void run(String... argument) {
-		@SuppressWarnings("unchecked")
-		List<Object> objects = (List<Object>)action.run();
-		for (Object object : objects) {
-			PWItem item = (PWItem)object;
-			printItem(item);
-		}
+public class PropertyLoader {
+	
+	private static HashMap<String, Properties> propertyMap = new HashMap<String, Properties>();
+	
+	public static String getValue(String propertyName) {
+		return getValue("core", propertyName);
 	}
 	
-	protected void printItem(PWItem item) {
-		List<PWField> fields = PWItem.getFields(item.getClass(), PWField.KeyType.Primary);
-		StringBuffer buffer = new StringBuffer();
-		final String TAB = "\t";
-		for (PWField field : fields) {
-			String value = PWItem.getValueAsString(item, field.getName());
-			buffer.append(TAB);
-			buffer.append(value);
+	public static String getValue(String categoryName, String propertyName) {
+		if (!propertyMap.containsKey(categoryName)) {
+			Properties conf = new Properties();
+			try {
+				File current = new File(System.getProperty("user.dir"));
+				String format = "/resources/%s.properties";
+				String relationalPath = String.format(format, categoryName);
+				String fullPath = current.getParentFile().getAbsolutePath() + relationalPath;
+				conf.load(new FileInputStream(fullPath));
+				propertyMap.put(categoryName, conf);
+			} catch (FileNotFoundException e) {
+				throw new PWError(e, e.getMessage());
+			} catch (IOException e) {
+				throw new PWError(e, e.getMessage());
+			}
 		}
-		PaperWorker2.message(buffer.substring(TAB.length()));
+		return propertyMap.get(categoryName).getProperty(propertyName);
 	}
 
 }

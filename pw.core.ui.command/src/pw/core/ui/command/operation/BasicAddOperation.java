@@ -28,16 +28,13 @@
 
 package pw.core.ui.command.operation;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import pw.core.PWField;
-import pw.core.PWGeneralController;
 import pw.core.PWItem;
 import pw.core.PWUtilities;
+import pw.core.action.AbstractBasicAction;
 import pw.core.ui.command.PaperWorker;
 import pw.core.ui.command.editor.PWFieldEditor;
-import pw.core.ui.command.editor.PWStringFieldEditor;
 
 /**
  * @author masamitsu
@@ -45,8 +42,8 @@ import pw.core.ui.command.editor.PWStringFieldEditor;
  */
 public class BasicAddOperation extends AbstractBasicOperation {
 	
-	public BasicAddOperation(PWGeneralController controller, Class<? extends PWItem> itemType) {
-		super(controller, itemType);
+	public BasicAddOperation(AbstractBasicAction action) {
+		super(action);
 	}
 
 	/* (non-Javadoc)
@@ -54,16 +51,17 @@ public class BasicAddOperation extends AbstractBasicOperation {
 	 */
 	@Override
 	public void run(String... arguments) {
-		String actionName = arguments[1];
-		PWItem item = (PWItem) PWUtilities.createInstance(itemType);
+		PWItem item = (PWItem) PWUtilities.createInstance(action.getItemType());
 		
+		PaperWorker.message("<< ADD >>");
 		for (PWFieldEditor editor : getFieldEditors()) {
-			editor.print(null, item, "  >> ");
+			editor.print(item, " >> ");
 		}
 		
 		PaperWorker.message("------------------------------");
 		if (PaperWorker.confirm("Do you save? [Y/N] >> ", "*** Input 'Y' or 'N'. ***", "Y", "N")) {
-			controller.invoke(actionName, item);
+			action.run(item);
+			
 			PaperWorker.message("");
 			PaperWorker.message("Saved.");
 		} else {
@@ -73,14 +71,7 @@ public class BasicAddOperation extends AbstractBasicOperation {
 	}
 	
 	public List<PWFieldEditor> getFieldEditors() {
-		List<PWFieldEditor> editors = new ArrayList<PWFieldEditor>();
-		List<PWField> fields = PWItem.getFields(itemType);
-		int maxLength = getMaxLengthOfCaptions(itemType);
-		for (PWField field : fields) {
-			PWFieldEditor editor = new PWStringFieldEditor(field, maxLength);
-			editors.add(editor);
-		}
-		return editors;
+		return getDefaultFieldEditors(action.getItemType());
 	}
 
 }

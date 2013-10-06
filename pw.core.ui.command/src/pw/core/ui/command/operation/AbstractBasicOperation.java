@@ -28,9 +28,14 @@
 
 package pw.core.ui.command.operation;
 
-import pw.core.PWGeneralController;
+import java.util.ArrayList;
+import java.util.List;
+
+import pw.core.PWField;
 import pw.core.PWItem;
-import pw.core.ui.command.PWBasicOperation;
+import pw.core.action.AbstractBasicAction;
+import pw.core.ui.command.editor.PWFieldEditor;
+import pw.core.ui.command.editor.PWStringFieldEditor;
 
 /**
  * @author masamitsu
@@ -38,13 +43,37 @@ import pw.core.ui.command.PWBasicOperation;
  */
 public abstract class AbstractBasicOperation extends PWBasicOperation {
 	
-	protected Class<? extends PWItem> itemType;
-	protected PWGeneralController controller;
+	protected AbstractBasicAction action;
 	
-	public AbstractBasicOperation(PWGeneralController controller, Class<? extends PWItem> itemType) {
+	public AbstractBasicOperation(AbstractBasicAction action) {
 		super();
+		this.action = action;
+	}
+	
+	public static List<PWFieldEditor> getDefaultFieldEditors(Class<? extends PWItem> itemType) {
+		List<PWFieldEditor> editors = new ArrayList<PWFieldEditor>();
+		List<PWField> fields = PWItem.getFields(itemType);
+		int maxLength = getMaxLengthOfCaptions(itemType);
+		for (PWField field : fields) {
+			PWFieldEditor editor = new PWStringFieldEditor(field, maxLength);
+			editors.add(editor);
+		}
+		return editors;
+	}
+	
+	protected String getKeyParameters(List<PWField> keyFields, Object[] keyValues) {
 		
-		this.controller = controller;
-		this.itemType = itemType;
+		StringBuffer buffer = new StringBuffer();
+		final String SEPARATOR = ",";
+		for (int i = 0; i < keyFields.size(); i++) {
+			PWField keyField = keyFields.get(i);
+			String name = keyField.getName();
+			String value = keyField.toString(keyValues[i]);
+			buffer.append(SEPARATOR);
+			buffer.append(name);
+			buffer.append(": ");
+			buffer.append(value);
+		}
+		return buffer.substring(SEPARATOR.length());
 	}
 }

@@ -33,6 +33,7 @@ import java.util.List;
 import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.PWQuery;
+import pw.core.PWUtilities;
 
 /**
  * @author masamitsu
@@ -40,8 +41,8 @@ import pw.core.PWQuery;
  */
 public class BasicUpdateAction extends AbstractBasicAction {
 	
-	public BasicUpdateAction(String... arguments) {
-		super(arguments);
+	public BasicUpdateAction() {
+		super();
 	}
 
 	/* (non-Javadoc)
@@ -50,26 +51,50 @@ public class BasicUpdateAction extends AbstractBasicAction {
 	@Override
 	public Object run(Object... objects) {
 		assert(session != null);
-		assert(objects.length == 1);
+		assert(2 <= objects.length);
 		assert(objects[0] != null);
+		assert(objects[1] != null);
+		
+		List<PWField> keyFields = PWItem.getFields(itemType, keyType);
+		
 		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item, keyType);
+		
+		Object[] keyObjects = (Object[])objects[1];
+		String[] keyStrings = new String[keyObjects.length];
+		for (int i = 0; i < keyObjects.length; i++) {
+			keyStrings[i] = (String)keyObjects[i];
+		}
+		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(keyFields, 0, keyStrings);
+		
+		
+		PWQuery query = getQuery(item, keyType, keyValues);
+		if (query == null) {
+			return null;
+		}
 		session.getAccesser().execute(query);
         return null;
 	}
 	
-	public static PWQuery getQuery(PWItem item, PWField.KeyType keyType) {
+	public static PWQuery getQuery(PWItem item, PWField.KeyType keyType, Object... keyValues) {
     	List<PWField> fields = PWItem.getFields(item.getClass());
     	
     	// Create the fields part of query
     	StringBuffer fieldsBuffer = new StringBuffer();
     	for (PWField field : fields) {
-     		if (field.isKey(keyType)) {
+     		if (field.isKey(PWField.KeyType.Primary)) {
+     			continue;
+     		}
+     		Object value = field.getValue(item);
+     		if (value == null) {
      			continue;
      		}
  			fieldsBuffer.append(PWQuery.COMMA);
  			fieldsBuffer.append(field.getName());
  			fieldsBuffer.append(" = ?");
+    	}
+    	if (fieldsBuffer.length() == 0) {
+    		// No update fields.
+    		return null;
     	}
     	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
     	
@@ -84,16 +109,18 @@ public class BasicUpdateAction extends AbstractBasicAction {
     	// for fields
     	PWQuery query = new PWQuery(allQuery);
     	for (PWField field : fields) {
-     		if (field.isKey(keyType)) {
+     		if (field.isKey(PWField.KeyType.Primary)) {
     			continue;
      		}
-     		query.addValue(field.getValue(item));
+     		Object value = field.getValue(item);
+     		if (value == null) {
+     			continue;
+     		}
+     		query.addValue(value);
     	}
     	// for where
-    	for (PWField field : fields) {
-     		if (field.isKey(keyType)) {
-         		query.addValue(field.getValue(item));
-     		}
+    	for (Object keyValue : keyValues) {
+     		query.addValue(keyValue);
     	}
     	
     	return query;

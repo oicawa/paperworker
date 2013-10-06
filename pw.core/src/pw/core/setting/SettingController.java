@@ -28,6 +28,7 @@
 
 package pw.core.setting;
 
+import pw.core.PWField;
 import pw.core.PWGeneralController;
 import pw.core.PWSession;
 import pw.core.action.BasicAddAction;
@@ -61,18 +62,16 @@ public class SettingController extends PWGeneralController {
 
 		String jobSettingClassPath = JobSetting.class.getName();
 		String actionSettingClassPath = ActionSetting.class.getName();
-		registAction(ADDJOB, new BasicAddAction(jobSettingClassPath));
-		registAction(UPDATEJOB, new BasicUpdateAction(jobSettingClassPath));
-		registAction(DELETEJOB, new BasicDeleteAction(jobSettingClassPath));
-		registAction(DETAILJOB, new BasicDetailAction(jobSettingClassPath));
-		registAction(LISTJOB, new BasicListAction(jobSettingClassPath));
-		registAction(ADDACTION, new BasicAddAction(actionSettingClassPath));
-		registAction(UPDATEACTION, new BasicUpdateAction(actionSettingClassPath));
-		registAction(DELETEACTION, new BasicDeleteAction(actionSettingClassPath));
-		registAction(DETAILACTION, new BasicDetailAction(actionSettingClassPath));
-		registAction(LISTACTION, new BasicListAction(actionSettingClassPath));
-		
-		initializeTable(JobSetting.class);
-		initializeTable(ActionSetting.class);
+		String keyType = PWField.KeyType.Primary.toString();
+		registAction(ADDJOB, new BasicAddAction(), jobSettingClassPath, keyType);
+		registAction(UPDATEJOB, new BasicUpdateAction(), jobSettingClassPath, keyType);
+		registAction(DELETEJOB, new BasicDeleteAction(), jobSettingClassPath, keyType);
+		registAction(DETAILJOB, new BasicDetailAction(), jobSettingClassPath, keyType);
+		registAction(LISTJOB, new BasicListAction(), jobSettingClassPath, keyType);
+		registAction(ADDACTION, new BasicAddAction(), actionSettingClassPath, keyType);
+		registAction(UPDATEACTION, new BasicUpdateAction(), actionSettingClassPath, keyType);
+		registAction(DELETEACTION, new BasicDeleteAction(), actionSettingClassPath, keyType);
+		registAction(DETAILACTION, new BasicDetailAction(), actionSettingClassPath, keyType);
+		registAction(LISTACTION, new BasicListAction(), actionSettingClassPath, keyType);
 	}
 }

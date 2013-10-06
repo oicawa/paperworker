@@ -28,8 +28,15 @@
 
 package pw.core.ui.command.operation;
 
-import pw.core.PWGeneralController;
+import java.util.List;
+
+import pw.core.PWError;
+import pw.core.PWField;
 import pw.core.PWItem;
+import pw.core.PWUtilities;
+import pw.core.action.AbstractBasicAction;
+import pw.core.ui.command.PaperWorker;
+import pw.core.ui.command.editor.PWFieldEditor;
 
 /**
  * @author masamitsu
@@ -40,17 +47,47 @@ public class BasicUpdateOperation extends AbstractBasicOperation {
 	/**
 	 * @param itemType
 	 */
-	public BasicUpdateOperation(PWGeneralController controller, Class<? extends PWItem> itemType) {
-		super(controller, itemType);
+	public BasicUpdateOperation(AbstractBasicAction action) {
+		super(action);
 	}
 
 	/* (non-Javadoc)
 	 * @see pw.core.ui.command.PWBasicOperation#run(java.lang.String[])
 	 */
 	@Override
-	public void run(String... argument) {
-		// TODO Auto-generated method stub
+	public void run(String... arguments) {
+		if (arguments.length < 3) {
+			throw new PWError("require key field values.");
+		}
+			
+		List<PWField> keyFields = PWItem.getFields(action.getItemType(), action.getKeyType());
+		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(keyFields, ACTION_ARG_START_INDEX, arguments);
+		
+		PaperWorker.message("<< UPDATE >>");
+		PaperWorker.message("* If you input no value (just only the ENTER key), the field value doesn't change.");
 
+		
+		PWItem dst = (PWItem) PWUtilities.createInstance(action.getItemType());
+		for (PWFieldEditor editor : getFieldEditors()) {
+			if (editor.getField().isPrimary()) {
+				continue;
+			}
+			editor.print(dst, " >> ");
+		}
+		
+		PaperWorker.message("------------------------------");
+		if (PaperWorker.confirm("Do you save? [Y/N] >> ", "*** Input 'Y' or 'N'. ***", "Y", "N")) {
+			action.run(dst, keyValues);
+			PaperWorker.message("");
+			PaperWorker.message("Saved.");
+		} else {
+			PaperWorker.message("");
+			PaperWorker.message("Canceled.");
+		}
+	}
+	
+	public List<PWFieldEditor> getFieldEditors() {
+		return getDefaultFieldEditors(action.getItemType());
 	}
 
 }

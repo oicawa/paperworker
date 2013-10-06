@@ -36,11 +36,12 @@ import java.util.UUID;
 public class PWUtilities {
 	
 	public static final String LINE_SEPARATOR_PATTERN =  "\r\n|[\n\r\u2028\u2029\u0085]";
+	public static final String LINE_SEPARATOR =  System.getProperty("line.separator");
 
-	public static <T> T createInstance(Class<T> type, Object... args) {
+	public static <T> T createInstance(Class<T> type) {
 		try {
 			Constructor<T> constructor = type.getConstructor();
-			return constructor.newInstance(args);
+			return constructor.newInstance();
 		} catch (InstantiationException e) {
 			throw new PWError(e, e.getMessage());
 		} catch (IllegalAccessException e) {
@@ -101,5 +102,23 @@ public class PWUtilities {
 	public static UUID createNewUuid() {
 		// TODO: Must decides what version UUID to use.
 		return UUID.randomUUID();
+	}
+	
+	public static int getMaxLength(List<String> values) {
+		int max = 0;
+		for (String value : values) {
+			max = max < value.length() ? value.length() : max; 
+		}
+		return max;
+	}
+	
+	public static void prepareTable(Class<? extends PWItem> itemType) {
+		SqlAccesser accesser = SqlAccesser.getAccesser("tablecreator");
+		if (accesser.existTable(PWItem.getTableName(itemType))) {
+			return;
+		}
+		
+    	PWQuery query = PWQuery.getCreateTableQuery(itemType);
+    	accesser.execute(query);
 	}
 }

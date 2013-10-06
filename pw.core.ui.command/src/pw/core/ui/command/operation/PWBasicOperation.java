@@ -26,7 +26,7 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command;
+package pw.core.ui.command.operation;
 
 import java.util.List;
 

@@ -29,6 +29,8 @@
 package pw.core.action;
 
 import pw.core.PWAfterSqlQuery;
+import pw.core.PWError;
+import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.PWQuery;
 
@@ -38,8 +40,8 @@ import pw.core.PWQuery;
  */
 public class BasicListAction extends AbstractBasicAction {
 	
-	public BasicListAction(String... arguments) {
-		super(arguments);
+	public BasicListAction() {
+		super();
 	}
 	
 	/* (non-Javadoc)
@@ -47,10 +49,19 @@ public class BasicListAction extends AbstractBasicAction {
 	 */
 	@Override
 	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 0);
+		PWQuery query;
+		switch (objects.length) {
+		case 0:
+			query = getQuery(itemType);
+			break;
+		case 1:
+			PWItem item = (PWItem)objects[0];
+			query = getQuery(itemType, item);
+			break;
+		default:
+			throw new PWError("Illegal argument counts");
+		}
 		
-		PWQuery query = getQuery(itemType);
 		PWAfterSqlQuery afterQuery = new PWAfterSqlQuery(itemType);
 		session.getAccesser().select(query, afterQuery);
 		return afterQuery.getItemList();
@@ -63,6 +74,24 @@ public class BasicListAction extends AbstractBasicAction {
 		
     	// Create PWQuery
     	PWQuery query = new PWQuery(allQuery);
+		return query;
+	}
+	
+	public static PWQuery getQuery(Class<? extends PWItem> itemType, PWItem item) {
+		// Create all query
+		String allQuery = String.format("select * from %s where %s;",
+				PWQuery.getTableName(itemType),
+				getWhereQuery(itemType, item));
+		
+    	// Create PWQuery
+    	PWQuery query = new PWQuery(allQuery);
+    	for (PWField field : PWItem.getFields(itemType)) {
+    		Object value = field.getValue(item);
+    		if (value == null) {
+    			continue;
+    		}
+    		query.addValue(value);
+    	}
 		return query;
 	}
 }

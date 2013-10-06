@@ -38,8 +38,8 @@ import pw.core.PWItem;
 public interface PWFieldEditor {
 	public PWField getField();
 	
-	public void print(PWItem src, PWItem dst, String prompt);
+	public void print(PWItem dst, String prompt);
 	
-	public String prompt(String prompt);
+	public String prompt();
 
 }

@@ -49,7 +49,7 @@ public class SqlAccesser implements Closeable {
 			return connections.get(userId);
 		}
 		
-		String driverClassPath = "org.h2.Driver";	// TODO: Get from resources.
+		String driverClassPath = PropertyLoader.getValue("jdbcDriver");
 		try {
 			Class.forName(driverClassPath).newInstance();
 		} catch (InstantiationException e) {
@@ -65,8 +65,7 @@ public class SqlAccesser implements Closeable {
 //		props.put("password", "");
 		Connection connection;
 		try {
-			// TODO: SQL Driver class path must be get from System property or some outer resources?
-			String connectionString = "jdbc:h2:tcp://localhost/~/paperworker.db";
+			String connectionString = PropertyLoader.getValue("jdbcConnection");
 			connection = DriverManager.getConnection(connectionString, properties);
 		} catch (SQLException e) {
 			throw new PWError(e, e.getMessage());

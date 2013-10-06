@@ -43,12 +43,16 @@ public abstract class AbstractBasicAction extends PWAction {
 	protected Class<? extends PWItem> itemType;
 	protected PWField.KeyType keyType;
 	
-	public AbstractBasicAction(String... arguments) {
-		super(arguments);
+	public AbstractBasicAction() {
+		super();
 	}
 
 	public Class<? extends PWItem> getItemType() {
 		return itemType;
+	}
+	
+	public PWField.KeyType getKeyType() {
+		return keyType;
 	}
 
 	/* (non-Javadoc)

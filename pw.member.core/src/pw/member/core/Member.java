@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import pw.core.PWItem;
+import pw.core.PWUtilities;
 import pw.core.annotation.DateTimeInfo;
 import pw.core.annotation.PWFieldBasicInfo;
 import pw.core.annotation.PWItemBasicInfo;
@@ -194,5 +195,9 @@ public class Member extends PWItem {
 		Calendar base = Calendar.getInstance();
 		base.setTime(date);
 		return now.get(Calendar.YEAR) - base.get(Calendar.YEAR);
+	}
+	
+	static {
+		PWUtilities.prepareTable(Member.class);
 	}
 }

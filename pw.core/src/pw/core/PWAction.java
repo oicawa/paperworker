@@ -36,8 +36,7 @@ public abstract class PWAction {
 	
 	protected PWSession session;
 	
-	public PWAction(String... arguments) {
-		parseArguments(arguments);
+	public PWAction() {
 	}
 	
 	/**
@@ -52,9 +51,28 @@ public abstract class PWAction {
 		this.session = session;
 	}
 	
+	public void setParameters(String[] arguments) {
+		parseArguments(arguments);
+	}
+	
 	public static String getWhereQueryByKeys(Class<? extends PWItem> itemType, PWField.KeyType keyType) {
     	StringBuffer buffer = new StringBuffer();
     	for (PWField field : PWItem.getFields(itemType, keyType)) {
+ 			buffer.append(PWQuery.AND);
+ 			buffer.append(field.getName());
+ 			buffer.append(" = ?");
+    	}
+    	String wheresQuery = buffer.substring(PWQuery.AND.length());
+    	return wheresQuery;
+	}
+	
+	public static String getWhereQuery(Class<? extends PWItem> itemType, PWItem item) {
+    	StringBuffer buffer = new StringBuffer();
+    	for (PWField field : PWItem.getFields(itemType)) {
+    		Object value = field.getValue(item);
+    		if (value == null) {
+    			continue;
+    		}
  			buffer.append(PWQuery.AND);
  			buffer.append(field.getName());
  			buffer.append(" = ?");

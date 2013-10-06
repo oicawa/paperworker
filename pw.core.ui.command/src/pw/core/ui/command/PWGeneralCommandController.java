@@ -1,5 +1,5 @@
 /*
- *  $Id: BasicListOperation.java 2013/09/29 20:26:26 masamitsu $
+ *  $Id: PWGeneralUIController.java 2013/10/02 6:58:55 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,51 +26,67 @@
  *  ===============================================================================
  */
 
-package pw.core.ui.command.operation;
+package pw.core.ui.command;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
 
-import pw.core.PWField;
+import pw.core.PWAction;
+import pw.core.PWError;
 import pw.core.PWItem;
-import pw.core.action.AbstractBasicAction;
-import pw.core.ui.command.PaperWorker2;
+import pw.core.PWQuery;
+import pw.core.PWSession;
+import pw.core.ui.command.operation.PWBasicOperation;
+import pw.core.ui.command.operation.PWOperation;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicListOperation extends AbstractBasicOperation {
+public abstract class PWGeneralCommandController {
 
-	/**
-	 * @param itemType
-	 */
-	public BasicListOperation(AbstractBasicAction action) {
-		super(action);
-	}
-
-	/* (non-Javadoc)
-	 * @see pw.core.ui.command.PWBasicOperation#run(java.lang.String[])
-	 */
-	@Override
-	public void run(String... argument) {
-		@SuppressWarnings("unchecked")
-		List<Object> objects = (List<Object>)action.run();
-		for (Object object : objects) {
-			PWItem item = (PWItem)object;
-			printItem(item);
-		}
+	protected HashMap<String, PWBasicOperation> operations = new HashMap<String, PWBasicOperation>();
+	
+	public PWGeneralCommandController() {
 	}
 	
-	protected void printItem(PWItem item) {
-		List<PWField> fields = PWItem.getFields(item.getClass(), PWField.KeyType.Primary);
-		StringBuffer buffer = new StringBuffer();
-		final String TAB = "\t";
-		for (PWField field : fields) {
-			String value = PWItem.getValueAsString(item, field.getName());
-			buffer.append(TAB);
-			buffer.append(value);
+	public void registOperation(String name, PWBasicOperation operation) {
+		operations.put(name, operation);
+	}
+	
+	public Object invoke(String operationName, Object... objects) {
+		if (!operations.containsKey(operationName)) {
+			throw new PWError("The specified operation '%s' is not found.", operationName);
 		}
-		PaperWorker2.message(buffer.substring(TAB.length()));
+		//return operations.get(operationName).run(objects);
+		return null;
+	}
+
+	/**
+	 * @return 
+	 * 
+	 */
+	public Collection<String> getActionNames() {
+		return (Collection<String>)operations.keySet();
+		
+	}
+
+	/**
+	 * @param operationName
+	 * @return
+	 */
+	public PWBasicOperation getOperation(String operationName) {
+		if (!operations.containsKey(operationName)) {
+			return null;
+		}
+		return operations.get(operationName);
+	}
+
+	/**
+	 * @return
+	 */
+	public Collection<? extends String> getOperationNames() {
+		return (Collection<String>)operations.keySet();
 	}
 
 }
