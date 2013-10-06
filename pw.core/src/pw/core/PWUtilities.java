@@ -113,7 +113,7 @@ public class PWUtilities {
 	}
 	
 	public static void prepareTable(Class<? extends PWItem> itemType) {
-		SqlAccesser accesser = SqlAccesser.getAccesser("tablecreator");
+		PWAccesser accesser = PWAccesser.getAccesser("tablecreator");
 		if (accesser.existTable(PWItem.getTableName(itemType))) {
 			return;
 		}

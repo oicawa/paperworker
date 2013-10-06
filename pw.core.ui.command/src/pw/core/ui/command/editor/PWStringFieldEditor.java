@@ -37,7 +37,7 @@ import java.io.InputStreamReader;
 import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWUtilities;
-import pw.core.PropertyLoader;
+import pw.core.PWPropertyLoader;
 import pw.core.ui.command.PaperWorker;
 
 /**
@@ -71,7 +71,7 @@ public class PWStringFieldEditor extends PWAbstractFieldEditor {
 			File tmpFile = File.createTempFile(field.getName(), "tmp");
 			
 			// Get editor
-			String editor = PropertyLoader.getValue("command", "editor");
+			String editor = PWPropertyLoader.getValue("command", "editor");
 			
 			// Create process
 			ProcessBuilder pb = new ProcessBuilder(editor, tmpFile.getAbsolutePath());

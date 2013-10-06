@@ -31,6 +31,7 @@ package pw.core.ui.command.editor;
 import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWItem;
+import pw.core.ui.command.PWFieldEditor;
 import pw.core.ui.command.PaperWorker;
 
 /**

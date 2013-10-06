@@ -1,5 +1,5 @@
 /*
- *  $Id: DeleteAction.java 2013/09/21 3:03:36 Masamitsu Oikawa $
+ *  $Id: PWBasicOperation.java 2013/09/29 19:54:21 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,52 +26,13 @@
  *  ===============================================================================
  */
 
-package pw.holidaydivision.ui.command;
+package pw.core.ui.command;
 
-import java.util.List;
-
-import pw.core.PWField;
-import pw.core.ui.command.operation.PWDeleteOperation;
-import pw.holidaydivision.core.HolidayDivision;
-import pw.holidaydivision.core.HolidayDivisionController;
-
-public class DeleteAction extends PWDeleteOperation<HolidayDivision, HolidayDivisionController> {
-
-	public DeleteAction() {
-		super();
-	}
-
-	@Override
-	protected Class<HolidayDivision> getItemType() {
-		return HolidayDivision.class;
-	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.ui.command.PWAction#getDescription()
-	 */
-	@Override
-	public String[] getDescription() {
-		final String[] description = {
-				String.format("Delete a %s record by specified ID.", getCommandName()),
-				"  ---------",
-				String.format("  FORMAT > %s %s [ID]", getCommandName(), getName()),
-			};
-			return description;
-	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.ui.command.PWAction#getRegexForParse()
-	 */
-	@Override
-	protected String getRegexForParse() {
-		return String.format("^%s %s [0-9a-zA-Z]+", getCommandName(), getName());
-	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.ui.command.PWAction#getTitle(java.util.List, java.lang.Object[])
-	 */
-	@Override
-	protected String getTitle(List<PWField> fields, Object... keyValues) {
-		return "";
-	}
+/**
+ * @author masamitsu
+ *
+ */
+public interface PWOperation {
+	
+	public abstract void run(String... arguments);
 }

@@ -34,14 +34,17 @@ import java.util.List;
 import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.action.AbstractBasicAction;
-import pw.core.ui.command.editor.PWFieldEditor;
+import pw.core.ui.command.PWOperation;
+import pw.core.ui.command.PWFieldEditor;
 import pw.core.ui.command.editor.PWStringFieldEditor;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class AbstractBasicOperation extends PWBasicOperation {
+public abstract class AbstractBasicOperation implements PWOperation {
+	
+	protected final int ACTION_ARG_START_INDEX = 2;	// 2 is 'command' and 'action'.
 	
 	protected AbstractBasicAction action;
 	
@@ -75,5 +78,14 @@ public abstract class AbstractBasicOperation extends PWBasicOperation {
 			buffer.append(value);
 		}
 		return buffer.substring(SEPARATOR.length());
+	}
+	
+	public static int getMaxLengthOfCaptions(Class<? extends PWItem> type) {
+		List<String> captions = PWItem.getCaptions(type);
+		int max = 0;
+		for (String caption : captions) {
+			max = max < caption.length() ? caption.length() : max; 
+		}
+		return max;
 	}
 }

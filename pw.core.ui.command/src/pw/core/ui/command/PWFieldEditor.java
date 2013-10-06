@@ -1,5 +1,5 @@
 /*
- *  $Id: PWRenderer.java 2013/09/23 20:48:38 masamitsu $
+ *  $Id: PWFieldEditor.java 2013/09/25 6:56:17 masamitsu $
  *
  *  ===============================================================================
  *
@@ -28,9 +28,6 @@
 
 package pw.core.ui.command;
 
-import java.text.SimpleDateFormat;
-import java.util.List;
-
 import pw.core.PWField;
 import pw.core.PWItem;
 
@@ -38,48 +35,11 @@ import pw.core.PWItem;
  * @author masamitsu
  *
  */
-public abstract class PWLabel {
+public interface PWFieldEditor {
+	public PWField getField();
 	
-	private String[] fieldNames;
-	private String format;
-	private PWItem item;
-	private PWField.KeyType keyType;
+	public void print(PWItem dst, String prompt);
 	
-	public PWLabel(PWItem item, PWField.KeyType keyType, String format, String... fieldNames) {
-		this.item = item;
-		this.keyType = keyType;
-		this.format = format;
-		this.fieldNames = fieldNames;
-	}
-	
-	public String getText() {
-		Object[] values = new Object[fieldNames.length];
-		for (int i = 0; i < fieldNames.length; i++) {
-			PWField field = PWField.getField(item.getClass(), fieldNames[i]);
-			if (field.isDate()) {
-				Object value = field.getValue(item);
-				if (value == null) {
-					values[i] = "";
-				} else {
-					SimpleDateFormat formatter = new SimpleDateFormat(field.getDateTimeFormat());
-					values[i] = formatter.format(value);
-				}
-			} else {
-				values[i] = field.getValue(item);
-			}
-		}
-		return String.format(format, values);
-	}
+	public String prompt();
 
-	public String getId() {
-		List<PWField> keyFields = PWItem.getFields(item.getClass(), keyType);
-		StringBuffer buffer = new StringBuffer();
-		final String SEPARATOR = "/";
-		for (PWField keyField : keyFields) {
-			String keyValue = PWItem.getValueAsString(item, keyField.getName());
-			buffer.append(SEPARATOR);
-			buffer.append(keyValue);
-		}
-		return buffer.substring(SEPARATOR.length());
-	}
 }

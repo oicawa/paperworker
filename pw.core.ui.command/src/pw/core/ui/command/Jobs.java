@@ -26,22 +26,27 @@
  *  ===============================================================================
  */
 
-package pw.core.setting;
+package pw.core.ui.command;
 
+import java.util.Collection;
+import java.util.HashMap;
+
+import pw.core.PWAction;
 import pw.core.PWField;
-import pw.core.PWGeneralController;
 import pw.core.PWSession;
 import pw.core.action.BasicAddAction;
 import pw.core.action.BasicDeleteAction;
 import pw.core.action.BasicDetailAction;
 import pw.core.action.BasicListAction;
 import pw.core.action.BasicUpdateAction;
+import pw.core.setting.ActionSetting;
+import pw.core.setting.JobSetting;
 
 /**
  * @author masamitsu
  *
  */
-public class SettingController extends PWGeneralController {
+public class Jobs {
 
 	public static final String ADDJOB = "addjob";
 	public static final String UPDATEJOB = "updatejob";
@@ -54,11 +59,15 @@ public class SettingController extends PWGeneralController {
 	public static final String DETAILACTION = "detailaction";
 	public static final String LISTACTION = "listaction";
 	
+	protected PWSession session;
+	
+	protected HashMap<String, PWAction> actions = new HashMap<String, PWAction>();
+	
 	/**
 	 * @param session
 	 */
-	public SettingController(PWSession session) {
-		super(session);
+	public Jobs(PWSession session) {
+		this.session = session;
 
 		String jobSettingClassPath = JobSetting.class.getName();
 		String actionSettingClassPath = ActionSetting.class.getName();
@@ -73,5 +82,31 @@ public class SettingController extends PWGeneralController {
 		registAction(DELETEACTION, new BasicDeleteAction(), actionSettingClassPath, keyType);
 		registAction(DETAILACTION, new BasicDetailAction(), actionSettingClassPath, keyType);
 		registAction(LISTACTION, new BasicListAction(), actionSettingClassPath, keyType);
+	}
+	
+	public void registAction(String name, PWAction action, String... arguments) {
+		assert(session != null);
+		action.setSession(session);
+		action.setParameters(arguments);
+		actions.put(name, action);
+	}
+
+	/**
+	 * @return 
+	 * 
+	 */
+	public Collection<String> getActionNames() {
+		return (Collection<String>)actions.keySet();
+	}
+
+	/**
+	 * @param actionName
+	 * @return
+	 */
+	public PWAction getAction(String actionName) {
+		if (!actions.containsKey(actionName)) {
+			return null;
+		}
+		return actions.get(actionName);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- *  $Id: DeleteAction.java 2013/09/21 3:03:36 Masamitsu Oikawa $
+ *  $Id: PropertyLoader.java 2013/10/06 16:02:02 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,52 +26,44 @@
  *  ===============================================================================
  */
 
-package pw.organization.ui.command;
+package pw.core;
 
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Properties;
 
-import pw.core.PWField;
-import pw.core.ui.command.operation.PWDeleteOperation;
-import pw.organization.core.Organization;
-import pw.organization.core.OrganizationController;
-
-public class DeleteAction extends PWDeleteOperation<Organization, OrganizationController> {
-
-	public DeleteAction() {
-		super();
+/**
+ * @author masamitsu
+ *
+ */
+public class PWPropertyLoader {
+	
+	private static HashMap<String, Properties> propertyMap = new HashMap<String, Properties>();
+	
+	public static String getValue(String propertyName) {
+		return getValue("core", propertyName);
+	}
+	
+	public static String getValue(String categoryName, String propertyName) {
+		if (!propertyMap.containsKey(categoryName)) {
+			Properties conf = new Properties();
+			try {
+				File current = new File(System.getProperty("user.dir"));
+				String format = "/resources/%s.properties";
+				String relationalPath = String.format(format, categoryName);
+				String fullPath = current.getParentFile().getAbsolutePath() + relationalPath;
+				conf.load(new FileInputStream(fullPath));
+				propertyMap.put(categoryName, conf);
+			} catch (FileNotFoundException e) {
+				throw new PWError(e, e.getMessage());
+			} catch (IOException e) {
+				throw new PWError(e, e.getMessage());
+			}
+		}
+		return propertyMap.get(categoryName).getProperty(propertyName);
 	}
 
-	@Override
-	protected Class<Organization> getItemType() {
-		return Organization.class;
-	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.ui.command.PWAction#getDescription()
-	 */
-	@Override
-	public String[] getDescription() {
-		final String[] description = {
-			String.format("Delete a %s record by specified ID.", getCommandName()),
-			"  ---------",
-			String.format("  FORMAT > %s %s [ID]", getCommandName(), getName()),
-		};
-		return description;
-	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.ui.command.PWAction#getRegexForParse()
-	 */
-	@Override
-	protected String getRegexForParse() {
-		return String.format("^%s %s [0-9a-zA-Z]+", getCommandName(), getName());
-	}
-
-	/* (non-Javadoc)
-	 * @see paperworker.core.ui.command.PWAction#getTitle(java.util.List, java.lang.Object[])
-	 */
-	@Override
-	protected String getTitle(List<PWField> fields, Object... keyValues) {
-		return "";
-	}
 }

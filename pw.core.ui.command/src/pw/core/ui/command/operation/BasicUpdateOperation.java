@@ -35,8 +35,8 @@ import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.PWUtilities;
 import pw.core.action.AbstractBasicAction;
+import pw.core.ui.command.PWFieldEditor;
 import pw.core.ui.command.PaperWorker;
-import pw.core.ui.command.editor.PWFieldEditor;
 
 /**
  * @author masamitsu

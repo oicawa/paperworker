@@ -36,7 +36,7 @@ public class PWSession {
 	
 	private String userId;
 	
-	private SqlAccesser accesser;
+	private PWAccesser accesser;
 
 	public String getUserId() {
 		return userId;
@@ -46,11 +46,11 @@ public class PWSession {
 		this.userId = userId;
 	}
 
-	public SqlAccesser getAccesser() {
+	public PWAccesser getAccesser() {
 		return accesser;
 	}
 
-	public void setAccesser(SqlAccesser accesser) {
+	public void setAccesser(PWAccesser accesser) {
 		this.accesser = accesser;
 	}
 }

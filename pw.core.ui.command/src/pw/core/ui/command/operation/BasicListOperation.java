@@ -33,7 +33,7 @@ import java.util.List;
 import pw.core.PWField;
 import pw.core.PWItem;
 import pw.core.action.AbstractBasicAction;
-import pw.core.ui.command.PaperWorker2;
+import pw.core.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
@@ -70,7 +70,7 @@ public class BasicListOperation extends AbstractBasicOperation {
 			buffer.append(TAB);
 			buffer.append(value);
 		}
-		PaperWorker2.message(buffer.substring(TAB.length()));
+		PaperWorker.message(buffer.substring(TAB.length()));
 	}
 
 }

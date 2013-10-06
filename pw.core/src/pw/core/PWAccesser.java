@@ -38,18 +38,18 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Properties;
 
-public class SqlAccesser implements Closeable {
+public class PWAccesser implements Closeable {
 	
 	private Connection connection;
-	private static HashMap<String, SqlAccesser> connections = new HashMap<String, SqlAccesser>();
+	private static HashMap<String, PWAccesser> connections = new HashMap<String, PWAccesser>();
 	
-	public static SqlAccesser getAccesser(String userId) {
+	public static PWAccesser getAccesser(String userId) {
 		
 		if (connections.containsKey(userId)) {
 			return connections.get(userId);
 		}
 		
-		String driverClassPath = PropertyLoader.getValue("jdbcDriver");
+		String driverClassPath = PWPropertyLoader.getValue("jdbcDriver");
 		try {
 			Class.forName(driverClassPath).newInstance();
 		} catch (InstantiationException e) {
@@ -65,7 +65,7 @@ public class SqlAccesser implements Closeable {
 //		props.put("password", "");
 		Connection connection;
 		try {
-			String connectionString = PropertyLoader.getValue("jdbcConnection");
+			String connectionString = PWPropertyLoader.getValue("jdbcConnection");
 			connection = DriverManager.getConnection(connectionString, properties);
 		} catch (SQLException e) {
 			throw new PWError(e, e.getMessage());
@@ -78,12 +78,12 @@ public class SqlAccesser implements Closeable {
 			throw new PWError(e, "SQL Connection could not be set 'AutoCommit'. [value = %s]", autoCommit);
 		}
 		
-		connections.put(userId, new SqlAccesser(connection));
+		connections.put(userId, new PWAccesser(connection));
 		
 		return connections.get(userId);
 	}
 	
-	private SqlAccesser(Connection connection) {
+	private PWAccesser(Connection connection) {
 		this.connection = connection;
 	}
 	
