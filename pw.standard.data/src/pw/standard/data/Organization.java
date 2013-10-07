@@ -43,16 +43,16 @@ public class Organization extends PWItem {
 	@PWFieldBasicInfo(caption = "Parent Organization ID", type = "varchar(100)")
 	private String parentOrganizationId;
 	
-	@PWFieldBasicInfo(caption = "Group Name", type = "varchar(100)")
+	@PWFieldBasicInfo(caption = "Name", type = "varchar(100)")
 	private String name;
 	
-	@PWFieldBasicInfo(caption = "Group Short Name", type = "varchar(100)")
+	@PWFieldBasicInfo(caption = "Short Name", type = "varchar(100)")
 	private String shortName;
 	
-	@PWFieldBasicInfo(caption = "Group Leader ID", type = "varchar(100)")
+	@PWFieldBasicInfo(caption = "Leader ID", type = "varchar(100)")
 	private String leaderId;
 	
-	@PWFieldBasicInfo(caption = "Group Subleader ID", type = "varchar(100)")
+	@PWFieldBasicInfo(caption = "Subleader ID", type = "varchar(100)")
 	private String subleaderId;
 	
 	@PWFieldBasicInfo(caption = "Division", type = "varchar(100)")

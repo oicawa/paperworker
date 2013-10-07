@@ -32,6 +32,7 @@ import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 import pw.core.annotation.DateTimeInfo;
 import pw.core.annotation.PWFieldBasicInfo;
@@ -95,6 +96,10 @@ public class PWField {
 		return field.getType().isEnum();
 	}
 
+	public boolean isUuid() {
+		return field.getType() == UUID.class;
+	}
+
 	public String getType() {
 		PWFieldBasicInfo info = field.getAnnotation(PWFieldBasicInfo.class);
 		return info.type();
@@ -147,11 +152,11 @@ public class PWField {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Object parseAsEnum(String input) {
-		if (input == null) {
-			return null;
-		} else {
-			return Enum.valueOf((Class)field.getType(), input);
-		}
+		return input == null ? null : Enum.valueOf((Class)field.getType(), input);
+	}
+	
+	private Object parseAsUuid(String input) {
+		return input == null ? null : UUID.fromString(input);
 	}
 
 	public void setValue(Object object, Object value) {
@@ -159,6 +164,10 @@ public class PWField {
 			if (isEnum()) {
 				String input = value == null ? null : value.toString();
 				Object creanValue = parseAsEnum(input);
+				field.set(object, creanValue);
+			} else if (isUuid()) {
+				String input = value == null ? null : value.toString();
+				Object creanValue = parseAsUuid(input);
 				field.set(object, creanValue);
 			} else {
 				field.set(object, value);
@@ -202,6 +211,8 @@ public class PWField {
 		} else if (isReal()){
 			return String.format("%f", value);
 		} else if (isEnum()){
+			return value.toString();
+		} else if (isUuid()){
 			return value.toString();
 		} else {
 			return (String)value;

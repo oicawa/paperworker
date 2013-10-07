@@ -30,12 +30,15 @@ package pw.core.ui.command.operation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import pw.core.PWField;
 import pw.core.PWItem;
+import pw.core.PWUtilities;
 import pw.core.action.AbstractBasicAction;
 import pw.core.ui.command.PWOperation;
 import pw.core.ui.command.PWFieldEditor;
+import pw.core.ui.command.editor.PWFixedFieldEditor;
 import pw.core.ui.command.editor.PWStringFieldEditor;
 
 /**
@@ -58,8 +61,15 @@ public abstract class AbstractBasicOperation implements PWOperation {
 		List<PWField> fields = PWItem.getFields(itemType);
 		int maxLength = getMaxLengthOfCaptions(itemType);
 		for (PWField field : fields) {
-			PWFieldEditor editor = new PWStringFieldEditor(field, maxLength);
-			editors.add(editor);
+			PWFieldEditor editor;
+			if (field.isKey(PWField.KeyType.Primary) && field.isUuid()) {
+				UUID uuid = PWUtilities.createNewUuid();
+				editor = new PWFixedFieldEditor(field, maxLength, uuid.toString());
+				editors.add(editor);
+			} else {
+				editor = new PWStringFieldEditor(field, maxLength);
+				editors.add(editor);
+			}
 		}
 		return editors;
 	}

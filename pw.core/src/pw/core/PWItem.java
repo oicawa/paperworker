@@ -101,20 +101,20 @@ public abstract class PWItem {
 	
 	public static List<String> getCaptions(Class<? extends PWItem> type) {
 		List<String> captions = new ArrayList<String>();
-		for (PWField fieldInfo : getFields(type)) {
-			captions.add(fieldInfo.getCaption());
+		for (PWField field : getFields(type)) {
+			captions.add(field.getCaption());
 		}
 		return captions;
 	}
 	
 	public static void setValue(PWItem item, String fieldName, Object value) {
-		PWField fieldInfo = PWField.getField(item.getClass(), fieldName);
-		fieldInfo.setValue(item, value);
+		PWField field = PWField.getField(item.getClass(), fieldName);
+		field.setValue(item, value);
 	}
 
 	public static Object parse(PWItem object, String fieldName, String input) {
-		PWField fieldInfo = PWField.getField(object.getClass(), fieldName);
-		return fieldInfo.parse(input);
+		PWField field = PWField.getField(object.getClass(), fieldName);
+		return field.parse(input);
 	}
 
 	public static String getCaption(Class<? extends PWItem> type) {

@@ -62,7 +62,7 @@ public class BasicUpdateAction extends AbstractBasicAction {
 		Object[] keyObjects = (Object[])objects[1];
 		String[] keyStrings = new String[keyObjects.length];
 		for (int i = 0; i < keyObjects.length; i++) {
-			keyStrings[i] = (String)keyObjects[i];
+			keyStrings[i] = keyFields.get(i).toString(keyObjects[i]);
 		}
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(keyFields, 0, keyStrings);
 		
