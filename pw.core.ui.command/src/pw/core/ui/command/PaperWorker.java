@@ -101,7 +101,7 @@ public class PaperWorker implements Closeable {
 
 	private void run() {
 		message("==================================================");
-		message("PaperWorker2");
+		message("PaperWorker");
 		message("==================================================");
 		flush();
 		while (true) {
