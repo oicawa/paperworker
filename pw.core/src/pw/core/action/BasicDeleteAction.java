@@ -32,8 +32,8 @@ import java.util.List;
 
 import pw.core.PWError;
 import pw.core.PWField;
-import pw.core.PWItem;
-import pw.core.PWQuery;
+import pw.core.accesser.PWQuery;
+import pw.core.item.PWItem;
 
 /**
  * @author masamitsu

@@ -1,5 +1,5 @@
 /*
- *  $Id: AddAction.java 2013/09/28 1:05:04 masamitsu $
+ *  $Id: BasicAddOperation.java 2013/09/29 19:36:41 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,60 +26,52 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.ui.command.operation;
 
 import java.util.List;
 
-import pw.core.PWField;
-import pw.core.accesser.PWQuery;
+import pw.core.PWUtilities;
+import pw.core.action.AbstractBasicAction;
 import pw.core.item.PWItem;
+import pw.ui.command.PWFieldEditor;
+import pw.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicAddAction extends AbstractBasicAction {
+public class BasicAddOperation extends AbstractBasicOperation {
 	
-	public BasicAddAction() {
-		super();
-	}
-	
-	/* (non-Javadoc)
-	 * @see pw.core.PWAction#run()
-	 */
-	@Override
-	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item);
-		session.getAccesser().execute(query);
-        return null;
+	public BasicAddOperation(AbstractBasicAction action) {
+		super(action);
 	}
 
-	
-	public static PWQuery getQuery(PWItem item) {
-    	List<PWField> fields = PWItem.getFields(item.getClass());
-    	
-    	// Create the fields part of query
-    	StringBuffer fieldsBuffer = new StringBuffer();
-    	for (int i = 0; i < fields.size(); i++) {
-    		fieldsBuffer.append(PWQuery.COMMA);
-    		fieldsBuffer.append("?");
-    	}
-    	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
-    	
-    	// Create all query
-    	String allQuery = String.format("insert into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
-    	
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-    	for (PWField field : fields) {
-    		Object keyValue = field.getValue(item);
-        	query.addValue(keyValue);
-    	}
-    	
-    	return query;
+	/* (non-Javadoc)
+	 * @see pw.core.ui.command.PWBasicOperation#run(java.lang.String[])
+	 */
+	@Override
+	public void run(String... arguments) {
+		PWItem item = (PWItem) PWUtilities.createInstance(action.getItemType());
+		
+		PaperWorker.message("<< ADD >>");
+		for (PWFieldEditor editor : getFieldEditors()) {
+			editor.print(item, " >> ");
+		}
+		
+		PaperWorker.message("------------------------------");
+		if (PaperWorker.confirm("Do you save? [Y/N] >> ", "*** Input 'Y' or 'N'. ***", "Y", "N")) {
+			action.run(item);
+			
+			PaperWorker.message("");
+			PaperWorker.message("Saved.");
+		} else {
+			PaperWorker.message("");
+			PaperWorker.message("Canceled.");
+		}
 	}
+	
+	public List<PWFieldEditor> getFieldEditors() {
+		return getDefaultFieldEditors(action.getItemType());
+	}
+
 }

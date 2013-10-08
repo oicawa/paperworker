@@ -1,5 +1,5 @@
 /*
- *  $Id: AddAction.java 2013/09/28 1:05:04 masamitsu $
+ *  $Id: PWFixedFieldEditor.java 2013/10/07 22:36:19 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,60 +26,49 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.ui.command.editor;
 
-import java.util.List;
-
+import pw.core.PWError;
 import pw.core.PWField;
-import pw.core.accesser.PWQuery;
 import pw.core.item.PWItem;
+import pw.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicAddAction extends AbstractBasicAction {
+public class PWFixedFieldEditor extends PWAbstractFieldEditor {
+
+	private String defaultValue;
 	
-	public BasicAddAction() {
-		super();
+	/**
+	 * @param field
+	 * @param captionLength
+	 */
+	public PWFixedFieldEditor(PWField field, int captionLength, String defaultValue) {
+		super(field, captionLength);
+		this.defaultValue = defaultValue;
 	}
 	
-	/* (non-Javadoc)
-	 * @see pw.core.PWAction#run()
-	 */
-	@Override
-	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item);
-		session.getAccesser().execute(query);
-        return null;
+	public void print(PWItem dst, String prompt) {
+		String input = prompt();
+		try {
+			if (input == null || input.equals("")) {
+				PWItem.setValue(dst, field.getName(), null);
+			} else {
+				PWItem.setValue(dst, field.getName(), field.parse(input));
+			}
+		} catch (PWError e) {
+			PaperWorker.error(e);
+		}
+	}
+	
+	public String prompt() {
+		String caption = field.getCaption();
+		String format = String.format("%%-%ds >> %%s", captionLength);
+		PaperWorker.message(String.format(format, caption, defaultValue));
+		return defaultValue;
 	}
 
-	
-	public static PWQuery getQuery(PWItem item) {
-    	List<PWField> fields = PWItem.getFields(item.getClass());
-    	
-    	// Create the fields part of query
-    	StringBuffer fieldsBuffer = new StringBuffer();
-    	for (int i = 0; i < fields.size(); i++) {
-    		fieldsBuffer.append(PWQuery.COMMA);
-    		fieldsBuffer.append("?");
-    	}
-    	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
-    	
-    	// Create all query
-    	String allQuery = String.format("insert into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
-    	
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-    	for (PWField field : fields) {
-    		Object keyValue = field.getValue(item);
-        	query.addValue(keyValue);
-    	}
-    	
-    	return query;
-	}
+
 }

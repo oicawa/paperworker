@@ -36,6 +36,7 @@ import java.util.UUID;
 
 import pw.core.annotation.DateTimeInfo;
 import pw.core.annotation.PWFieldBasicInfo;
+import pw.core.item.PWItem;
 
 public class PWField {
 	

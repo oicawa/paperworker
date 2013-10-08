@@ -1,5 +1,5 @@
 /*
- *  $Id: PWSession.java 2013/09/28 21:28:28 masamitsu $
+ *  $Id: PWBasicOperation.java 2013/09/29 19:54:21 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,33 +26,13 @@
  *  ===============================================================================
  */
 
-package pw.core;
-
-import pw.core.accesser.PWAccesser;
+package pw.ui.command;
 
 /**
  * @author masamitsu
  *
  */
-public class PWSession {
+public interface PWOperation {
 	
-	private String userId;
-	
-	private PWAccesser accesser;
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public PWAccesser getAccesser() {
-		return accesser;
-	}
-
-	public void setAccesser(PWAccesser accesser) {
-		this.accesser = accesser;
-	}
+	public abstract void run(String... arguments);
 }

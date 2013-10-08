@@ -1,5 +1,5 @@
 /*
- *  $Id: UpdateAction.java 2013/09/28 1:38:39 masamitsu $
+ *  $Id: BasicUpdateAction.java 2013/09/28 1:38:39 masamitsu $
  *
  *  ===============================================================================
  *
@@ -31,9 +31,9 @@ package pw.core.action;
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.PWItem;
-import pw.core.PWQuery;
 import pw.core.PWUtilities;
+import pw.core.accesser.PWQuery;
+import pw.core.item.PWItem;
 
 /**
  * @author masamitsu

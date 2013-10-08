@@ -1,5 +1,5 @@
 /*
- *  $Id: AddAction.java 2013/09/28 1:05:04 masamitsu $
+ *  $Id: PWCommentAction.java 2013/10/09 0:44:07 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,60 +26,32 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.standard.action.comment;
 
-import java.util.List;
-
-import pw.core.PWField;
-import pw.core.accesser.PWQuery;
-import pw.core.item.PWItem;
+import pw.core.action.PWAction;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicAddAction extends AbstractBasicAction {
-	
-	public BasicAddAction() {
-		super();
-	}
-	
+public class PWCommentAction extends PWAction {
+
 	/* (non-Javadoc)
-	 * @see pw.core.PWAction#run()
+	 * @see pw.core.action.PWAction#parseArguments(java.lang.String[])
+	 */
+	@Override
+	protected void parseArguments(String[] arguments) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/* (non-Javadoc)
+	 * @see pw.core.action.PWAction#run(java.lang.Object[])
 	 */
 	@Override
 	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item);
-		session.getAccesser().execute(query);
-        return null;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	
-	public static PWQuery getQuery(PWItem item) {
-    	List<PWField> fields = PWItem.getFields(item.getClass());
-    	
-    	// Create the fields part of query
-    	StringBuffer fieldsBuffer = new StringBuffer();
-    	for (int i = 0; i < fields.size(); i++) {
-    		fieldsBuffer.append(PWQuery.COMMA);
-    		fieldsBuffer.append("?");
-    	}
-    	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
-    	
-    	// Create all query
-    	String allQuery = String.format("insert into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
-    	
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-    	for (PWField field : fields) {
-    		Object keyValue = field.getValue(item);
-        	query.addValue(keyValue);
-    	}
-    	
-    	return query;
-	}
 }

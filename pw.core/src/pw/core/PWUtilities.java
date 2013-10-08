@@ -33,6 +33,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.UUID;
 
+import pw.core.accesser.PWAccesser;
+import pw.core.accesser.PWQuery;
+import pw.core.item.PWItem;
+
 public class PWUtilities {
 	
 	public static final String LINE_SEPARATOR_PATTERN =  "\r\n|[\n\r\u2028\u2029\u0085]";

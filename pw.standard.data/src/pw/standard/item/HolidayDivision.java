@@ -1,5 +1,5 @@
 /*
- *  $Id: AddAction.java 2013/09/28 1:05:04 masamitsu $
+ *  $Id: HolidayDivision.java 2013/09/21 3:03:36 Masamitsu Oikawa $
  *
  *  ===============================================================================
  *
@@ -26,60 +26,50 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.standard.item;
 
-import java.util.List;
-
-import pw.core.PWField;
-import pw.core.accesser.PWQuery;
+import pw.core.PWUtilities;
+import pw.core.annotation.PWFieldBasicInfo;
+import pw.core.annotation.PWItemBasicInfo;
 import pw.core.item.PWItem;
 
-/**
- * @author masamitsu
- *
- */
-public class BasicAddAction extends AbstractBasicAction {
+@PWItemBasicInfo(caption = "Holiday Divisions", tableName = "HolidayDivisions")
+public class HolidayDivision extends PWItem {
 	
-	public BasicAddAction() {
-		super();
-	}
-	
-	/* (non-Javadoc)
-	 * @see pw.core.PWAction#run()
-	 */
-	@Override
-	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item);
-		session.getAccesser().execute(query);
-        return null;
+	public String getDivisionId() {
+		return divisionId;
 	}
 
+	public void setDivisionId(String divisionId) {
+		this.divisionId = divisionId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
+
+	@PWFieldBasicInfo(caption = "Holiday Division ID", type = "varchar(100)", primary = true)
+	private String divisionId;
+
+	@PWFieldBasicInfo(caption = "Holiday Division Name", type = "varchar(100)")
+	private String name;
 	
-	public static PWQuery getQuery(PWItem item) {
-    	List<PWField> fields = PWItem.getFields(item.getClass());
-    	
-    	// Create the fields part of query
-    	StringBuffer fieldsBuffer = new StringBuffer();
-    	for (int i = 0; i < fields.size(); i++) {
-    		fieldsBuffer.append(PWQuery.COMMA);
-    		fieldsBuffer.append("?");
-    	}
-    	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
-    	
-    	// Create all query
-    	String allQuery = String.format("insert into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
-    	
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-    	for (PWField field : fields) {
-    		Object keyValue = field.getValue(item);
-        	query.addValue(keyValue);
-    	}
-    	
-    	return query;
+	@PWFieldBasicInfo(caption = "Holiday Division Short Name", type = "varchar(100)")
+	private String shortName;
+	
+	static {
+		PWUtilities.prepareTable(HolidayDivision.class);
 	}
 }

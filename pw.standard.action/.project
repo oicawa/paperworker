@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>pw.ui.command</name>
+	<name>pw.standard.action</name>
 	<comment></comment>
 	<projects>
-		<project>paperworker.member.ui.command</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

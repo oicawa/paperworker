@@ -1,5 +1,5 @@
 /*
- *  $Id: AddAction.java 2013/09/28 1:05:04 masamitsu $
+ *  $Id: BasicDeleteOperation.java 2013/09/29 20:25:10 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,60 +26,49 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.ui.command.operation;
 
 import java.util.List;
 
+import pw.core.PWError;
 import pw.core.PWField;
-import pw.core.accesser.PWQuery;
+import pw.core.PWUtilities;
+import pw.core.action.AbstractBasicAction;
 import pw.core.item.PWItem;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicAddAction extends AbstractBasicAction {
-	
-	public BasicAddAction() {
-		super();
-	}
-	
-	/* (non-Javadoc)
-	 * @see pw.core.PWAction#run()
+public class BasicDeleteOperation extends AbstractBasicOperation {
+
+	/**
+	 * @param itemType
 	 */
-	@Override
-	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item);
-		session.getAccesser().execute(query);
-        return null;
+	public BasicDeleteOperation(AbstractBasicAction action) {
+		super(action);
 	}
 
-	
-	public static PWQuery getQuery(PWItem item) {
-    	List<PWField> fields = PWItem.getFields(item.getClass());
-    	
-    	// Create the fields part of query
-    	StringBuffer fieldsBuffer = new StringBuffer();
-    	for (int i = 0; i < fields.size(); i++) {
-    		fieldsBuffer.append(PWQuery.COMMA);
-    		fieldsBuffer.append("?");
-    	}
-    	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
-    	
-    	// Create all query
-    	String allQuery = String.format("insert into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
-    	
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-    	for (PWField field : fields) {
-    		Object keyValue = field.getValue(item);
-        	query.addValue(keyValue);
-    	}
-    	
-    	return query;
+	/* (non-Javadoc)
+	 * @see pw.core.ui.command.PWBasicOperation#run(java.lang.String[])
+	 */
+	@Override
+	public void run(String... arguments) {
+		if (arguments.length < 3) {
+			throw new PWError("require key field values.");
+		}
+		
+		List<PWField> keyFields = PWItem.getFields(action.getItemType(), action.getKeyType());
+		if (keyFields.size() == 0) {
+			throw new PWError("No '%s' key fields.", action.getKeyType().toString());
+		}
+		
+		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(keyFields, ACTION_ARG_START_INDEX, arguments);
+		if (keyFields.size() != keyValues.length) {
+			throw new PWError("The number of key values is different from the number of '%s' key fields.", action.getKeyType().toString());
+		}
+		
+		action.run(keyValues);
 	}
+
 }

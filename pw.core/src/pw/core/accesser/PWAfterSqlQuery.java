@@ -1,5 +1,5 @@
 /*
- *  $Id: AddAction.java 2013/09/28 1:05:04 masamitsu $
+ *  $Id: PWAfterSqlQuery.java 2013/09/23 8:55:58 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,60 +26,56 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.core.accesser;
 
+import java.sql.Clob;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import pw.core.PWError;
 import pw.core.PWField;
-import pw.core.accesser.PWQuery;
+import pw.core.PWUtilities;
 import pw.core.item.PWItem;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicAddAction extends AbstractBasicAction {
+public class PWAfterSqlQuery implements PWAfterQuery<ResultSet> {
+
+	private List<Object> items = new ArrayList<Object>();
+	private Class<? extends PWItem> itemType;
 	
-	public BasicAddAction() {
-		super();
+	public PWAfterSqlQuery(Class<? extends PWItem> itemType) {
+		this.itemType = itemType;
 	}
 	
-	/* (non-Javadoc)
-	 * @see pw.core.PWAction#run()
-	 */
 	@Override
-	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item);
-		session.getAccesser().execute(query);
-        return null;
+	public void run(ResultSet resultSet) {
+        try {
+			while (resultSet.next()) {
+				Object item = PWUtilities.createInstance(itemType);
+	        	List<PWField> fields = PWItem.getFields(itemType);
+		    	for (PWField field : fields) {
+		    		if (field.getType().equals("text")) {
+		    			Clob clob = resultSet.getClob(field.getName());
+		    			String value = clob == null ? null : clob.getSubString(1, (int) clob.length());
+			    		field.setValue(item, value);
+		    		} else {
+			    		field.setValue(item, resultSet.getObject(field.getName()));
+		    		}
+		    	}
+		    	items.add(item);
+			}
+		} catch (SQLException e) {
+			throw new PWError(e, e.getMessage());
+		}
 	}
 
-	
-	public static PWQuery getQuery(PWItem item) {
-    	List<PWField> fields = PWItem.getFields(item.getClass());
-    	
-    	// Create the fields part of query
-    	StringBuffer fieldsBuffer = new StringBuffer();
-    	for (int i = 0; i < fields.size(); i++) {
-    		fieldsBuffer.append(PWQuery.COMMA);
-    		fieldsBuffer.append("?");
-    	}
-    	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
-    	
-    	// Create all query
-    	String allQuery = String.format("insert into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
-    	
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-    	for (PWField field : fields) {
-    		Object keyValue = field.getValue(item);
-        	query.addValue(keyValue);
-    	}
-    	
-    	return query;
+	public List<Object> getItemList() {
+		return items;
 	}
+
 }

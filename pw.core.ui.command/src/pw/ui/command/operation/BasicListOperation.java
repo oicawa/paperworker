@@ -1,5 +1,5 @@
 /*
- *  $Id: AddAction.java 2013/09/28 1:05:04 masamitsu $
+ *  $Id: BasicListOperation.java 2013/09/29 20:26:26 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,60 +26,51 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.ui.command.operation;
 
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.accesser.PWQuery;
+import pw.core.action.AbstractBasicAction;
 import pw.core.item.PWItem;
+import pw.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicAddAction extends AbstractBasicAction {
-	
-	public BasicAddAction() {
-		super();
-	}
-	
-	/* (non-Javadoc)
-	 * @see pw.core.PWAction#run()
+public class BasicListOperation extends AbstractBasicOperation {
+
+	/**
+	 * @param itemType
 	 */
-	@Override
-	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item);
-		session.getAccesser().execute(query);
-        return null;
+	public BasicListOperation(AbstractBasicAction action) {
+		super(action);
 	}
 
-	
-	public static PWQuery getQuery(PWItem item) {
-    	List<PWField> fields = PWItem.getFields(item.getClass());
-    	
-    	// Create the fields part of query
-    	StringBuffer fieldsBuffer = new StringBuffer();
-    	for (int i = 0; i < fields.size(); i++) {
-    		fieldsBuffer.append(PWQuery.COMMA);
-    		fieldsBuffer.append("?");
-    	}
-    	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
-    	
-    	// Create all query
-    	String allQuery = String.format("insert into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
-    	
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-    	for (PWField field : fields) {
-    		Object keyValue = field.getValue(item);
-        	query.addValue(keyValue);
-    	}
-    	
-    	return query;
+	/* (non-Javadoc)
+	 * @see pw.core.ui.command.PWBasicOperation#run(java.lang.String[])
+	 */
+	@Override
+	public void run(String... argument) {
+		@SuppressWarnings("unchecked")
+		List<Object> objects = (List<Object>)action.run();
+		for (Object object : objects) {
+			PWItem item = (PWItem)object;
+			printItem(item);
+		}
 	}
+	
+	protected void printItem(PWItem item) {
+		List<PWField> fields = PWItem.getFields(item.getClass(), PWField.KeyType.Primary);
+		StringBuffer buffer = new StringBuffer();
+		final String TAB = "\t";
+		for (PWField field : fields) {
+			String value = PWItem.getValueAsString(item, field.getName());
+			buffer.append(TAB);
+			buffer.append(value);
+		}
+		PaperWorker.message(buffer.substring(TAB.length()));
+	}
+
 }

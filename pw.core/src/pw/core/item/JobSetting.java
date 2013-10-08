@@ -1,5 +1,5 @@
 /*
- *  $Id: AddAction.java 2013/09/28 1:05:04 masamitsu $
+ *  $Id: Job.java 2013/09/28 20:09:51 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,60 +26,43 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.core.item;
 
-import java.util.List;
-
-import pw.core.PWField;
-import pw.core.accesser.PWQuery;
-import pw.core.item.PWItem;
+import pw.core.PWUtilities;
+import pw.core.annotation.PWFieldBasicInfo;
+import pw.core.annotation.PWItemBasicInfo;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicAddAction extends AbstractBasicAction {
+@PWItemBasicInfo(caption = "Job Settings", tableName = "JobSettings")
+public class JobSetting extends PWItem {
 	
-	public BasicAddAction() {
-		super();
-	}
-	
-	/* (non-Javadoc)
-	 * @see pw.core.PWAction#run()
-	 */
-	@Override
-	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item);
-		session.getAccesser().execute(query);
-        return null;
+	@PWFieldBasicInfo(caption = "Job Name", type = "varchar(100)", primary = true)
+	private String name;
+
+	@PWFieldBasicInfo(caption = "Description", type = "text")
+	private String description;
+
+	public String getName() {
+		return name;
 	}
 
-	
-	public static PWQuery getQuery(PWItem item) {
-    	List<PWField> fields = PWItem.getFields(item.getClass());
-    	
-    	// Create the fields part of query
-    	StringBuffer fieldsBuffer = new StringBuffer();
-    	for (int i = 0; i < fields.size(); i++) {
-    		fieldsBuffer.append(PWQuery.COMMA);
-    		fieldsBuffer.append("?");
-    	}
-    	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
-    	
-    	// Create all query
-    	String allQuery = String.format("insert into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
-    	
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-    	for (PWField field : fields) {
-    		Object keyValue = field.getValue(item);
-        	query.addValue(keyValue);
-    	}
-    	
-    	return query;
+	public void setName(String name) {
+		this.name = name;
 	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	static {
+		PWUtilities.prepareTable(JobSetting.class);
+	}
+
 }

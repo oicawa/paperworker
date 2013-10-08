@@ -1,5 +1,5 @@
 /*
- *  $Id: PWSession.java 2013/09/28 21:28:28 masamitsu $
+ *  $Id: PWDocumentItem.java 2013/10/09 0:03:58 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,33 +26,14 @@
  *  ===============================================================================
  */
 
-package pw.core;
+package pw.core.item;
 
-import pw.core.accesser.PWAccesser;
+import java.util.UUID;
 
 /**
  * @author masamitsu
  *
  */
-public class PWSession {
-	
-	private String userId;
-	
-	private PWAccesser accesser;
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public PWAccesser getAccesser() {
-		return accesser;
-	}
-
-	public void setAccesser(PWAccesser accesser) {
-		this.accesser = accesser;
-	}
+public interface PWDocumentItem {
+	public UUID getDocumentId();
 }

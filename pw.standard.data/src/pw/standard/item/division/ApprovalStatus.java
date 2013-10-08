@@ -1,5 +1,5 @@
 /*
- *  $Id: PWSession.java 2013/09/28 21:28:28 masamitsu $
+ *  $Id: ApprovalStatus.java 2013/10/08 23:37:44 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,33 +26,15 @@
  *  ===============================================================================
  */
 
-package pw.core;
-
-import pw.core.accesser.PWAccesser;
+package pw.standard.item.division;
 
 /**
  * @author masamitsu
  *
  */
-public class PWSession {
-	
-	private String userId;
-	
-	private PWAccesser accesser;
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public PWAccesser getAccesser() {
-		return accesser;
-	}
-
-	public void setAccesser(PWAccesser accesser) {
-		this.accesser = accesser;
-	}
+public enum ApprovalStatus {
+	None,
+	Request,
+	Rejected,
+	Approved,
 }
