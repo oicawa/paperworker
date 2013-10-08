@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pw.core.PWField;
-import pw.core.PWField.KeyType;
 import pw.core.item.PWItem;
 
 public class PWQuery {

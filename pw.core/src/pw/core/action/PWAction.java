@@ -30,7 +30,6 @@ package pw.core.action;
 
 import pw.core.PWField;
 import pw.core.PWSession;
-import pw.core.PWField.KeyType;
 import pw.core.accesser.PWQuery;
 import pw.core.item.PWItem;
 
