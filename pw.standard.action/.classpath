@@ -3,5 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/pw.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/pw.standard.item"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

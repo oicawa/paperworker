@@ -48,8 +48,8 @@ public class Approval extends PWItem {
 	@PWFieldBasicInfo(caption = "Document ID", type = "varchar(100)", primary = true)
 	private UUID documentId;
 	
-	@PWFieldBasicInfo(caption = "Approval Order", type = "varchar(100)", primary = true)
-	private int order;
+	@PWFieldBasicInfo(caption = "Approval Order No", type = "int", primary = true)
+	private int orderNo;
 	
 	@PWFieldBasicInfo(caption = "Approver ID", type = "varchar(100)")
 	private String approverId;
@@ -71,11 +71,11 @@ public class Approval extends PWItem {
 	}
 
 	public int getOrder() {
-		return order;
+		return orderNo;
 	}
 
 	public void setOrder(int order) {
-		this.order = order;
+		this.orderNo = order;
 	}
 
 	public String getApproverId() {

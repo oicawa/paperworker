@@ -30,6 +30,8 @@ package pw.ui.command;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 
 import pw.core.PWError;
+import pw.core.PWPropertyLoader;
 import pw.core.PWSession;
 import pw.core.PWUtilities;
 import pw.core.accesser.PWAccesser;
@@ -49,6 +52,8 @@ import pw.core.action.PWAction;
 import pw.core.item.ActionSetting;
 import pw.core.item.JobSetting;
 import pw.core.item.PWItem;
+import pw.standard.action.approval.PWRequestAction;
+import pw.ui.command.operation.ApprovalRequestOperation;
 import pw.ui.command.operation.BasicAddOperation;
 import pw.ui.command.operation.BasicDeleteOperation;
 import pw.ui.command.operation.BasicDetailOperation;
@@ -225,6 +230,9 @@ public class PaperWorker implements Closeable {
 		
 		try {
 			PWOperation operation = getOperation(action);
+			if (operation == null) {
+				throw new PWError("No operation for '%s' action.", actionName);
+			}
 			operation.run(commandLine);
 		} catch (PWError e) {
 			error("*** ERROR *** %s", e.getMessage());
@@ -249,6 +257,8 @@ public class PaperWorker implements Closeable {
 				return new BasicListOperation((BasicListAction)action);
 			} else if (actionType == BasicUpdateAction.class) {
 				return new BasicUpdateOperation((BasicUpdateAction)action);
+			} else if (actionType == PWRequestAction.class) {
+				return new ApprovalRequestOperation((PWRequestAction)action);
 			} else {
 				actionType = actionType.getSuperclass();
 			}
@@ -296,6 +306,44 @@ public class PaperWorker implements Closeable {
 			throw new PWError(e, e.getMessage());
 		}
 		return input;
+	}
+	
+	public static String promptAsMultiLines(String caption) {
+		try {
+			System.out.print(caption);
+			flush();
+			
+			// Create temporary file
+			File tmpFile = File.createTempFile(caption, "tmp");
+			
+			// Get editor
+			String editor = PWPropertyLoader.getValue("command", "editor");
+			
+			// Create process
+			ProcessBuilder pb = new ProcessBuilder(editor, tmpFile.getAbsolutePath());
+			Process p = pb.start();
+			p.waitFor();
+			
+			// Read temporary file contents
+			FileInputStream stream = new FileInputStream(tmpFile);
+			@SuppressWarnings("resource")
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+			StringBuffer buffer = new StringBuffer();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				buffer.append(PWUtilities.LINE_SEPARATOR);
+				buffer.append(line);
+			}
+			
+			tmpFile.delete();
+			
+			return buffer.length() == 0 ? null : buffer.substring(PWUtilities.LINE_SEPARATOR.length());
+			
+		} catch (IOException e) {
+			throw new PWError(e, e.getMessage());
+		} catch (InterruptedException e) {
+			throw new PWError(e, e.getMessage());
+		}
 	}
 	
 	public static boolean confirm(String message, String again, String ok, String cancel) {

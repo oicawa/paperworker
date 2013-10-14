@@ -95,6 +95,9 @@ public class ActionSetting extends PWItem {
 	}
 	
 	public String[] getArgumentArray() {
+		if (arguments == null) {
+			return null;
+		}
 		return arguments.split(PWUtilities.LINE_SEPARATOR_PATTERN);
 	}
 	

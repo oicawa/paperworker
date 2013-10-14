@@ -1,5 +1,5 @@
 /*
- *  $Id: PWApprovalRequestAction.java 2013/10/09 0:32:25 masamitsu $
+ *  $Id: ApprovalRequestOperation.java 2013/10/14 20:14:15 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,54 +26,64 @@
  *  ===============================================================================
  */
 
-package pw.standard.action.approval;
+package pw.ui.command.operation;
 
 import java.util.UUID;
 
 import pw.core.PWError;
-import pw.core.accesser.PWQuery;
-import pw.core.action.BasicAddAction;
-import pw.core.action.PWAction;
-import pw.standard.item.Approval;
-import pw.standard.item.division.ApprovalStatus;
+import pw.core.PWUtilities;
+import pw.standard.action.approval.PWRequestAction;
+import pw.ui.command.PWOperation;
+import pw.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
  *
  */
-public class PWRequestAction extends PWAction {
+public class ApprovalRequestOperation implements PWOperation {
 
-	/* (non-Javadoc)
-	 * @see pw.core.action.PWAction#parseArguments(java.lang.String[])
-	 */
-	@Override
-	protected void parseArguments(String[] arguments) {
+	private PWRequestAction action;
+	
+	public ApprovalRequestOperation(PWRequestAction action) {
+		this.action = action;
 	}
-
+	
 	/* (non-Javadoc)
-	 * @see pw.core.action.PWAction#run(java.lang.Object[])
+	 * @see pw.ui.command.PWOperation#run(java.lang.String[])
 	 */
 	@Override
-	public Object run(Object... objects) {
-		if (objects.length != 2) {
-			throw new PWError("Document ID & approver IDs are required.");
+	public void run(String... arguments) {
+
+		// Target Document ID
+		String uuid = PaperWorker.prompt("Document ID  >> ");
+		UUID documentId = UUID.fromString(uuid);
+		
+		// Approver IDs
+		String lines = PaperWorker.promptAsMultiLines("Approver IDs >> ");
+		if (lines == null) {
+			throw new PWError("Approval Request requires 1 or more approver IDs.");
+		}
+		String[] approverIds = lines.split(PWUtilities.LINE_SEPARATOR);
+		if (approverIds.length == 0) {
+			throw new PWError("Approval Request requires 1 or more approver IDs.");
 		}
 		
-		UUID documentId = (UUID)objects[0];
-		String[] approverIds = (String[])objects[1];
-		PWQuery[] queries = new PWQuery[approverIds.length];
+		// Display
+		String format = "                %s";
 		for (int i = 0; i < approverIds.length; i++) {
-			Approval approval = new Approval();
-			approval.setDocumentId(documentId);
-			approval.setApproverId(approverIds[i]);
-			approval.setOrder(i);
-			approval.setStatus(i == 0 ? ApprovalStatus.Request : ApprovalStatus.None);
-			PWQuery query = BasicAddAction.getQuery(approval);
-			queries[i] = query;
+			PaperWorker.message(i == 0 ? "%s" : format, approverIds[i]);
 		}
 		
-		session.getAccesser().execute(queries);
-		return null;
+		PaperWorker.message("------------------------------");
+		if (PaperWorker.confirm("Do you request? [Y/N] >> ", "*** Input 'Y' or 'N'. ***", "Y", "N")) {
+			action.run(documentId, approverIds);
+			PaperWorker.message("");
+			PaperWorker.message("Requested.");
+		} else {
+			PaperWorker.message("");
+			PaperWorker.message("Canceled.");
+		}
+		
 	}
 
 }

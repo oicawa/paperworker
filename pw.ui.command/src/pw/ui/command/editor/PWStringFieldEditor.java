@@ -28,16 +28,8 @@
 
 package pw.ui.command.editor;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWUtilities;
-import pw.core.PWPropertyLoader;
 import pw.ui.command.PaperWorker;
 
 /**
@@ -65,35 +57,15 @@ public class PWStringFieldEditor extends PWAbstractFieldEditor {
 		
 		// Multi Line
 		PaperWorker.message(format, caption);
+		String input = PaperWorker.promptAsMultiLines(field.getName());
 		
-		try {
-			// Create temporary file
-			File tmpFile = File.createTempFile(field.getName(), "tmp");
-			
-			// Get editor
-			String editor = PWPropertyLoader.getValue("command", "editor");
-			
-			// Create process
-			ProcessBuilder pb = new ProcessBuilder(editor, tmpFile.getAbsolutePath());
-			Process p = pb.start();
-			p.waitFor();
-			
-			// Read temporary file contents
-			FileInputStream stream = new FileInputStream(tmpFile);
-			@SuppressWarnings("resource")
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			StringBuffer buffer = new StringBuffer();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				buffer.append(PWUtilities.LINE_SEPARATOR);
-				buffer.append(line);
-			}
-			return buffer.length() == 0 ? null : buffer.substring(PWUtilities.LINE_SEPARATOR.length());
-			
-		} catch (IOException e) {
-			throw new PWError(e, e.getMessage());
-		} catch (InterruptedException e) {
-			throw new PWError(e, e.getMessage());
+		// Display
+		format = String.format("%%-%ds    ", captionLength);
+		String[] lines = input.split(PWUtilities.LINE_SEPARATOR);
+		for (int i = 0; i < lines.length; i++) {
+			PaperWorker.message(i == 0 ? "%s" : format, lines[i]);
 		}
+		
+		return input;
 	}
 }

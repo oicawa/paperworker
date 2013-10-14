@@ -1,5 +1,5 @@
 /*
- *  $Id: AddAction.java 2013/09/28 1:05:04 masamitsu $
+ *  $Id: ApproverRoot.java 2013/10/14 15:55:30 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,59 +26,22 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.standard.action.approval.root;
 
 import java.util.List;
-
-import pw.core.PWField;
-import pw.core.accesser.PWQuery;
-import pw.core.item.PWItem;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicAddAction extends AbstractBasicAction {
+public abstract class ApproverRoot {
 	
-	public BasicAddAction() {
-		super();
+	private String creatorId;
+	
+	public ApproverRoot(String creatorId) {
+		this.creatorId = creatorId;
 	}
 	
-	/* (non-Javadoc)
-	 * @see pw.core.PWAction#run()
-	 */
-	@Override
-	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item);
-		session.getAccesser().execute(query);
-        return null;
-	}
+	public abstract List<String> getApprovers();
 
-	public static PWQuery getQuery(PWItem item) {
-    	List<PWField> fields = PWItem.getFields(item.getClass());
-    	
-    	// Create the fields part of query
-    	StringBuffer fieldsBuffer = new StringBuffer();
-    	for (int i = 0; i < fields.size(); i++) {
-    		fieldsBuffer.append(PWQuery.COMMA);
-    		fieldsBuffer.append("?");
-    	}
-    	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
-    	
-    	// Create all query
-    	String allQuery = String.format("insert into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
-    	
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-    	for (PWField field : fields) {
-    		Object keyValue = field.getValue(item);
-        	query.addValue(keyValue);
-    	}
-    	
-    	return query;
-	}
 }
