@@ -125,4 +125,12 @@ public class PWUtilities {
     	PWQuery query = PWQuery.getCreateTableQuery(itemType);
     	accesser.execute(query);
 	}
+
+	/**
+	 * @param value
+	 * @return
+	 */
+	public static boolean isEnum(Object value) {
+		return value != null && value.getClass().isEnum();
+	}
 }

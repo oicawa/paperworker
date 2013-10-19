@@ -26,11 +26,12 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.standard.action.basic;
 
 import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWUtilities;
+import pw.core.action.PWAction;
 import pw.core.item.PWItem;
 
 /**

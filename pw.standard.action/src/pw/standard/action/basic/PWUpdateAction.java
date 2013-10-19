@@ -26,7 +26,7 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.standard.action.basic;
 
 import java.util.List;
 
@@ -39,9 +39,9 @@ import pw.core.item.PWItem;
  * @author masamitsu
  *
  */
-public class BasicUpdateAction extends AbstractBasicAction {
+public class PWUpdateAction extends AbstractBasicAction {
 	
-	public BasicUpdateAction() {
+	public PWUpdateAction() {
 		super();
 	}
 

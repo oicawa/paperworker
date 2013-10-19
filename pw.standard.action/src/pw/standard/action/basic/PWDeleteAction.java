@@ -1,5 +1,5 @@
 /*
- *  $Id: DetailAction.java 2013/09/28 2:04:11 masamitsu $
+ *  $Id: DeleteAction.java 2013/09/28 11:45:50 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,13 +26,12 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.standard.action.basic;
 
 import java.util.List;
 
 import pw.core.PWError;
 import pw.core.PWField;
-import pw.core.accesser.PWAfterSqlQuery;
 import pw.core.accesser.PWQuery;
 import pw.core.item.PWItem;
 
@@ -40,30 +39,24 @@ import pw.core.item.PWItem;
  * @author masamitsu
  *
  */
-public class BasicDetailAction extends AbstractBasicAction {
+public class PWDeleteAction extends AbstractBasicAction {
 	
-	public BasicDetailAction() {
+	public PWDeleteAction() {
 		super();
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see pw.core.PWAction#run(java.lang.Object[])
 	 */
 	@Override
 	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		
 		PWQuery query = getQuery(itemType, keyType, objects);
-		PWAfterSqlQuery afterQuery = new PWAfterSqlQuery(itemType);
-		session.getAccesser().select(query, afterQuery);
-		List<Object> list = afterQuery.getItemList();
-		return list.size() == 0 ? null : list.get(0);
+		session.getAccesser().execute(query);
+		return null;
 	}
-	
+
 	public static PWQuery getQuery(Class<? extends PWItem> itemType, PWField.KeyType keyType, Object... keyValues) {
-		// Get key fields
+		// Check
 		List<PWField> keyFields = PWItem.getFields(itemType, keyType);
 		if (keyFields.size() == 0) {
 			throw new PWError("No '%s' key fields.", keyType.toString());
@@ -73,8 +66,8 @@ public class BasicDetailAction extends AbstractBasicAction {
 			throw new PWError("The number of key values is different from the number of '%s' key fields.", keyType.toString());
 		}
 		
-		// Create all query
-		String allQuery = String.format("select * from %s where %s;",
+    	// Create all query
+		String allQuery = String.format("delete from %s where %s;",
 				PWQuery.getTableName(itemType),
 				getWhereQueryByKeys(itemType, keyType));
 		
@@ -83,7 +76,6 @@ public class BasicDetailAction extends AbstractBasicAction {
     	for (Object keyValue : keyValues) {
         	query.addValue(keyValue);
     	}
-		
-		return query;
+    	return query;
 	}
 }

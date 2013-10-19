@@ -1,5 +1,5 @@
 /*
- *  $Id: DateTimeInfo.java 2013/09/21 3:03:36 Masamitsu Oikawa $
+ *  $Id: BasicAddOperation.java 2013/09/29 19:36:41 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,15 +26,52 @@
  *  ===============================================================================
  */
 
-package pw.core.annotation;
+package pw.ui.command.operation.basic;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.List;
 
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface DateTimeInfo {
-	String format() default "yyyy-MM-dd HH:mm:ss";
+import pw.core.PWUtilities;
+import pw.core.item.PWItem;
+import pw.standard.action.basic.AbstractBasicAction;
+import pw.ui.command.PWFieldEditor;
+import pw.ui.command.PaperWorker;
+
+/**
+ * @author masamitsu
+ *
+ */
+public class AddOperation extends AbstractBasicOperation {
+	
+	public AddOperation(AbstractBasicAction action) {
+		super(action);
+	}
+
+	/* (non-Javadoc)
+	 * @see pw.core.ui.command.PWBasicOperation#run(java.lang.String[])
+	 */
+	@Override
+	public void run(String... arguments) {
+		PWItem item = (PWItem) PWUtilities.createInstance(action.getItemType());
+		
+		PaperWorker.message("<< ADD >>");
+		for (PWFieldEditor editor : getFieldEditors()) {
+			editor.print(item, " >> ");
+		}
+		
+		PaperWorker.message("------------------------------");
+		if (PaperWorker.confirm("Do you save? [Y/N] >> ", "*** Input 'Y' or 'N'. ***", "Y", "N")) {
+			action.run(item);
+			
+			PaperWorker.message("");
+			PaperWorker.message("Saved.");
+		} else {
+			PaperWorker.message("");
+			PaperWorker.message("Canceled.");
+		}
+	}
+	
+	public List<PWFieldEditor> getFieldEditors() {
+		return getDefaultFieldEditors(action.getItemType());
+	}
+
 }

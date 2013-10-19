@@ -26,27 +26,27 @@
  *  ===============================================================================
  */
 
-package pw.ui.command.operation;
+package pw.ui.command.operation.basic;
 
 import java.util.List;
 
 import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWUtilities;
-import pw.core.action.AbstractBasicAction;
 import pw.core.item.PWItem;
+import pw.standard.action.basic.AbstractBasicAction;
 import pw.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicDetailOperation extends AbstractBasicOperation {
+public class DetailOperation extends AbstractBasicOperation {
 
 	/**
 	 * @param itemType
 	 */
-	public BasicDetailOperation(AbstractBasicAction action) {
+	public DetailOperation(AbstractBasicAction action) {
 		super(action);
 	}
 
@@ -68,7 +68,7 @@ public class BasicDetailOperation extends AbstractBasicOperation {
 		if (keyFields.size() != keyValues.length) {
 			throw new PWError("The number of key values is different from the number of '%s' key fields.", action.getKeyType().toString());
 		}
-			
+		
 		PWItem item = (PWItem)action.run(keyValues);
 		if (item == null) {
 			PaperWorker.message("Not found. [KeyType: '%s', %s]", action.getKeyType().toString(), getKeyParameters(keyFields, keyValues));
@@ -86,6 +86,19 @@ public class BasicDetailOperation extends AbstractBasicOperation {
 		String caption = field.getCaption();
 		String format = String.format("%%-%ds : %%s", captionLength);
 		String value = field.toString(field.getValue(item));
-		PaperWorker.message(format, caption, value);
+		if (value == null) {
+			PaperWorker.message(format, caption, value);
+			return;
+		}
+		
+		// Multi lines
+		String[] lines = value.split(PWUtilities.LINE_SEPARATOR);
+		String headFormat = String.format("%%-%ds : ", captionLength);
+		String restFormat = String.format("%%-%ds   ", captionLength);
+		String captionLabel = String.format(headFormat, caption);
+		String paddingLabel = String.format(restFormat, "");
+		for (int i = 0; i < lines.length; i++) {
+			PaperWorker.message((i == 0 ? captionLabel : paddingLabel) + lines[i]);
+		}
 	}
 }

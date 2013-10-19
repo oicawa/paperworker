@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import pw.core.PWUtilities;
-import pw.core.annotation.DateTimeInfo;
+import pw.core.annotation.PWDateTimeInfo;
 import pw.core.annotation.PWFieldBasicInfo;
 import pw.core.annotation.PWItemBasicInfo;
 import pw.core.item.PWDocumentItem;
@@ -52,11 +52,11 @@ public class Holiday extends PWItem implements PWDocumentItem {
 	private String creatorId;
 	
 	@PWFieldBasicInfo(caption = "Start Date", type = "datetime", unique = true)
-	@DateTimeInfo(format = "yyyy-MM-dd")
+	@PWDateTimeInfo(format = "yyyy-MM-dd")
 	private Date startDate;
 	
 	@PWFieldBasicInfo(caption = "End Date", type = "datetime", unique = true)
-	@DateTimeInfo(format = "yyyy-MM-dd")
+	@PWDateTimeInfo(format = "yyyy-MM-dd")
 	private Date endDate;
 	
 	@PWFieldBasicInfo(caption = "Division ID", type = "varchar(100)")
@@ -66,7 +66,7 @@ public class Holiday extends PWItem implements PWDocumentItem {
 	private String reason;
 	
 	@PWFieldBasicInfo(caption = "Submitted Date", type = "datetime")
-	@DateTimeInfo(format = "yyyy-MM-dd")
+	@PWDateTimeInfo(format = "yyyy-MM-dd")
 	private Date submittedDate;
 	
 	public String getCreatorId() {

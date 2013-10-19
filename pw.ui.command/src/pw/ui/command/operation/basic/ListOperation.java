@@ -1,5 +1,5 @@
 /*
- *  $Id: DeleteAction.java 2013/09/28 11:45:50 masamitsu $
+ *  $Id: BasicListOperation.java 2013/09/29 20:26:26 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,56 +26,56 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.ui.command.operation.basic;
 
 import java.util.List;
 
-import pw.core.PWError;
 import pw.core.PWField;
-import pw.core.accesser.PWQuery;
 import pw.core.item.PWItem;
+import pw.standard.action.basic.AbstractBasicAction;
+import pw.ui.command.PaperWorker;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicDeleteAction extends AbstractBasicAction {
-	
-	public BasicDeleteAction() {
-		super();
-	}
-	
-	/* (non-Javadoc)
-	 * @see pw.core.PWAction#run(java.lang.Object[])
+public class ListOperation extends AbstractBasicOperation {
+
+	/**
+	 * @param itemType
 	 */
-	@Override
-	public Object run(Object... objects) {
-		PWQuery query = getQuery(itemType, keyType, objects);
-		session.getAccesser().execute(query);
-		return null;
+	public ListOperation(AbstractBasicAction action) {
+		super(action);
 	}
 
-	public static PWQuery getQuery(Class<? extends PWItem> itemType, PWField.KeyType keyType, Object... keyValues) {
-		// Check
-		List<PWField> keyFields = PWItem.getFields(itemType, keyType);
-		if (keyFields.size() == 0) {
-			throw new PWError("No '%s' key fields.", keyType.toString());
+	/* (non-Javadoc)
+	 * @see pw.core.ui.command.PWBasicOperation#run(java.lang.String[])
+	 */
+	@Override
+	public void run(String... arguments) {
+//		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(keyFields, ACTION_ARG_START_INDEX, arguments);
+//		if (keyFields.size() != keyValues.length) {
+//			throw new PWError("The number of key values is different from the number of '%s' key fields.", action.getKeyType().toString());
+//		}
+		
+		@SuppressWarnings("unchecked")
+		List<Object> objects = (List<Object>)action.run();
+		for (Object object : objects) {
+			PWItem item = (PWItem)object;
+			printItem(item);
 		}
-		
-		if (keyFields.size() != keyValues.length) {
-			throw new PWError("The number of key values is different from the number of '%s' key fields.", keyType.toString());
-		}
-		
-    	// Create all query
-		String allQuery = String.format("delete from %s where %s;",
-				PWQuery.getTableName(itemType),
-				getWhereQueryByKeys(itemType, keyType));
-		
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-    	for (Object keyValue : keyValues) {
-        	query.addValue(keyValue);
-    	}
-    	return query;
 	}
+	
+	protected void printItem(PWItem item) {
+		List<PWField> fields = PWItem.getFields(item.getClass(), action.getKeyType());
+		StringBuffer buffer = new StringBuffer();
+		final String TAB = "\t";
+		for (PWField field : fields) {
+			String value = PWItem.getValueAsString(item, field.getName());
+			buffer.append(TAB);
+			buffer.append(value);
+		}
+		PaperWorker.message(buffer.substring(TAB.length()));
+	}
+
 }

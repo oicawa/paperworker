@@ -34,7 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-import pw.core.annotation.DateTimeInfo;
+import pw.core.annotation.PWDateTimeInfo;
 import pw.core.annotation.PWFieldBasicInfo;
 import pw.core.item.PWItem;
 
@@ -112,7 +112,7 @@ public class PWField {
 	}
 
 	public String getDateTimeFormat() {
-		DateTimeInfo datetimeInfo = field.getAnnotation(DateTimeInfo.class);
+		PWDateTimeInfo datetimeInfo = field.getAnnotation(PWDateTimeInfo.class);
 		return datetimeInfo == null ? null : datetimeInfo.format();
 	}
 
@@ -141,7 +141,7 @@ public class PWField {
 	
 	private Object parseAsDate(String input) {
 		// TODO: should this field be checked 'Date' field?
-		DateTimeInfo dateTimeInfo = field.getAnnotation(DateTimeInfo.class);
+		PWDateTimeInfo dateTimeInfo = field.getAnnotation(PWDateTimeInfo.class);
 		String format = dateTimeInfo.format();
 		SimpleDateFormat formatter = new SimpleDateFormat(format);
 		try {

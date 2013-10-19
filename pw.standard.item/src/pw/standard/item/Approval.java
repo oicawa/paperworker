@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import pw.core.PWUtilities;
-import pw.core.annotation.DateTimeInfo;
+import pw.core.annotation.PWDateTimeInfo;
 import pw.core.annotation.PWFieldBasicInfo;
 import pw.core.annotation.PWItemBasicInfo;
 import pw.core.item.PWItem;
@@ -45,17 +45,20 @@ import pw.standard.item.division.ApprovalStatus;
 @PWItemBasicInfo(caption = "Approvals", tableName = "Approvals")
 public class Approval extends PWItem {
 	
-	@PWFieldBasicInfo(caption = "Document ID", type = "varchar(100)", primary = true)
+	@PWFieldBasicInfo(caption = "Document ID", type = "varchar(100)", primary = true, unique = true)
 	private UUID documentId;
 	
-	@PWFieldBasicInfo(caption = "Approval Order No", type = "int", primary = true)
-	private int orderNo;
-	
-	@PWFieldBasicInfo(caption = "Approver ID", type = "varchar(100)")
+	@PWFieldBasicInfo(caption = "Approver ID", type = "varchar(100)", primary = true)
 	private String approverId;
 	
+	@PWFieldBasicInfo(caption = "Approval Order No", type = "int", unique = true)
+	private int orderNo;
+	
+	@PWFieldBasicInfo(caption = "Table Name", type = "varchar(100)")
+	private String tableName;
+	
 	@PWFieldBasicInfo(caption = "Judged DateTime", type = "datetime")
-	@DateTimeInfo(format = "yyyy-MM-dd HH:mm:ss")
+	@PWDateTimeInfo(format = "yyyy-MM-dd HH:mm:ss")
 	private Date judgedDateTime;
 	
 	@PWFieldBasicInfo(caption = "Approver ID", type = "varchar(100)")
@@ -70,20 +73,28 @@ public class Approval extends PWItem {
 		this.documentId = documentId;
 	}
 
-	public int getOrder() {
-		return orderNo;
-	}
-
-	public void setOrder(int order) {
-		this.orderNo = order;
-	}
-
 	public String getApproverId() {
 		return approverId;
 	}
 
 	public void setApproverId(String approverId) {
 		this.approverId = approverId;
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	public int getOrderNo() {
+		return orderNo;
+	}
+
+	public void setOrderNo(int orderNo) {
+		this.orderNo = orderNo;
 	}
 
 	public Date getJudgedDateTime() {

@@ -43,22 +43,24 @@ import pw.core.PWPropertyLoader;
 import pw.core.PWSession;
 import pw.core.PWUtilities;
 import pw.core.accesser.PWAccesser;
-import pw.core.action.BasicAddAction;
-import pw.core.action.BasicDeleteAction;
-import pw.core.action.BasicDetailAction;
-import pw.core.action.BasicListAction;
-import pw.core.action.BasicUpdateAction;
 import pw.core.action.PWAction;
 import pw.core.item.ActionSetting;
 import pw.core.item.JobSetting;
 import pw.core.item.PWItem;
+import pw.standard.action.approval.PWChangeStatusAction;
 import pw.standard.action.approval.PWRequestAction;
-import pw.ui.command.operation.ApprovalRequestOperation;
-import pw.ui.command.operation.BasicAddOperation;
-import pw.ui.command.operation.BasicDeleteOperation;
-import pw.ui.command.operation.BasicDetailOperation;
-import pw.ui.command.operation.BasicListOperation;
-import pw.ui.command.operation.BasicUpdateOperation;
+import pw.standard.action.basic.PWAddAction;
+import pw.standard.action.basic.PWDeleteAction;
+import pw.standard.action.basic.PWDetailAction;
+import pw.standard.action.basic.PWListAction;
+import pw.standard.action.basic.PWUpdateAction;
+import pw.ui.command.operation.approval.ChangeStatusOperation;
+import pw.ui.command.operation.approval.RequestOperation;
+import pw.ui.command.operation.basic.AddOperation;
+import pw.ui.command.operation.basic.DeleteOperation;
+import pw.ui.command.operation.basic.DetailOperation;
+import pw.ui.command.operation.basic.ListOperation;
+import pw.ui.command.operation.basic.UpdateOperation;
 
 /**
  * @author masamitsu
@@ -72,21 +74,12 @@ public class PaperWorker implements Closeable {
 	private PWSession session = new PWSession();
 	Jobs jobs;
 	
-	public PaperWorker(String userId) {
-		session.setAccesser(PWAccesser.getAccesser(userId));
-		session.setUserId(userId);
-		jobs = new Jobs(session);
+	public PaperWorker() {
 	}
 	
 	public static void main(String[] args) {
-		
-		String userId = "";
-		if (args.length == 1) {
-			userId = args[1];
-		}
-
 		try {
-			PaperWorker paperworker = new PaperWorker(userId);
+			PaperWorker paperworker = new PaperWorker();
 			try {
 				paperworker.run();
 			} catch (Exception e) {
@@ -109,8 +102,25 @@ public class PaperWorker implements Closeable {
 		message("PaperWorker");
 		message("==================================================");
 		flush();
+		
 		while (true) {
-			String input = prompt("> ");
+			String userId = prompt("Login Acount > ");
+			if (userId.equals("")) {
+				continue;
+			}
+			session.setAccesser(PWAccesser.getAccesser(userId));
+			session.setUserId(userId);
+			jobs = new Jobs(session);
+			
+			message("");
+			message("Welcome to PaperWorker system, %s", session.getUserId());
+			message("");
+			
+			break;
+		}
+		
+		while (true) {
+			String input = prompt("%s > ", session.getUserId());
 			
 			if (input.equals("")) {
 				continue;
@@ -218,7 +228,8 @@ public class PaperWorker implements Closeable {
 		PWAction detailAction = jobs.getAction(Jobs.DETAILACTION);
 		ActionSetting setting = (ActionSetting)detailAction.run(commandName, actionName);
 		if (setting == null) {
-			throw new PWError("No such action [name: %s]", actionName);
+			error("No such action [name: %s]", actionName);
+			return;
 		}
 		
 		// Create action
@@ -231,7 +242,8 @@ public class PaperWorker implements Closeable {
 		try {
 			PWOperation operation = getOperation(action);
 			if (operation == null) {
-				throw new PWError("No operation for '%s' action.", actionName);
+				error("No operation for '%s' action.", actionName);
+				return;
 			}
 			operation.run(commandLine);
 		} catch (PWError e) {
@@ -247,18 +259,20 @@ public class PaperWorker implements Closeable {
 	private PWOperation getOperation(PWAction action) {
 		Class<?> actionType = action.getClass();
 		while (actionType != null) {
-			if (actionType == BasicAddAction.class) {
-				return new BasicAddOperation((BasicAddAction)action);
-			} else if (actionType == BasicDeleteAction.class) {
-				return new BasicDeleteOperation((BasicDeleteAction)action);
-			} else if (actionType == BasicDetailAction.class) {
-				return new BasicDetailOperation((BasicDetailAction)action);
-			} else if (actionType == BasicListAction.class) {
-				return new BasicListOperation((BasicListAction)action);
-			} else if (actionType == BasicUpdateAction.class) {
-				return new BasicUpdateOperation((BasicUpdateAction)action);
+			if (actionType == PWAddAction.class) {
+				return new AddOperation((PWAddAction)action);
+			} else if (actionType == PWDeleteAction.class) {
+				return new DeleteOperation((PWDeleteAction)action);
+			} else if (actionType == PWDetailAction.class) {
+				return new DetailOperation((PWDetailAction)action);
+			} else if (actionType == PWListAction.class) {
+				return new ListOperation((PWListAction)action);
+			} else if (actionType == PWUpdateAction.class) {
+				return new UpdateOperation((PWUpdateAction)action);
 			} else if (actionType == PWRequestAction.class) {
-				return new ApprovalRequestOperation((PWRequestAction)action);
+				return new RequestOperation((PWRequestAction)action);
+			} else if (actionType == PWChangeStatusAction.class) {
+				return new ChangeStatusOperation((PWChangeStatusAction)action);
 			} else {
 				actionType = actionType.getSuperclass();
 			}
@@ -310,9 +324,6 @@ public class PaperWorker implements Closeable {
 	
 	public static String promptAsMultiLines(String caption) {
 		try {
-			System.out.print(caption);
-			flush();
-			
 			// Create temporary file
 			File tmpFile = File.createTempFile(caption, "tmp");
 			

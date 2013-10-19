@@ -32,7 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import pw.core.PWUtilities;
-import pw.core.annotation.DateTimeInfo;
+import pw.core.annotation.PWDateTimeInfo;
 import pw.core.annotation.PWFieldBasicInfo;
 import pw.core.annotation.PWItemBasicInfo;
 import pw.core.item.PWItem;
@@ -60,11 +60,11 @@ public class Member extends PWItem {
 	private String firstKana;
 	
 	@PWFieldBasicInfo(caption = "Birthday", type = "datetime")
-	@DateTimeInfo(format = "yyyy-MM-dd")
+	@PWDateTimeInfo(format = "yyyy-MM-dd")
 	private Date birthday;
 	
 	@PWFieldBasicInfo(caption = "Entered Date", type = "datetime")
-	@DateTimeInfo(format = "yyyy-MM-dd")
+	@PWDateTimeInfo(format = "yyyy-MM-dd")
 	private Date enteredDate;
 	
 	@PWFieldBasicInfo(caption = "Gender", type = "varchar(100)")

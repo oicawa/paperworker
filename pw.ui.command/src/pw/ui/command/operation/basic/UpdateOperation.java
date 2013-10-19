@@ -26,15 +26,15 @@
  *  ===============================================================================
  */
 
-package pw.ui.command.operation;
+package pw.ui.command.operation.basic;
 
 import java.util.List;
 
 import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWUtilities;
-import pw.core.action.AbstractBasicAction;
 import pw.core.item.PWItem;
+import pw.standard.action.basic.AbstractBasicAction;
 import pw.ui.command.PWFieldEditor;
 import pw.ui.command.PaperWorker;
 
@@ -42,12 +42,12 @@ import pw.ui.command.PaperWorker;
  * @author masamitsu
  *
  */
-public class BasicUpdateOperation extends AbstractBasicOperation {
+public class UpdateOperation extends AbstractBasicOperation {
 
 	/**
 	 * @param itemType
 	 */
-	public BasicUpdateOperation(AbstractBasicAction action) {
+	public UpdateOperation(AbstractBasicAction action) {
 		super(action);
 	}
 

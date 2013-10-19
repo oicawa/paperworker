@@ -35,11 +35,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 import pw.core.PWError;
 import pw.core.PWPropertyLoader;
+import pw.core.PWUtilities;
 
 public class PWAccesser implements Closeable {
 	
@@ -122,7 +125,7 @@ public class PWAccesser implements Closeable {
 			st = connection.prepareStatement(query.getQuery());
 			for (int i = 0; i < query.getValues().size(); i++) {
 				Object value = query.getValues().get(i);
-				st.setObject(i + 1, value);
+				st.setObject(i + 1, PWUtilities.isEnum(value) ? value.toString() : value);
 			}
 			try {
 		        ResultSet rs = st.executeQuery();
@@ -143,28 +146,27 @@ public class PWAccesser implements Closeable {
 		}
 	}
 	
-	public void execute(PWQuery... queries) {
+	public List<Integer> execute(PWQuery... queries) {
 		try {
+			List<Integer> counts = new ArrayList<Integer>();
 			for (PWQuery query : queries) {
 				PreparedStatement st;
 				st = connection.prepareStatement(query.getQuery());
 	            try {
 	    			for (int i = 0; i < query.getValues().size(); i++) {
 	    				Object value = query.getValues().get(i);
-	    				if (value != null && value.getClass().isEnum()) {
-		    				st.setObject(i + 1, value.toString());
-	    				} else {
-		    				st.setObject(i + 1, value);
-	    				}
+	    				st.setObject(i + 1, PWUtilities.isEnum(value) ? value.toString() : value);
 	    			}
 					st.execute();
 				} catch (SQLException e) {
 					throw new PWError(e, e.getMessage());
 				} finally {
+					counts.add(st.getUpdateCount());
 			        st.close();
 				}
 			}
 	        connection.commit();
+	        return counts;
 		} catch (SQLException e) {
 			throw new PWError(e, e.getMessage());
 		}

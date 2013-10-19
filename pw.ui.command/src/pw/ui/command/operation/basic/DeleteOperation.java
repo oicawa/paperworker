@@ -1,5 +1,5 @@
 /*
- *  $Id: ApprovalRequestOperation.java 2013/10/14 20:14:15 masamitsu $
+ *  $Id: BasicDeleteOperation.java 2013/09/29 20:25:10 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,64 +26,49 @@
  *  ===============================================================================
  */
 
-package pw.ui.command.operation;
+package pw.ui.command.operation.basic;
 
-import java.util.UUID;
+import java.util.List;
 
 import pw.core.PWError;
+import pw.core.PWField;
 import pw.core.PWUtilities;
-import pw.standard.action.approval.PWRequestAction;
-import pw.ui.command.PWOperation;
-import pw.ui.command.PaperWorker;
+import pw.core.item.PWItem;
+import pw.standard.action.basic.AbstractBasicAction;
 
 /**
  * @author masamitsu
  *
  */
-public class ApprovalRequestOperation implements PWOperation {
+public class DeleteOperation extends AbstractBasicOperation {
 
-	private PWRequestAction action;
-	
-	public ApprovalRequestOperation(PWRequestAction action) {
-		this.action = action;
+	/**
+	 * @param itemType
+	 */
+	public DeleteOperation(AbstractBasicAction action) {
+		super(action);
 	}
-	
+
 	/* (non-Javadoc)
-	 * @see pw.ui.command.PWOperation#run(java.lang.String[])
+	 * @see pw.core.ui.command.PWBasicOperation#run(java.lang.String[])
 	 */
 	@Override
 	public void run(String... arguments) {
-
-		// Target Document ID
-		String uuid = PaperWorker.prompt("Document ID  >> ");
-		UUID documentId = UUID.fromString(uuid);
-		
-		// Approver IDs
-		String lines = PaperWorker.promptAsMultiLines("Approver IDs >> ");
-		if (lines == null) {
-			throw new PWError("Approval Request requires 1 or more approver IDs.");
-		}
-		String[] approverIds = lines.split(PWUtilities.LINE_SEPARATOR);
-		if (approverIds.length == 0) {
-			throw new PWError("Approval Request requires 1 or more approver IDs.");
+		if (arguments.length < 3) {
+			throw new PWError("require key field values.");
 		}
 		
-		// Display
-		String format = "                %s";
-		for (int i = 0; i < approverIds.length; i++) {
-			PaperWorker.message(i == 0 ? "%s" : format, approverIds[i]);
+		List<PWField> keyFields = PWItem.getFields(action.getItemType(), action.getKeyType());
+		if (keyFields.size() == 0) {
+			throw new PWError("No '%s' key fields.", action.getKeyType().toString());
 		}
 		
-		PaperWorker.message("------------------------------");
-		if (PaperWorker.confirm("Do you request? [Y/N] >> ", "*** Input 'Y' or 'N'. ***", "Y", "N")) {
-			action.run(documentId, approverIds);
-			PaperWorker.message("");
-			PaperWorker.message("Requested.");
-		} else {
-			PaperWorker.message("");
-			PaperWorker.message("Canceled.");
+		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(keyFields, ACTION_ARG_START_INDEX, arguments);
+		if (keyFields.size() != keyValues.length) {
+			throw new PWError("The number of key values is different from the number of '%s' key fields.", action.getKeyType().toString());
 		}
 		
+		action.run(keyValues);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- *  $Id: ListAction.java 2013/09/28 12:32:12 masamitsu $
+ *  $Id: AddAction.java 2013/09/28 1:05:04 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,11 +26,11 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.standard.action.basic;
 
-import pw.core.PWError;
+import java.util.List;
+
 import pw.core.PWField;
-import pw.core.accesser.PWAfterSqlQuery;
 import pw.core.accesser.PWQuery;
 import pw.core.item.PWItem;
 
@@ -38,60 +38,47 @@ import pw.core.item.PWItem;
  * @author masamitsu
  *
  */
-public class BasicListAction extends AbstractBasicAction {
+public class PWAddAction extends AbstractBasicAction {
 	
-	public BasicListAction() {
+	public PWAddAction() {
 		super();
 	}
 	
 	/* (non-Javadoc)
-	 * @see pw.core.PWAction#run(java.lang.Object[])
+	 * @see pw.core.PWAction#run()
 	 */
 	@Override
 	public Object run(Object... objects) {
-		PWQuery query;
-		switch (objects.length) {
-		case 0:
-			query = getQuery(itemType);
-			break;
-		case 1:
-			PWItem item = (PWItem)objects[0];
-			query = getQuery(itemType, item);
-			break;
-		default:
-			throw new PWError("Illegal argument counts");
-		}
-		
-		PWAfterSqlQuery afterQuery = new PWAfterSqlQuery(itemType);
-		session.getAccesser().select(query, afterQuery);
-		return afterQuery.getItemList();
+		assert(session != null);
+		assert(objects.length == 1);
+		assert(objects[0] != null);
+		PWItem item = (PWItem)objects[0];
+		PWQuery query = getQuery(item);
+		session.getAccesser().execute(query);
+        return null;
 	}
-	
-	public static PWQuery getQuery(Class<? extends PWItem> itemType) {
-		// Create all query
-		String allQuery = String.format("select * from %s;",
-				PWQuery.getTableName(itemType));
-		
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-		return query;
-	}
-	
-	public static PWQuery getQuery(Class<? extends PWItem> itemType, PWItem item) {
-		// Create all query
-		String allQuery = String.format("select * from %s where %s;",
-				PWQuery.getTableName(itemType),
-				getWhereQuery(itemType, item));
-		
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-    	for (PWField field : PWItem.getFields(itemType)) {
-    		Object value = field.getValue(item);
-    		if (value == null) {
-    			continue;
-    		}
-    		query.addValue(value);
+
+	public static PWQuery getQuery(PWItem item) {
+    	List<PWField> fields = PWItem.getFields(item.getClass());
+    	
+    	// Create the fields part of query
+    	StringBuffer fieldsBuffer = new StringBuffer();
+    	for (int i = 0; i < fields.size(); i++) {
+    		fieldsBuffer.append(PWQuery.COMMA);
+    		fieldsBuffer.append("?");
     	}
-		return query;
+    	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
+    	
+    	// Create all query
+    	String allQuery = String.format("insert into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
+    	
+    	// Create PWQuery
+    	PWQuery query = new PWQuery(allQuery);
+    	for (PWField field : fields) {
+    		Object keyValue = field.getValue(item);
+        	query.addValue(keyValue);
+    	}
+    	
+    	return query;
 	}
 }

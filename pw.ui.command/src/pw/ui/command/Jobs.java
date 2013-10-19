@@ -33,14 +33,14 @@ import java.util.HashMap;
 
 import pw.core.PWField;
 import pw.core.PWSession;
-import pw.core.action.BasicAddAction;
-import pw.core.action.BasicDeleteAction;
-import pw.core.action.BasicDetailAction;
-import pw.core.action.BasicListAction;
-import pw.core.action.BasicUpdateAction;
 import pw.core.action.PWAction;
 import pw.core.item.ActionSetting;
 import pw.core.item.JobSetting;
+import pw.standard.action.basic.PWAddAction;
+import pw.standard.action.basic.PWDeleteAction;
+import pw.standard.action.basic.PWDetailAction;
+import pw.standard.action.basic.PWListAction;
+import pw.standard.action.basic.PWUpdateAction;
 
 /**
  * @author masamitsu
@@ -72,16 +72,16 @@ public class Jobs {
 		String jobSettingClassPath = JobSetting.class.getName();
 		String actionSettingClassPath = ActionSetting.class.getName();
 		String keyType = PWField.KeyType.Primary.toString();
-		registAction(ADDJOB, new BasicAddAction(), jobSettingClassPath, keyType);
-		registAction(UPDATEJOB, new BasicUpdateAction(), jobSettingClassPath, keyType);
-		registAction(DELETEJOB, new BasicDeleteAction(), jobSettingClassPath, keyType);
-		registAction(DETAILJOB, new BasicDetailAction(), jobSettingClassPath, keyType);
-		registAction(LISTJOB, new BasicListAction(), jobSettingClassPath, keyType);
-		registAction(ADDACTION, new BasicAddAction(), actionSettingClassPath, keyType);
-		registAction(UPDATEACTION, new BasicUpdateAction(), actionSettingClassPath, keyType);
-		registAction(DELETEACTION, new BasicDeleteAction(), actionSettingClassPath, keyType);
-		registAction(DETAILACTION, new BasicDetailAction(), actionSettingClassPath, keyType);
-		registAction(LISTACTION, new BasicListAction(), actionSettingClassPath, keyType);
+		registAction(ADDJOB, new PWAddAction(), jobSettingClassPath, keyType);
+		registAction(UPDATEJOB, new PWUpdateAction(), jobSettingClassPath, keyType);
+		registAction(DELETEJOB, new PWDeleteAction(), jobSettingClassPath, keyType);
+		registAction(DETAILJOB, new PWDetailAction(), jobSettingClassPath, keyType);
+		registAction(LISTJOB, new PWListAction(), jobSettingClassPath, keyType);
+		registAction(ADDACTION, new PWAddAction(), actionSettingClassPath, keyType);
+		registAction(UPDATEACTION, new PWUpdateAction(), actionSettingClassPath, keyType);
+		registAction(DELETEACTION, new PWDeleteAction(), actionSettingClassPath, keyType);
+		registAction(DETAILACTION, new PWDetailAction(), actionSettingClassPath, keyType);
+		registAction(LISTACTION, new PWListAction(), actionSettingClassPath, keyType);
 	}
 	
 	public void registAction(String name, PWAction action, String... arguments) {

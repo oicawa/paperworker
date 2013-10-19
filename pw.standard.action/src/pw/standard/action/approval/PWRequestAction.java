@@ -31,9 +31,11 @@ package pw.standard.action.approval;
 import java.util.UUID;
 
 import pw.core.PWError;
+import pw.core.PWUtilities;
 import pw.core.accesser.PWQuery;
-import pw.core.action.BasicAddAction;
 import pw.core.action.PWAction;
+import pw.core.item.PWItem;
+import pw.standard.action.basic.PWAddAction;
 import pw.standard.item.Approval;
 import pw.standard.item.division.ApprovalStatus;
 
@@ -43,11 +45,21 @@ import pw.standard.item.division.ApprovalStatus;
  */
 public class PWRequestAction extends PWAction {
 
+	private String tableName;
+	
 	/* (non-Javadoc)
 	 * @see pw.core.action.PWAction#parseArguments(java.lang.String[])
 	 */
 	@Override
 	protected void parseArguments(String[] arguments) {
+		if (arguments == null || arguments.length != 1) {
+			throw new PWError("%s requires a target bean classpath.", this.getClass().getName());
+		}
+		
+		String classPath = arguments[0];
+		@SuppressWarnings("unchecked")
+		Class<? extends PWItem> itemType = (Class<? extends PWItem>)PWUtilities.getClass(classPath);
+		tableName = PWItem.getTableName(itemType);
 	}
 
 	/* (non-Javadoc)
@@ -66,9 +78,10 @@ public class PWRequestAction extends PWAction {
 			Approval approval = new Approval();
 			approval.setDocumentId(documentId);
 			approval.setApproverId(approverIds[i]);
-			approval.setOrder(i);
+			approval.setTableName(tableName);
+			approval.setOrderNo(i);
 			approval.setStatus(i == 0 ? ApprovalStatus.Request : ApprovalStatus.None);
-			PWQuery query = BasicAddAction.getQuery(approval);
+			PWQuery query = PWAddAction.getQuery(approval);
 			queries[i] = query;
 		}
 		

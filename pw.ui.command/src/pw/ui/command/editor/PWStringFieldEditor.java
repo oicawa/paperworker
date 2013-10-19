@@ -56,11 +56,15 @@ public class PWStringFieldEditor extends PWAbstractFieldEditor {
 		}
 		
 		// Multi Line
-		PaperWorker.message(format, caption);
+		System.out.print(String.format(format, caption));
 		String input = PaperWorker.promptAsMultiLines(field.getName());
+		if (input == null) {
+			PaperWorker.message("");
+			return null; 
+		}
 		
 		// Display
-		format = String.format("%%-%ds    ", captionLength);
+		format = String.format(String.format("%%-%ds    ", captionLength), "") + "%s";
 		String[] lines = input.split(PWUtilities.LINE_SEPARATOR);
 		for (int i = 0; i < lines.length; i++) {
 			PaperWorker.message(i == 0 ? "%s" : format, lines[i]);

@@ -36,7 +36,7 @@ import java.util.List;
  */
 public abstract class ApproverRoot {
 	
-	private String creatorId;
+	protected String creatorId;
 	
 	public ApproverRoot(String creatorId) {
 		this.creatorId = creatorId;

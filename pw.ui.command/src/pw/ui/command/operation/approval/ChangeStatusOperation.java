@@ -1,5 +1,5 @@
 /*
- *  $Id: AddAction.java 2013/09/28 1:05:04 masamitsu $
+ *  $Id: ChangeStateOperation.java 2013/10/19 15:56:20 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,59 +26,37 @@
  *  ===============================================================================
  */
 
-package pw.core.action;
+package pw.ui.command.operation.approval;
 
-import java.util.List;
+import java.util.UUID;
 
-import pw.core.PWField;
-import pw.core.accesser.PWQuery;
-import pw.core.item.PWItem;
+import pw.core.PWError;
+import pw.standard.action.approval.PWChangeStatusAction;
+import pw.ui.command.PWOperation;
 
 /**
  * @author masamitsu
  *
  */
-public class BasicAddAction extends AbstractBasicAction {
+public class ChangeStatusOperation implements PWOperation {
+
+	private PWChangeStatusAction action;
 	
-	public BasicAddAction() {
-		super();
-	}
-	
-	/* (non-Javadoc)
-	 * @see pw.core.PWAction#run()
-	 */
-	@Override
-	public Object run(Object... objects) {
-		assert(session != null);
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item);
-		session.getAccesser().execute(query);
-        return null;
+	public ChangeStatusOperation(PWChangeStatusAction action) {
+		this.action = action;
 	}
 
-	public static PWQuery getQuery(PWItem item) {
-    	List<PWField> fields = PWItem.getFields(item.getClass());
-    	
-    	// Create the fields part of query
-    	StringBuffer fieldsBuffer = new StringBuffer();
-    	for (int i = 0; i < fields.size(); i++) {
-    		fieldsBuffer.append(PWQuery.COMMA);
-    		fieldsBuffer.append("?");
-    	}
-    	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
-    	
-    	// Create all query
-    	String allQuery = String.format("insert into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
-    	
-    	// Create PWQuery
-    	PWQuery query = new PWQuery(allQuery);
-    	for (PWField field : fields) {
-    		Object keyValue = field.getValue(item);
-        	query.addValue(keyValue);
-    	}
-    	
-    	return query;
+	/* (non-Javadoc)
+	 * @see pw.ui.command.PWOperation#run(java.lang.String[])
+	 */
+	@Override
+	public void run(String... arguments) {
+		if (arguments == null || arguments.length < 3) {
+			throw new PWError("Document ID is required.");
+		}
+		String uuid = arguments[2];
+		UUID documentId = UUID.fromString(uuid);
+		action.run(documentId);
 	}
+
 }

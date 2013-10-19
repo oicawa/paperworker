@@ -51,6 +51,7 @@ public class CounterApproverRoot extends ApproverRoot {
 	 */
 	@Override
 	public List<String> getApprovers() {
+		
 		return null;
 	}
 
