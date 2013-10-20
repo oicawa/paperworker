@@ -44,29 +44,22 @@ import pw.standard.item.division.ApprovalStatus;
  * @author masamitsu
  *
  */
-public class PWChangeStatusAction extends PWAction {
+public abstract class AbstractChangeStatusAction extends PWAction {
 	
 	private static final String WHERE_FOR_REQUESTED = "documentId=? and approverId=? and judgedDateTime is NULL and status=?";
 	private static final String WHERE_FOR_NEXTORDER = "documentId=? and orderNo=? and judgedDateTime is NULL and status=?";
 	
 	private ApprovalStatus status;
 	
+	public AbstractChangeStatusAction(ApprovalStatus status) {
+		this.status = status;
+	}
+	
 	/* (non-Javadoc)
 	 * @see pw.core.action.PWAction#parseArguments(java.lang.String[])
 	 */
 	@Override
 	protected void parseArguments(String[] arguments) {
-		if (arguments == null || arguments.length != 1) {
-			throw new PWError("%s requires a ApprovalStatus string ('Approved' or 'Rejected').", this.getClass().getName());
-		}
-		
-		ApprovalStatus status = ApprovalStatus.valueOf(arguments[0]);
-		if (status != ApprovalStatus.Approved &&
-			status != ApprovalStatus.Rejected) {
-			throw new PWError("%s requires a ApprovalStatus string ('Approved' or 'Rejected').", this.getClass().getName());
-		}
-		
-		this.status = status;
 	}
 
 	/* (non-Javadoc)

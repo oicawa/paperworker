@@ -45,7 +45,7 @@ import pw.standard.item.division.ApprovalStatus;
 @PWItemBasicInfo(caption = "Approvals", tableName = "Approvals")
 public class Approval extends PWItem {
 	
-	@PWFieldBasicInfo(caption = "Document ID", type = "varchar(100)", primary = true, unique = true)
+	@PWFieldBasicInfo(caption = "Document ID", type = "uuid", primary = true, unique = true)
 	private UUID documentId;
 	
 	@PWFieldBasicInfo(caption = "Approver ID", type = "varchar(100)", primary = true)

@@ -1,5 +1,5 @@
 /*
- *  $Id: ChangeStateOperation.java 2013/10/19 15:56:20 masamitsu $
+ *  $Id: PWApproveAction.java 2013/10/09 0:37:19 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,37 +26,20 @@
  *  ===============================================================================
  */
 
-package pw.ui.command.operation.approval;
+package pw.standard.action.approval;
 
-import java.util.UUID;
-
-import pw.core.PWError;
-import pw.standard.action.approval.AbstractChangeStatusAction;
-import pw.ui.command.PWOperation;
+import pw.standard.item.division.ApprovalStatus;
 
 /**
  * @author masamitsu
  *
  */
-public class ChangeStatusOperation implements PWOperation {
+public class PWApproveAction extends AbstractChangeStatusAction {
 
-	private AbstractChangeStatusAction action;
-	
-	public ChangeStatusOperation(AbstractChangeStatusAction action) {
-		this.action = action;
-	}
-
-	/* (non-Javadoc)
-	 * @see pw.ui.command.PWOperation#run(java.lang.String[])
+	/**
+	 * @param status
 	 */
-	@Override
-	public void run(String... arguments) {
-		if (arguments == null || arguments.length < 3) {
-			throw new PWError("Document ID is required.");
-		}
-		String uuid = arguments[2];
-		UUID documentId = UUID.fromString(uuid);
-		action.run(documentId);
+	public PWApproveAction() {
+		super(ApprovalStatus.Approved);
 	}
-
 }

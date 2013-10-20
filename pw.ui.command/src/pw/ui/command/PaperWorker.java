@@ -47,7 +47,7 @@ import pw.core.action.PWAction;
 import pw.core.item.ActionSetting;
 import pw.core.item.JobSetting;
 import pw.core.item.PWItem;
-import pw.standard.action.approval.PWChangeStatusAction;
+import pw.standard.action.approval.AbstractChangeStatusAction;
 import pw.standard.action.approval.PWRequestAction;
 import pw.standard.action.basic.PWAddAction;
 import pw.standard.action.basic.PWDeleteAction;
@@ -271,8 +271,8 @@ public class PaperWorker implements Closeable {
 				return new UpdateOperation((PWUpdateAction)action);
 			} else if (actionType == PWRequestAction.class) {
 				return new RequestOperation((PWRequestAction)action);
-			} else if (actionType == PWChangeStatusAction.class) {
-				return new ChangeStatusOperation((PWChangeStatusAction)action);
+			} else if (actionType == AbstractChangeStatusAction.class) {
+				return new ChangeStatusOperation((AbstractChangeStatusAction)action);
 			} else {
 				actionType = actionType.getSuperclass();
 			}
@@ -294,6 +294,7 @@ public class PaperWorker implements Closeable {
 
 	public static void message(String format, Object... args) {
 		System.out.println(String.format(format, args));
+		System.out.flush();
 	}
 	
 	public static void error(String format, Object... args) {
