@@ -28,6 +28,7 @@
 
 package pw.core;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -41,6 +42,7 @@ public class PWUtilities {
 	
 	public static final String LINE_SEPARATOR_PATTERN =  "\r\n|[\n\r\u2028\u2029\u0085]";
 	public static final String LINE_SEPARATOR =  System.getProperty("line.separator");
+	public static final String FILE_SEPARATOR =  File.separator;
 
 	public static <T> T createInstance(Class<T> type) {
 		try {
@@ -71,22 +73,11 @@ public class PWUtilities {
 		return type;
 	}
 
-	public static String getCommandName(String packageName) {
-		final String prefix = "paperworker.";
-		final String suffix = ".ui.command";
-		
-		// Suffix
-		if (!packageName.endsWith(suffix)) {
-			return null;
-		}
-		String commandName = packageName.substring(0, packageName.length() - suffix.length());
-		
-		// Prefix
-		if (commandName.startsWith(prefix)) {
-			commandName = commandName.substring(prefix.length());
-		}
-		
-		return commandName;
+	public static File getFileInResourceDirectory(String relationalPath) {
+		File current = new File(System.getProperty("user.dir"));
+		String resourceRelationalPath = String.format("%sresources%s%s", FILE_SEPARATOR, FILE_SEPARATOR, relationalPath);
+		String path = current.getParentFile().getAbsolutePath() + resourceRelationalPath;
+		return new File(path);
 	}
 
 	public static <TItem extends PWItem> Object[] getKeyValuesFromArgumants(List<PWField> keyFields, int from, String[] args, String... defaultValues) {
@@ -132,5 +123,38 @@ public class PWUtilities {
 	 */
 	public static boolean isEnum(Object value) {
 		return value != null && value.getClass().isEnum();
+	}
+	
+	public static boolean isHankaku(char c) {
+		// ASCII
+		if (c <= '\u007e') {
+			return true;
+		}
+		
+		// '\'
+		if (c == '\u00a5') {
+			return true;
+		}
+		
+		// '~'
+		if (c == '\u203e') {
+			return true;
+		}
+		
+		// Hankaku Kana
+		if ('\uff61' <= c && c <= '\uff9f') {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public static int getWidthOfZenkakuHankakuString(String value) {
+		int width = 0;
+        for(int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            width += isHankaku(c) ? 1 : 2;
+        }
+        return width;
 	}
 }

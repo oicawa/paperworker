@@ -67,7 +67,8 @@ public class ListOperation extends AbstractBasicOperation {
 	}
 	
 	protected void printItem(PWItem item) {
-		List<PWField> fields = PWItem.getFields(item.getClass(), action.getKeyType());
+		AbstractBasicAction basicAction = (AbstractBasicAction)action;
+		List<PWField> fields = PWItem.getFields(item.getClass(), basicAction.getKeyType());
 		StringBuffer buffer = new StringBuffer();
 		final String TAB = "\t";
 		for (PWField field : fields) {

@@ -45,15 +45,10 @@ import pw.ui.command.editor.PWStringFieldEditor;
  * @author masamitsu
  *
  */
-public abstract class AbstractBasicOperation implements PWOperation {
-	
-	protected final int ACTION_ARG_START_INDEX = 2;	// 2 is 'command' and 'action'.
-	
-	protected AbstractBasicAction action;
+public abstract class AbstractBasicOperation extends PWOperation {
 	
 	public AbstractBasicOperation(AbstractBasicAction action) {
-		super();
-		this.action = action;
+		super(action);
 	}
 	
 	public static List<PWFieldEditor> getDefaultFieldEditors(Class<? extends PWItem> itemType) {

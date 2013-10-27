@@ -40,12 +40,10 @@ import pw.ui.command.PaperWorker;
  * @author masamitsu
  *
  */
-public class RequestOperation implements PWOperation {
+public class RequestOperation extends PWOperation {
 
-	private PWRequestAction action;
-	
 	public RequestOperation(PWRequestAction action) {
-		this.action = action;
+		super(action);
 	}
 	
 	/* (non-Javadoc)

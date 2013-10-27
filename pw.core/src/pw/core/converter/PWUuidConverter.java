@@ -1,5 +1,5 @@
 /*
- *  $Id: PWBasicOperation.java 2013/09/29 19:54:21 masamitsu $
+ *  $Id: PWUuidConverter.java 2013/10/27 20:05:15 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,23 +26,32 @@
  *  ===============================================================================
  */
 
-package pw.ui.command;
+package pw.core.converter;
 
-import pw.core.action.PWAction;
+import java.util.UUID;
+
+import pw.core.PWConverter;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWOperation {
-	
-	protected final int ACTION_ARG_START_INDEX = 2;	// 2 is 'command' and 'action'.
-	
-	protected PWAction action;
-	
-	public PWOperation(PWAction action) {
-		this.action = action;
+public class PWUuidConverter implements PWConverter {
+
+	/* (non-Javadoc)
+	 * @see pw.core.PWConverter#toObject(java.lang.String)
+	 */
+	@Override
+	public Object toObject(String value) {
+		return UUID.fromString(value);
 	}
-	
-	public abstract void run(String... arguments);
+
+	/* (non-Javadoc)
+	 * @see pw.core.PWConverter#toString(java.lang.Object)
+	 */
+	@Override
+	public String toString(Object object) {
+		return ((UUID)object).toString();
+	}
+
 }

@@ -38,12 +38,10 @@ import pw.ui.command.PWOperation;
  * @author masamitsu
  *
  */
-public class ChangeStatusOperation implements PWOperation {
+public class ChangeStatusOperation extends PWOperation {
 
-	private AbstractChangeStatusAction action;
-	
 	public ChangeStatusOperation(AbstractChangeStatusAction action) {
-		this.action = action;
+		super(action);
 	}
 
 	/* (non-Javadoc)

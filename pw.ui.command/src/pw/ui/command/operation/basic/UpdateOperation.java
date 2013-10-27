@@ -60,14 +60,15 @@ public class UpdateOperation extends AbstractBasicOperation {
 			throw new PWError("require key field values.");
 		}
 			
-		List<PWField> keyFields = PWItem.getFields(action.getItemType(), action.getKeyType());
+		AbstractBasicAction basicAction = (AbstractBasicAction)action;
+		List<PWField> keyFields = PWItem.getFields(basicAction.getItemType(), basicAction.getKeyType());
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(keyFields, ACTION_ARG_START_INDEX, arguments);
 		
 		PaperWorker.message("<< UPDATE >>");
 		PaperWorker.message("* If you input no value (just only the ENTER key), the field value doesn't change.");
 
 		
-		PWItem dst = (PWItem) PWUtilities.createInstance(action.getItemType());
+		PWItem dst = (PWItem) PWUtilities.createInstance(basicAction.getItemType());
 		for (PWFieldEditor editor : getFieldEditors()) {
 			if (editor.getField().isPrimary()) {
 				continue;
@@ -87,7 +88,8 @@ public class UpdateOperation extends AbstractBasicOperation {
 	}
 	
 	public List<PWFieldEditor> getFieldEditors() {
-		return getDefaultFieldEditors(action.getItemType());
+		AbstractBasicAction basicAction = (AbstractBasicAction)action;
+		return getDefaultFieldEditors(basicAction.getItemType());
 	}
 
 }

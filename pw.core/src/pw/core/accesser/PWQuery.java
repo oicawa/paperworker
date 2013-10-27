@@ -28,10 +28,18 @@
 
 package pw.core.accesser;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import pw.core.PWError;
 import pw.core.PWField;
+import pw.core.PWUtilities;
 import pw.core.item.PWItem;
 
 public class PWQuery {
@@ -47,6 +55,37 @@ public class PWQuery {
 		this.query = query;
 	}
 	
+	/**
+	 * @param sqlFile
+	 */
+	public PWQuery(File sqlFile) {
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(sqlFile)));
+			StringBuffer buffer = new StringBuffer();
+			try {
+				while (true) {
+					String line = reader.readLine();
+					if (line == null) {
+						break;
+					}
+					buffer.append(line);
+					buffer.append(PWUtilities.LINE_SEPARATOR);
+				}
+				query = buffer.toString();
+			} catch (IOException e) {
+				throw new PWError(e, e.getMessage());
+			} finally {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					// TODO: What should I do?
+				}
+			}
+		} catch (FileNotFoundException e) {
+			throw new PWError(e, e.getMessage());
+		}
+	}
+
 	public String getQuery() {
 		return query;
 	}

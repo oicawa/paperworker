@@ -51,10 +51,8 @@ public class PWPropertyLoader {
 		if (!propertyMap.containsKey(categoryName)) {
 			Properties conf = new Properties();
 			try {
-				File current = new File(System.getProperty("user.dir"));
-				String format = "/resources/%s.properties";
-				String relationalPath = String.format(format, categoryName);
-				String fullPath = current.getParentFile().getAbsolutePath() + relationalPath;
+				File propertyFile = PWUtilities.getFileInResourceDirectory(String.format("%s.properties", categoryName));
+				String fullPath = propertyFile.getAbsolutePath();
 				conf.load(new FileInputStream(fullPath));
 				propertyMap.put(categoryName, conf);
 			} catch (FileNotFoundException e) {

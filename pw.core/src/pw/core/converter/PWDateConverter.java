@@ -1,5 +1,5 @@
 /*
- *  $Id: PWBasicOperation.java 2013/09/29 19:54:21 masamitsu $
+ *  $Id: PWDateConverter.java 2013/10/26 21:03:26 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,23 +26,41 @@
  *  ===============================================================================
  */
 
-package pw.ui.command;
+package pw.core.converter;
 
-import pw.core.action.PWAction;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import pw.core.PWConverter;
+import pw.core.PWError;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWOperation {
+public class PWDateConverter implements PWConverter {
+
+	private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 	
-	protected final int ACTION_ARG_START_INDEX = 2;	// 2 is 'command' and 'action'.
-	
-	protected PWAction action;
-	
-	public PWOperation(PWAction action) {
-		this.action = action;
+	/* (non-Javadoc)
+	 * @see pw.core.view.PWConverter#convert(java.lang.String)
+	 */
+	@Override
+	public Object toObject(String value) {
+		try {
+			return format.parse(value);
+		} catch (ParseException e) {
+			throw new PWError(e, "Invalid format for Date. [%s]", value);
+		}
 	}
-	
-	public abstract void run(String... arguments);
+
+	/* (non-Javadoc)
+	 * @see pw.core.PWConverter#toString(java.lang.Object)
+	 */
+	@Override
+	public String toString(Object object) {
+		return format.format((Date)object);
+	}
+
 }

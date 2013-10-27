@@ -54,6 +54,7 @@ import pw.standard.action.basic.PWDeleteAction;
 import pw.standard.action.basic.PWDetailAction;
 import pw.standard.action.basic.PWListAction;
 import pw.standard.action.basic.PWUpdateAction;
+import pw.standard.action.basic.PWViewAction;
 import pw.ui.command.operation.approval.ChangeStatusOperation;
 import pw.ui.command.operation.approval.RequestOperation;
 import pw.ui.command.operation.basic.AddOperation;
@@ -61,6 +62,7 @@ import pw.ui.command.operation.basic.DeleteOperation;
 import pw.ui.command.operation.basic.DetailOperation;
 import pw.ui.command.operation.basic.ListOperation;
 import pw.ui.command.operation.basic.UpdateOperation;
+import pw.ui.command.operation.basic.ViewOperation;
 
 /**
  * @author masamitsu
@@ -267,6 +269,8 @@ public class PaperWorker implements Closeable {
 				return new DetailOperation((PWDetailAction)action);
 			} else if (actionType == PWListAction.class) {
 				return new ListOperation((PWListAction)action);
+			} else if (actionType == PWViewAction.class) {
+				return new ViewOperation((PWViewAction)action);
 			} else if (actionType == PWUpdateAction.class) {
 				return new UpdateOperation((PWUpdateAction)action);
 			} else if (actionType == PWRequestAction.class) {

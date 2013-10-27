@@ -1,5 +1,5 @@
 /*
- *  $Id: PWBasicOperation.java 2013/09/29 19:54:21 masamitsu $
+ *  $Id: PWView.java 2013/10/26 7:28:03 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,23 +26,51 @@
  *  ===============================================================================
  */
 
-package pw.ui.command;
+package pw.core.view;
 
-import pw.core.action.PWAction;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWOperation {
+public class PWView implements Iterable<PWViewRow> {
+
+	private PWViewColumn[] columns;
+	private List<PWViewRow> rows = new ArrayList<PWViewRow>();
 	
-	protected final int ACTION_ARG_START_INDEX = 2;	// 2 is 'command' and 'action'.
-	
-	protected PWAction action;
-	
-	public PWOperation(PWAction action) {
-		this.action = action;
+	public PWView(int columnCount) {
+		columns = new PWViewColumn[columnCount];
+	}
+
+	public PWViewColumn getColumn(int index) {
+		if (columns[index] == null) {
+			columns[index] = new PWViewColumn();
+		}
+		return columns[index];
+	}
+
+	public int getColumnCount() {
+		return columns.length;
 	}
 	
-	public abstract void run(String... arguments);
+	public PWViewRow addRow() {
+		PWViewRow row = new PWViewRow(columns.length);
+		rows.add(row);
+		return row;
+	}
+	
+	public PWViewRow getRow(int index) {
+		return rows.get(index);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Iterable#iterator()
+	 */
+	@Override
+	public Iterator<PWViewRow> iterator() {
+		return rows.iterator();
+	}
 }

@@ -1,0 +1,18 @@
+select
+	H.CREATORID,
+	M.FAMILYNAME || M.FIRSTNAME as CREATORNAME,
+	H.STARTDATE,
+	H.ENDDATE,
+	D.SHORTNAME as DivisionShortName,
+	H.REASON
+from
+	HOLIDAYS as H
+	left join MEMBERS as M
+		on H.CREATORID = M.MEMBERID
+	left join HOLIDAYDIVISIONS as D
+		on H.DIVISIONID = D.DIVISIONID
+where
+	H.CREATORID = ?
+	and ? <= H.STARTDATE
+	and H.ENDDATE <= ?
+

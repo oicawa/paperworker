@@ -1,5 +1,5 @@
 /*
- *  $Id: PWBasicOperation.java 2013/09/29 19:54:21 masamitsu $
+ *  $Id: PWViewRecord.java 2013/10/26 14:10:38 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,23 +26,24 @@
  *  ===============================================================================
  */
 
-package pw.ui.command;
-
-import pw.core.action.PWAction;
+package pw.core.view;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWOperation {
-	
-	protected final int ACTION_ARG_START_INDEX = 2;	// 2 is 'command' and 'action'.
-	
-	protected PWAction action;
-	
-	public PWOperation(PWAction action) {
-		this.action = action;
+public class PWViewRow {
+	private Object[] values;
+
+	PWViewRow(int columnCount) {
+		values = new Object[columnCount];
 	}
 	
-	public abstract void run(String... arguments);
+	public void setValue(int index, Object value) {
+		values[index] = value;
+	}
+	
+	public Object getValue(int index) {
+		return values[index];
+	}
 }

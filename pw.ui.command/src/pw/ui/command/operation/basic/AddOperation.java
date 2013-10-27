@@ -51,7 +51,8 @@ public class AddOperation extends AbstractBasicOperation {
 	 */
 	@Override
 	public void run(String... arguments) {
-		PWItem item = (PWItem) PWUtilities.createInstance(action.getItemType());
+		AbstractBasicAction basicAction = (AbstractBasicAction)action;
+		PWItem item = (PWItem) PWUtilities.createInstance(basicAction.getItemType());
 		
 		PaperWorker.message("<< ADD >>");
 		for (PWFieldEditor editor : getFieldEditors()) {
@@ -71,7 +72,8 @@ public class AddOperation extends AbstractBasicOperation {
 	}
 	
 	public List<PWFieldEditor> getFieldEditors() {
-		return getDefaultFieldEditors(action.getItemType());
+		AbstractBasicAction basicAction = (AbstractBasicAction)action;
+		return getDefaultFieldEditors(basicAction.getItemType());
 	}
 
 }

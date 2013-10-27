@@ -58,14 +58,16 @@ public class DeleteOperation extends AbstractBasicOperation {
 			throw new PWError("require key field values.");
 		}
 		
-		List<PWField> keyFields = PWItem.getFields(action.getItemType(), action.getKeyType());
+		AbstractBasicAction basicAction = (AbstractBasicAction)action;
+		
+		List<PWField> keyFields = PWItem.getFields(basicAction.getItemType(), basicAction.getKeyType());
 		if (keyFields.size() == 0) {
-			throw new PWError("No '%s' key fields.", action.getKeyType().toString());
+			throw new PWError("No '%s' key fields.", basicAction.getKeyType().toString());
 		}
 		
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(keyFields, ACTION_ARG_START_INDEX, arguments);
 		if (keyFields.size() != keyValues.length) {
-			throw new PWError("The number of key values is different from the number of '%s' key fields.", action.getKeyType().toString());
+			throw new PWError("The number of key values is different from the number of '%s' key fields.", basicAction.getKeyType().toString());
 		}
 		
 		action.run(keyValues);

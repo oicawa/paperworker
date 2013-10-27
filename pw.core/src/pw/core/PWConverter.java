@@ -1,5 +1,5 @@
 /*
- *  $Id: PWBasicOperation.java 2013/09/29 19:54:21 masamitsu $
+ *  $Id: PWConverter.java 2013/10/26 20:47:05 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,23 +26,20 @@
  *  ===============================================================================
  */
 
-package pw.ui.command;
-
-import pw.core.action.PWAction;
+package pw.core;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWOperation {
+public interface PWConverter {
+
+	/**
+	 * @param value
+	 * @return
+	 */
+	Object toObject(String value);
 	
-	protected final int ACTION_ARG_START_INDEX = 2;	// 2 is 'command' and 'action'.
-	
-	protected PWAction action;
-	
-	public PWOperation(PWAction action) {
-		this.action = action;
-	}
-	
-	public abstract void run(String... arguments);
+	String toString(Object object);
+
 }

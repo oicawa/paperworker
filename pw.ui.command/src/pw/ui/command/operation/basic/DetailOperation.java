@@ -59,24 +59,25 @@ public class DetailOperation extends AbstractBasicOperation {
 			throw new PWError("require key field values.");
 		}
 		
-		List<PWField> keyFields = PWItem.getFields(action.getItemType(), action.getKeyType());
+		AbstractBasicAction basicAction = (AbstractBasicAction)action;
+		List<PWField> keyFields = PWItem.getFields(basicAction.getItemType(), basicAction.getKeyType());
 		if (keyFields.size() == 0) {
-			throw new PWError("No '%s' key fields.", action.getKeyType().toString());
+			throw new PWError("No '%s' key fields.", basicAction.getKeyType().toString());
 		}
 		
 		Object[] keyValues = PWUtilities.getKeyValuesFromArgumants(keyFields, ACTION_ARG_START_INDEX, arguments);
 		if (keyFields.size() != keyValues.length) {
-			throw new PWError("The number of key values is different from the number of '%s' key fields.", action.getKeyType().toString());
+			throw new PWError("The number of key values is different from the number of '%s' key fields.", basicAction.getKeyType().toString());
 		}
 		
 		PWItem item = (PWItem)action.run(keyValues);
 		if (item == null) {
-			PaperWorker.message("Not found. [KeyType: '%s', %s]", action.getKeyType().toString(), getKeyParameters(keyFields, keyValues));
+			PaperWorker.message("Not found. [KeyType: '%s', %s]", basicAction.getKeyType().toString(), getKeyParameters(keyFields, keyValues));
 			return;
 		}
 
-		List<PWField> fields = PWItem.getFields(action.getItemType());
-		int length = PWUtilities.getMaxLength(PWItem.getCaptions(action.getItemType()));
+		List<PWField> fields = PWItem.getFields(basicAction.getItemType());
+		int length = PWUtilities.getMaxLength(PWItem.getCaptions(basicAction.getItemType()));
 		for (int i = 0; i < fields.size(); i++) {
 			printField(item, fields.get(i), length);
 		}

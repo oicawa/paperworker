@@ -1,5 +1,5 @@
 /*
- *  $Id: PWFilter.java 2013/09/21 3:03:36 Masamitsu Oikawa $
+ *  $Id: PWViewColumn.java 2013/10/26 8:14:03 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,8 +26,36 @@
  *  ===============================================================================
  */
 
-package pw.core.accesser;
+package pw.core.view;
 
-public interface PWFilter<T> {
-	boolean isMatch(T item);
+/**
+ * @author masamitsu
+ *
+ */
+public class PWViewColumn {
+	private String label;
+	private String name;
+	private String dbType;
+	
+	PWViewColumn() {
+	}
+	
+	public String getLabel() {
+		return label;
+	}
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getDbType() {
+		return dbType;
+	}
+	public void setDbType(String dbType) {
+		this.dbType = dbType;
+	}
 }

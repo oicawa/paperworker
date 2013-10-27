@@ -1,5 +1,5 @@
 /*
- *  $Id: PWBasicOperation.java 2013/09/29 19:54:21 masamitsu $
+ *  $Id: PWClobConverter.java 2013/10/27 20:30:48 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,23 +26,40 @@
  *  ===============================================================================
  */
 
-package pw.ui.command;
+package pw.core.converter;
 
-import pw.core.action.PWAction;
+import java.sql.Clob;
+import java.sql.SQLException;
+
+import pw.core.PWConverter;
+import pw.core.PWError;
 
 /**
  * @author masamitsu
  *
  */
-public abstract class PWOperation {
-	
-	protected final int ACTION_ARG_START_INDEX = 2;	// 2 is 'command' and 'action'.
-	
-	protected PWAction action;
-	
-	public PWOperation(PWAction action) {
-		this.action = action;
+public class PWClobConverter implements PWConverter {
+
+	/* (non-Javadoc)
+	 * @see pw.core.PWConverter#toObject(java.lang.String)
+	 */
+	@Override
+	public Object toObject(String value) {
+		throw new PWError("'toObject' method is not implemented in %s", PWClobConverter.class.getName());
 	}
-	
-	public abstract void run(String... arguments);
+
+	/* (non-Javadoc)
+	 * @see pw.core.PWConverter#toString(java.lang.Object)
+	 */
+	@Override
+	public String toString(Object object) {
+		try {
+			Clob clob = (Clob)object;
+			String value = clob == null ? null : clob.getSubString(1, (int) clob.length());
+			return value;
+		} catch (SQLException e) {
+			throw new PWError(e, e.getMessage());
+		}
+	}
+
 }
