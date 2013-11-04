@@ -1,2 +1,0 @@
-jdbcDriver=org.h2.Driver
-connection=jdbc:h2:tcp://localhost/~/paperworker.db
