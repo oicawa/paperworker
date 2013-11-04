@@ -1,9 +1,0 @@
-select
-	GROUPID,
-	NAME,
-	SHROTNAME,
-	DIVISION
-from
-	GROUPS
-order by
-	GROUPID
