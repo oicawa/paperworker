@@ -48,8 +48,8 @@ public class ActionSetting extends PWItem {
 	@PWFieldBasicInfo(caption = "Action Class Path", type = "varchar(100)")
 	private String actionClassPath;
 
-	@PWFieldBasicInfo(caption = "Default Arguments", type = "text")
-	private String arguments;
+	@PWFieldBasicInfo(caption = "Setting Parameters", type = "text")
+	private String parameters;
 	
 	@PWFieldBasicInfo(caption = "Description", type = "text")
 	private String description;
@@ -79,11 +79,11 @@ public class ActionSetting extends PWItem {
 	}
 
 	public String getArguments() {
-		return arguments;
+		return parameters;
 	}
 
 	public void setArguments(String arguments) {
-		this.arguments = arguments;
+		this.parameters = arguments;
 	}
 
 	public String getDescription() {
@@ -95,10 +95,10 @@ public class ActionSetting extends PWItem {
 	}
 	
 	public String[] getArgumentArray() {
-		if (arguments == null) {
+		if (parameters == null) {
 			return null;
 		}
-		return arguments.split(PWUtilities.LINE_SEPARATOR_PATTERN);
+		return parameters.split(PWUtilities.LINE_SEPARATOR_PATTERN);
 	}
 	
 	static {

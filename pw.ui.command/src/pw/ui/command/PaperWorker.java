@@ -38,23 +38,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import pw.action.approval.AbstractChangeStatusAction;
+import pw.action.approval.PWRequestAction;
+import pw.action.basic.PWAddAction;
+import pw.action.basic.PWDeleteAction;
+import pw.action.basic.PWDetailAction;
+import pw.action.basic.PWListAction;
+import pw.action.basic.PWUpdateAction;
+import pw.action.basic.PWViewAction;
+import pw.action.file.PWExportCsvAction;
+import pw.action.file.PWImportCsvAction;
+import pw.core.PWAction;
 import pw.core.PWError;
 import pw.core.PWPropertyLoader;
 import pw.core.PWSession;
 import pw.core.PWUtilities;
 import pw.core.accesser.PWAccesser;
-import pw.core.action.PWAction;
 import pw.core.item.ActionSetting;
 import pw.core.item.JobSetting;
 import pw.core.item.PWItem;
-import pw.standard.action.approval.AbstractChangeStatusAction;
-import pw.standard.action.approval.PWRequestAction;
-import pw.standard.action.basic.PWAddAction;
-import pw.standard.action.basic.PWDeleteAction;
-import pw.standard.action.basic.PWDetailAction;
-import pw.standard.action.basic.PWListAction;
-import pw.standard.action.basic.PWUpdateAction;
-import pw.standard.action.basic.PWViewAction;
 import pw.ui.command.operation.approval.ChangeStatusOperation;
 import pw.ui.command.operation.approval.RequestOperation;
 import pw.ui.command.operation.basic.AddOperation;
@@ -63,6 +65,7 @@ import pw.ui.command.operation.basic.DetailOperation;
 import pw.ui.command.operation.basic.ListOperation;
 import pw.ui.command.operation.basic.UpdateOperation;
 import pw.ui.command.operation.basic.ViewOperation;
+import pw.ui.command.operation.file.FileOperation;
 
 /**
  * @author masamitsu
@@ -277,6 +280,8 @@ public class PaperWorker implements Closeable {
 				return new RequestOperation((PWRequestAction)action);
 			} else if (actionType == AbstractChangeStatusAction.class) {
 				return new ChangeStatusOperation((AbstractChangeStatusAction)action);
+			} else if (actionType == PWExportCsvAction.class || actionType == PWImportCsvAction.class) {
+				return new FileOperation((PWAction)action);
 			} else {
 				actionType = actionType.getSuperclass();
 			}

@@ -40,4 +40,5 @@ public @interface PWFieldBasicInfo {
 	String type();
 	boolean primary() default false;
 	boolean unique() default false;
+	boolean auto() default false;
 }

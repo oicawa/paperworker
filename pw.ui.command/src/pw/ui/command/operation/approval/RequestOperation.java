@@ -30,9 +30,9 @@ package pw.ui.command.operation.approval;
 
 import java.util.UUID;
 
+import pw.action.approval.PWRequestAction;
 import pw.core.PWError;
 import pw.core.PWUtilities;
-import pw.standard.action.approval.PWRequestAction;
 import pw.ui.command.PWOperation;
 import pw.ui.command.PaperWorker;
 

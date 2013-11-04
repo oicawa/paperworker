@@ -31,16 +31,16 @@ package pw.ui.command;
 import java.util.Collection;
 import java.util.HashMap;
 
+import pw.action.basic.PWAddAction;
+import pw.action.basic.PWDeleteAction;
+import pw.action.basic.PWDetailAction;
+import pw.action.basic.PWListAction;
+import pw.action.basic.PWUpdateAction;
+import pw.core.PWAction;
 import pw.core.PWField;
 import pw.core.PWSession;
-import pw.core.action.PWAction;
 import pw.core.item.ActionSetting;
 import pw.core.item.JobSetting;
-import pw.standard.action.basic.PWAddAction;
-import pw.standard.action.basic.PWDeleteAction;
-import pw.standard.action.basic.PWDetailAction;
-import pw.standard.action.basic.PWListAction;
-import pw.standard.action.basic.PWUpdateAction;
 
 /**
  * @author masamitsu

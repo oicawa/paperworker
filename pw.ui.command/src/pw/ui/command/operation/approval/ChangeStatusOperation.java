@@ -30,8 +30,8 @@ package pw.ui.command.operation.approval;
 
 import java.util.UUID;
 
+import pw.action.approval.AbstractChangeStatusAction;
 import pw.core.PWError;
-import pw.standard.action.approval.AbstractChangeStatusAction;
 import pw.ui.command.PWOperation;
 
 /**

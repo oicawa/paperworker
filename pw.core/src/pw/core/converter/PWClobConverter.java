@@ -45,7 +45,7 @@ public class PWClobConverter implements PWConverter {
 	 */
 	@Override
 	public Object toObject(String value) {
-		throw new PWError("'toObject' method is not implemented in %s", PWClobConverter.class.getName());
+		return value;
 	}
 
 	/* (non-Javadoc)

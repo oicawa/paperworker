@@ -33,9 +33,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import pw.core.PWError;
-import pw.core.view.PWView;
-import pw.core.view.PWViewColumn;
-import pw.core.view.PWViewRow;
+import pw.core.table.PWTable;
+import pw.core.table.PWTableColumn;
+import pw.core.table.PWTableRow;
 
 /**
  * @author masamitsu
@@ -43,7 +43,7 @@ import pw.core.view.PWViewRow;
  */
 public class PWAfterViewQuery implements PWAfterQuery<ResultSet> {
 
-	private PWView view;
+	private PWTable view;
 	
 	public PWAfterViewQuery() {
 	}
@@ -54,9 +54,9 @@ public class PWAfterViewQuery implements PWAfterQuery<ResultSet> {
         	// Get metadata
         	ResultSetMetaData meta = resultSet.getMetaData();
         	int columnCount = meta.getColumnCount();
-        	view = new PWView(columnCount);
+        	view = new PWTable(columnCount);
         	for (int i = 0; i < columnCount; i++) {
-        		PWViewColumn column = view.getColumn(i);
+        		PWTableColumn column = view.getColumn(i);
         		column.setLabel(meta.getColumnLabel(i + 1));
         		column.setName(meta.getColumnName(i + 1));
         		column.setDbType(meta.getColumnTypeName(i + 1));
@@ -64,16 +64,8 @@ public class PWAfterViewQuery implements PWAfterQuery<ResultSet> {
         	
         	// Get all row data
 			while (resultSet.next()) {
-				PWViewRow row = view.addRow();
+				PWTableRow row = view.addRow();
 				for (int i = 0; i < columnCount; i++) {
-//					PWViewColumn column = view.getColumn(i);
-//					if ("clob".toUpperCase().equals(column.getDbType().toUpperCase())) {
-//						Clob clob = resultSet.getClob(i + 1);
-//						String value = clob == null ? null : clob.getSubString(1, (int) clob.length());
-//						row.setValue(i, value);
-//					} else {
-//						row.setValue(i, resultSet.getObject(i + 1));
-//					}
 					row.setValue(i, resultSet.getObject(i + 1));
 				}
 			}
@@ -82,7 +74,7 @@ public class PWAfterViewQuery implements PWAfterQuery<ResultSet> {
 		}
 	}
 
-	public PWView getView() {
+	public PWTable getView() {
 		return view;
 	}
 

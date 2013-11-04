@@ -31,16 +31,16 @@ package pw.ui.command.operation.basic;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import pw.action.basic.PWViewAction;
 import pw.core.PWConverter;
 import pw.core.PWUtilities;
 import pw.core.converter.PWClobConverter;
 import pw.core.converter.PWDateConverter;
 import pw.core.converter.PWStringConverter;
 import pw.core.converter.PWUuidConverter;
-import pw.core.view.PWView;
-import pw.core.view.PWViewColumn;
-import pw.core.view.PWViewRow;
-import pw.standard.action.basic.PWViewAction;
+import pw.core.table.PWTable;
+import pw.core.table.PWTableColumn;
+import pw.core.table.PWTableRow;
 import pw.ui.command.PWOperation;
 import pw.ui.command.PaperWorker;
 
@@ -74,7 +74,7 @@ public class ViewOperation extends PWOperation {
 		Object[] parameters = Arrays.copyOfRange(arguments, ACTION_ARG_START_INDEX, arguments.length, Object[].class);
 		
 		// Get view
-		PWView view = (PWView)action.run(parameters);
+		PWTable view = (PWTable)action.run(parameters);
 		
 		int widthes[] = calculateColumnWidthes(view);
 		
@@ -84,7 +84,7 @@ public class ViewOperation extends PWOperation {
 		StringBuffer header = new StringBuffer();
 		StringBuffer separator = new StringBuffer();
 		for (int i = 0; i < columnCount; i++) {
-			PWViewColumn column = view.getColumn(i);
+			PWTableColumn column = view.getColumn(i);
 			columnFormats[i] = String.format("%s%%-%ds", COLUMN_SEPARATOR, widthes[i]);
 			String caption = String.format(columnFormats[i], column.getName());
 			header.append(caption);
@@ -96,7 +96,7 @@ public class ViewOperation extends PWOperation {
 		PaperWorker.message(separator.substring(COLUMN_SEPARATOR2.length()));
 		
 		// Print rows
-		for (PWViewRow row : view) {
+		for (PWTableRow row : view) {
 			printItem(view, row, widthes);
 		}
 	}
@@ -105,19 +105,19 @@ public class ViewOperation extends PWOperation {
 	 * @param view
 	 * @return
 	 */
-	private int[] calculateColumnWidthes(PWView view) {
+	private int[] calculateColumnWidthes(PWTable view) {
 		// Column Header
 		int columnCount = view.getColumnCount();
 		int widthes[] = new int[columnCount];
 		for (int i = 0; i < columnCount; i++) {
-			PWViewColumn column = view.getColumn(i);
+			PWTableColumn column = view.getColumn(i);
 			widthes[i] = PWUtilities.getWidthOfZenkakuHankakuString(column.getName());
 		}
 		
 		// Rows
-		for (PWViewRow row : view) {
+		for (PWTableRow row : view) {
 			for (int i = 0; i < columnCount; i++) {
-				PWViewColumn column = view.getColumn(i);
+				PWTableColumn column = view.getColumn(i);
 				PWConverter converter = converters.get(column.getDbType());
 				Object value = row.getValue(i);
 				int width = PWUtilities.getWidthOfZenkakuHankakuString(converter.toString(value));
@@ -127,10 +127,10 @@ public class ViewOperation extends PWOperation {
 		return widthes;
 	}
 
-	protected void printItem(PWView view, PWViewRow row, int[] widthes) {
+	protected void printItem(PWTable view, PWTableRow row, int[] widthes) {
 		StringBuffer buffer = new StringBuffer();
 		for (int i = 0; i < view.getColumnCount(); i++) {
-			PWViewColumn column = view.getColumn(i);
+			PWTableColumn column = view.getColumn(i);
 			PWConverter converter = converters.get(column.getDbType());
 			Object value = row.getValue(i);
 			String display = converter.toString(value).replaceAll(PWUtilities.LINE_SEPARATOR_PATTERN, " ");

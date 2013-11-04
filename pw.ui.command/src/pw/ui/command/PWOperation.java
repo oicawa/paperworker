@@ -28,7 +28,7 @@
 
 package pw.ui.command;
 
-import pw.core.action.PWAction;
+import pw.core.PWAction;
 
 /**
  * @author masamitsu

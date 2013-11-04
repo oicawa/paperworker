@@ -1,0 +1,9 @@
+select
+	GROUPID,
+	NAME,
+	SHORTNAME,
+	DIVISION
+from
+	GROUPS
+order by
+	GROUPID
