@@ -38,11 +38,11 @@ import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWField.KeyType;
 import pw.core.PWUtilities;
+import pw.core.accesser.PWAccesser;
 import pw.core.accesser.PWQuery;
 import pw.core.csv.PWCsvFile;
 import pw.core.item.PWItem;
 import pw.core.table.PWTable;
-import pw.core.table.PWTableColumn;
 import pw.core.table.PWTableRow;
 
 /**
@@ -58,12 +58,12 @@ public class PWImportCsvAction extends PWAction {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void parseArguments(String[] arguments) {
-		if (arguments.length != 1) {
+	protected void parseSettingParameters(String[] settingParameters) {
+		if (settingParameters.length != 1) {
 			throw new PWError("Required 1 parameter as the target item.");
 		}
 		
-		type = (Class<? extends PWItem>)PWUtilities.getClass(arguments[0]);
+		type = (Class<? extends PWItem>)PWUtilities.getClass(settingParameters[0]);
 	}
 
 	/* (non-Javadoc)
@@ -90,8 +90,7 @@ public class PWImportCsvAction extends PWAction {
 		for (int i = 0; i < keyFields.size(); i++) {
 			PWField keyField = keyFields.get(i);
 			for (int j = 0; j < table.getColumnCount(); j++) {
-				PWTableColumn column = table.getColumn(j);
-				if (column.getName().toUpperCase().equals(keyField.getName().toUpperCase())) {
+				if (table.getColumnName(j).toUpperCase().equals(keyField.getName().toUpperCase())) {
 					keyIndexes[i] = j;
 					break;
 				}
@@ -100,7 +99,7 @@ public class PWImportCsvAction extends PWAction {
 		
 		// Update rows
 		List<PWQuery> queries = new ArrayList<PWQuery>();
-		for (PWTableRow row : table) {
+		for (PWTableRow row : table.getRows()) {
 			// Get key values
 			Object[] keyValues = new Object[keyFields.size()];
 			for (int keyIndex : keyIndexes) {
@@ -119,7 +118,7 @@ public class PWImportCsvAction extends PWAction {
 			queries.add(PWAddAction.getQuery(item, true));
 		}
 		
-		session.getAccesser().execute(queries.toArray(new PWQuery[0]));
+		PWAccesser.getDefaultAccesser().execute(queries.toArray(new PWQuery[0]));
 		
 		return null;
 	}

@@ -57,6 +57,9 @@ public class Address extends PWItem {
 	@PWFieldBasicInfo(caption = "Formal Street Numbers", type = "varchar(100)")
 	private String formalStreetNumbers;
 
+	@PWFieldBasicInfo(caption = "Building Name", type = "varchar(100)")
+	private String roomName;
+
 	@PWFieldBasicInfo(caption = "Caption", type = "varchar(100)")
 	private String caption;
 
@@ -101,6 +104,14 @@ public class Address extends PWItem {
 
 	public void setFormalStreetNumbers(String formalStreetNumbers) {
 		this.formalStreetNumbers = formalStreetNumbers;
+	}
+
+	public String getRoomName() {
+		return roomName;
+	}
+
+	public void setRoomName(String roomName) {
+		this.roomName = roomName;
 	}
 
 	public String getCaption() {

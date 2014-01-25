@@ -28,31 +28,19 @@
 
 package pw.core;
 
-import pw.core.accesser.PWAccesser;
-
 /**
  * @author masamitsu
  *
  */
 public class PWSession {
 	
-	private String userId;
+	private static String userId;
 	
-	private PWAccesser accesser;
-
-	public String getUserId() {
+	public static String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public PWAccesser getAccesser() {
-		return accesser;
-	}
-
-	public void setAccesser(PWAccesser accesser) {
-		this.accesser = accesser;
+	public static void setUserId(String userId) {
+		PWSession.userId = userId;
 	}
 }

@@ -31,6 +31,7 @@ package pw.action.basic;
 import java.util.List;
 
 import pw.core.PWField;
+import pw.core.accesser.PWAccesser;
 import pw.core.accesser.PWQuery;
 import pw.core.item.PWItem;
 
@@ -49,12 +50,11 @@ public class PWAddAction extends AbstractBasicAction {
 	 */
 	@Override
 	public Object run(Object... objects) {
-		assert(session != null);
 		assert(objects.length == 1);
 		assert(objects[0] != null);
 		PWItem item = (PWItem)objects[0];
 		PWQuery query = getQuery(item);
-		session.getAccesser().execute(query);
+		PWAccesser.getDefaultAccesser().execute(query);
         return null;
 	}
 

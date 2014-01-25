@@ -49,6 +49,10 @@ public class PWAccesser implements Closeable {
 	private Connection connection;
 	private static HashMap<String, PWAccesser> connections = new HashMap<String, PWAccesser>();
 	
+	public static PWAccesser getDefaultAccesser() {
+		return getAccesser("default");
+	}
+		
 	public static PWAccesser getAccesser(String userId) {
 		
 		if (connections.containsKey(userId)) {
@@ -98,6 +102,12 @@ public class PWAccesser implements Closeable {
 			connection.close();
 		} catch (SQLException e) {
 			// TODO: Must write to logger.
+		}
+	}
+	
+	public static void closeAllConnections() {
+		for (PWAccesser accesser : connections.values()) {
+			accesser.close();
 		}
 	}
 	

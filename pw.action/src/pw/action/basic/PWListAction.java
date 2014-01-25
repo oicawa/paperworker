@@ -30,6 +30,7 @@ package pw.action.basic;
 
 import pw.core.PWError;
 import pw.core.PWField;
+import pw.core.accesser.PWAccesser;
 import pw.core.accesser.PWAfterSqlQuery;
 import pw.core.accesser.PWQuery;
 import pw.core.item.PWItem;
@@ -63,7 +64,7 @@ public class PWListAction extends AbstractBasicAction {
 		}
 		
 		PWAfterSqlQuery afterQuery = new PWAfterSqlQuery(itemType);
-		session.getAccesser().select(query, afterQuery);
+		PWAccesser.getDefaultAccesser().select(query, afterQuery);
 		return afterQuery.getItemList();
 	}
 	

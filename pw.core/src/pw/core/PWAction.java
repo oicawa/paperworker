@@ -28,8 +28,14 @@
 
 package pw.core;
 
+import java.io.File;
+
+import pw.core.accesser.PWAccesser;
+import pw.core.accesser.PWAfterViewQuery;
 import pw.core.accesser.PWQuery;
 import pw.core.item.PWItem;
+import pw.core.table.PWTable;
+import pw.core.table.PWTableRow;
 
 /**
  * @author masamitsu
@@ -37,25 +43,25 @@ import pw.core.item.PWItem;
  */
 public abstract class PWAction {
 	
-	protected PWSession session;
+	//protected PWSession session;
 	
 	public PWAction() {
 	}
 	
 	/**
-	 * @param arguments
+	 * @param settingParameters
 	 */
-	protected abstract void parseArguments(String[] arguments);
+	protected abstract void parseSettingParameters(String[] settingParameters);
 
 	public abstract Object run(Object... objects);
 	
-	public void setSession(PWSession session)
-	{
-		this.session = session;
-	}
+//	public void setSession(PWSession session)
+//	{
+//		this.session = session;
+//	}
 	
 	public void setParameters(String[] arguments) {
-		parseArguments(arguments);
+		parseSettingParameters(arguments);
 	}
 	
 	public static String getWhereQueryByKeys(Class<? extends PWItem> itemType, PWField.KeyType keyType) {
@@ -82,5 +88,41 @@ public abstract class PWAction {
     	}
     	String wheresQuery = buffer.substring(PWQuery.AND.length());
     	return wheresQuery;
+	}
+
+	/**
+	 * @param jobName
+	 * @param actionName
+	 * @return
+	 */
+	public static PWAction getAction(String jobName, String actionName) {
+		// Get SQL Query File
+		File sqlFile = PWUtilities.getFileInResourceDirectory("queries/action.sql");
+		
+		// Create Query
+		PWQuery query = new PWQuery(sqlFile);
+		query.addValue(jobName);
+		query.addValue(actionName);
+
+		// Do Query
+		PWAfterViewQuery afterQuery = new PWAfterViewQuery();
+		PWAccesser accesser = PWAccesser.getDefaultAccesser();
+		accesser.select(query, afterQuery);
+		
+		// Get Data
+		PWTable table = afterQuery.getView();
+		if (table.getRows().size() == 0)
+			throw new PWError("No such job/action name[JobName: %s, ActionName: %s]", jobName, actionName);
+		PWTableRow row = afterQuery.getView().getRow(0);
+		String classPath = (String)row.getValue(2);
+		String[] parameters = (String[])((String)row.getValue(3)).split(PWUtilities.LINE_SEPARATOR_PATTERN);
+		
+		// Create Action Instance
+		Class<?> actionClass = PWUtilities.getClass(classPath);
+		PWAction action = (PWAction)PWUtilities.createInstance(actionClass);
+		//action.setSession(this);
+		action.parseSettingParameters(parameters);
+		
+		return action;
 	}
 }

@@ -32,6 +32,7 @@ import java.util.List;
 
 import pw.core.PWError;
 import pw.core.PWField;
+import pw.core.accesser.PWAccesser;
 import pw.core.accesser.PWQuery;
 import pw.core.item.PWItem;
 
@@ -51,7 +52,7 @@ public class PWDeleteAction extends AbstractBasicAction {
 	@Override
 	public Object run(Object... objects) {
 		PWQuery query = getQuery(itemType, keyType, objects);
-		session.getAccesser().execute(query);
+		PWAccesser.getDefaultAccesser().execute(query);
 		return null;
 	}
 

@@ -34,6 +34,7 @@ import pw.action.basic.PWAddAction;
 import pw.core.PWAction;
 import pw.core.PWError;
 import pw.core.PWUtilities;
+import pw.core.accesser.PWAccesser;
 import pw.core.accesser.PWQuery;
 import pw.core.item.PWItem;
 import pw.item.division.ApprovalStatus;
@@ -51,7 +52,7 @@ public class PWRequestAction extends PWAction {
 	 * @see pw.core.action.PWAction#parseArguments(java.lang.String[])
 	 */
 	@Override
-	protected void parseArguments(String[] arguments) {
+	protected void parseSettingParameters(String[] arguments) {
 		if (arguments == null || arguments.length != 1) {
 			throw new PWError("%s requires a target bean classpath.", this.getClass().getName());
 		}
@@ -85,7 +86,7 @@ public class PWRequestAction extends PWAction {
 			queries[i] = query;
 		}
 		
-		session.getAccesser().execute(queries);
+		PWAccesser.getDefaultAccesser().execute(queries);
 		return null;
 	}
 

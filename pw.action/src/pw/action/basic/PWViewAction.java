@@ -30,6 +30,7 @@ package pw.action.basic;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -40,7 +41,9 @@ import java.util.regex.Pattern;
 import pw.core.PWAction;
 import pw.core.PWConverter;
 import pw.core.PWError;
+import pw.core.PWSession;
 import pw.core.PWUtilities;
+import pw.core.accesser.PWAccesser;
 import pw.core.accesser.PWAfterViewQuery;
 import pw.core.accesser.PWQuery;
 
@@ -67,23 +70,31 @@ public class PWViewAction extends PWAction {
 	 * @see pw.core.action.PWAction#parseArguments(java.lang.String[])
 	 */
 	@Override
-	protected void parseArguments(String[] arguments) {
-		if (arguments == null || arguments.length == 0) {
+	protected void parseSettingParameters(String[] settingParameters) {
+		if (settingParameters == null || settingParameters.length == 0) {
 			throw new PWError("[%s#constructor] requires SQL SELECT statement.", getClass().getName());
 		}
 		
 		// Set built in parameters
 		Calendar now = Calendar.getInstance();
-		buildInParameters.put(PARAMETER_USERID, session.getUserId());
+		buildInParameters.put(PARAMETER_USERID, PWSession.getUserId());
 		buildInParameters.put(PARAMETER_NOW, now.getTime());
 
 		// Get SQL file path
-		String relationalPath = arguments[0];
+		String firstLine = settingParameters[0];
+		String[] firstLineFields = firstLine.split(",");
+		String relationalPath = firstLineFields[0];
 		sqlFile = PWUtilities.getFileInResourceDirectory(relationalPath);
 		
+		// Get using Item class path
+		String[] classPathes = Arrays.copyOfRange(firstLineFields, 1, firstLineFields.length);
+		for (String classPath : classPathes) {
+			PWUtilities.getClass(classPath);
+		}
+		
 		// If 2 or more arguments, get all parameter names.
-		for (int i = 1; i < arguments.length; i++) {
-			String argument = arguments[i];
+		for (int i = 1; i < settingParameters.length; i++) {
+			String argument = settingParameters[i];
 			if (buildInParameters.containsKey(argument)) {
 				parameters.add(argument);
 				continue;
@@ -145,7 +156,7 @@ public class PWViewAction extends PWAction {
 		}
 		
 		PWAfterViewQuery afterQuery = new PWAfterViewQuery();
-		session.getAccesser().select(query, afterQuery);
+		PWAccesser.getDefaultAccesser().select(query, afterQuery);
 		return afterQuery.getView();
 	}
 

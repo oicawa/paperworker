@@ -44,7 +44,6 @@ import pw.core.converter.PWDateConverter;
 import pw.core.converter.PWStringConverter;
 import pw.core.converter.PWUuidConverter;
 import pw.core.table.PWTable;
-import pw.core.table.PWTableColumn;
 import pw.core.table.PWTableRow;
 
 /**
@@ -87,11 +86,10 @@ public class PWCsvFile {
 			StringBuffer columnNamesBuffer = new StringBuffer();
 			StringBuffer columnTypesBuffer = new StringBuffer();
 			for (int i = 0; i < table.getColumnCount(); i++) {
-				PWTableColumn column = table.getColumn(i);
 				columnNamesBuffer.append(COLUMN_SEPARATOR);
-				columnNamesBuffer.append(column.getName());
+				columnNamesBuffer.append(table.getColumnName(i));
 				columnTypesBuffer.append(COLUMN_SEPARATOR);
-				columnTypesBuffer.append(column.getDbType());
+				columnTypesBuffer.append(table.getColumnDbType(i));
 			}
 			String columnNames = table.getColumnCount() == 0 ? "" : columnNamesBuffer.substring(COLUMN_SEPARATOR.length());
 			String columnTypes = table.getColumnCount() == 0 ? "" : columnTypesBuffer.substring(COLUMN_SEPARATOR.length());
@@ -99,11 +97,10 @@ public class PWCsvFile {
 			writer.println(columnTypes);
 
 			// Write rows
-			for (PWTableRow row : table) {
+			for (PWTableRow row : table.getRows()) {
 				StringBuffer rowBuffer = new StringBuffer();
 				for (int i = 0; i < table.getColumnCount(); i++) {
-					PWTableColumn column = table.getColumn(i);
-					String value = converters.get(column.getDbType()).toString(row.getValue(i));
+					String value = converters.get(table.getColumnDbType(i)).toString(row.getValue(i));
 					if (value != null) {
 						value = value.replace("\r", "\\r");
 						value = value.replace("\n", "\\n");
@@ -140,9 +137,8 @@ public class PWCsvFile {
 			// Create view & columns
 			PWTable table = new PWTable(columns.length);
 			for (int i = 0; i < table.getColumnCount(); i++) {
-				PWTableColumn column = table.getColumn(i);
-				column.setName(columns[i]);
-				column.setDbType(types[i]);
+				table.setColumnName(i, columns[i]);
+				table.setColumnDbType(i, types[i]);
 			}
 			
 			// Create rows
@@ -179,7 +175,6 @@ public class PWCsvFile {
 		Object[] objects = new Object[types.length];
 		int begin = 0;
 		int cursor = 0;
-		int escape = -1;
 		int index = 0;
 		while(begin < line.length()) {
 			// Get comma index, and escape index

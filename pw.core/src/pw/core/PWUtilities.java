@@ -63,6 +63,29 @@ public class PWUtilities {
 		}
 	}
 	
+	public static <T> T createInstance(Class<T> type, Object... arguments) {
+		try {
+			Class<?>[] parameterTypes = new Class<?>[arguments.length];
+			for (int i = 0; i < arguments.length; i++) {
+				parameterTypes[i] = arguments[i].getClass();
+			}
+			Constructor<T> constructor = type.getConstructor(parameterTypes);
+			return constructor.newInstance(arguments);
+		} catch (InstantiationException e) {
+			throw new PWError(e, e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new PWError(e, e.getMessage());
+		} catch (IllegalArgumentException e) {
+			throw new PWError(e, e.getMessage());
+		} catch (InvocationTargetException e) {
+			throw new PWError(e, e.getMessage());
+		} catch (SecurityException e) {
+			throw new PWError(e, e.getMessage());
+		} catch (NoSuchMethodException e) {
+			throw new PWError(e, e.getMessage());
+		}
+	}
+	
 	public static Class<?> getClass(String classPath) {
 		Class<?> type;
 		try {

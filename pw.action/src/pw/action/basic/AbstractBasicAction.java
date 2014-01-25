@@ -59,7 +59,7 @@ public abstract class AbstractBasicAction extends PWAction {
 	 * @see pw.core.PWAction#parseArguments(java.lang.String[])
 	 */
 	@Override
-	protected void parseArguments(String[] arguments) {
+	protected void parseSettingParameters(String[] arguments) {
 		if (arguments.length == 0) {
 			throw new PWError("[%s#constructor] requires classpath and PWField.KeyType name(Optional. only 'Primary' or 'Unique').", getClass().getName());
 		}

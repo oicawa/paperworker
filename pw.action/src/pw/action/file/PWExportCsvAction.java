@@ -33,6 +33,7 @@ import java.io.File;
 import pw.core.PWAction;
 import pw.core.PWError;
 import pw.core.PWUtilities;
+import pw.core.accesser.PWAccesser;
 import pw.core.accesser.PWAfterViewQuery;
 import pw.core.accesser.PWQuery;
 import pw.core.csv.PWCsvFile;
@@ -50,7 +51,7 @@ public class PWExportCsvAction extends PWAction {
 	 * @see pw.core.action.PWAction#parseArguments(java.lang.String[])
 	 */
 	@Override
-	protected void parseArguments(String[] arguments) {
+	protected void parseSettingParameters(String[] arguments) {
 		if (arguments.length != 1) {
 			throw new PWError("Required 1 parameter as the target SQL file path.");
 		}
@@ -71,7 +72,7 @@ public class PWExportCsvAction extends PWAction {
 		File sqlFile = PWUtilities.getFileInResourceDirectory(sqlFilePath);
 		PWQuery query = new PWQuery(sqlFile);
 		PWAfterViewQuery afterQuery = new PWAfterViewQuery();
-		session.getAccesser().select(query, afterQuery);
+		PWAccesser.getDefaultAccesser().select(query, afterQuery);
 		PWTable view = afterQuery.getView();
 		
 		// Create file

@@ -29,35 +29,57 @@
 package pw.core.table;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 
 /**
  * @author masamitsu
  *
  */
-public class PWTable implements Iterable<PWTableRow> {
+public class PWTable {
 
-	private PWTableColumn[] columns;
+	private List<PWTableColumn> columns;
 	private List<PWTableRow> rows = new ArrayList<PWTableRow>();
 	
 	public PWTable(int columnCount) {
-		columns = new PWTableColumn[columnCount];
+		columns = new ArrayList<PWTableColumn>();
+		//columnMap = new HashMap<String, Integer>();
+		for (int i = 0; i < columnCount; i++) {
+			columns.add(new PWTableColumn());
+			//columnMap.
+		}
 	}
 
-	public PWTableColumn getColumn(int index) {
-		if (columns[index] == null) {
-			columns[index] = new PWTableColumn();
-		}
-		return columns[index];
+	public String getColumnLabel(int index) {
+		return columns.get(index).getLabel();
+	}
+
+	public void setColumnLabel(int index, String label) {
+		columns.get(index).setLabel(label);
+	}
+
+	public String getColumnName(int index) {
+		return columns.get(index).getName();
+	}
+
+	public void setColumnName(int index, String name) {
+		columns.get(index).setName(name);
+	}
+
+	public String getColumnDbType(int index) {
+		return columns.get(index).getDbType();
+	}
+
+	public void setColumnDbType(int index, String dbType) {
+		columns.get(index).setDbType(dbType);
 	}
 
 	public int getColumnCount() {
-		return columns.length;
+		return columns.size();
 	}
 	
 	public PWTableRow addRow() {
-		PWTableRow row = new PWTableRow(columns.length);
+		PWTableRow row = new PWTableRow(this);
 		rows.add(row);
 		return row;
 	}
@@ -66,11 +88,24 @@ public class PWTable implements Iterable<PWTableRow> {
 		return rows.get(index);
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Iterable#iterator()
+	public Collection<PWTableRow> getRows() {
+		return rows;
+	}
+
+	public Collection<PWTableColumn> getColumns() {
+		return columns;
+	}
+
+	/**
+	 * @param label
+	 * @return
 	 */
-	@Override
-	public Iterator<PWTableRow> iterator() {
-		return rows.iterator();
+	public int getColumnIndex(String label) {
+		for (int i = 0; i < columns.size(); i++) {
+			if (columns.get(i).getLabel().equals(label)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }

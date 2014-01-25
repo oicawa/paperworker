@@ -86,7 +86,7 @@ public class Jobs {
 	
 	public void registAction(String name, PWAction action, String... arguments) {
 		assert(session != null);
-		action.setSession(session);
+		//action.setSession(session);
 		action.setParameters(arguments);
 		actions.put(name, action);
 	}

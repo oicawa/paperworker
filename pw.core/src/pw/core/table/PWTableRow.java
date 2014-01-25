@@ -33,10 +33,12 @@ package pw.core.table;
  *
  */
 public class PWTableRow {
+	private PWTable table;
 	private Object[] values;
 
-	PWTableRow(int columnCount) {
-		values = new Object[columnCount];
+	PWTableRow(PWTable table) {
+		this.table = table;
+		values = new Object[table.getColumnCount()];
 	}
 	
 	public void setValue(int index, Object value) {
@@ -45,5 +47,20 @@ public class PWTableRow {
 	
 	public Object getValue(int index) {
 		return values[index];
+	}
+
+	/**
+	 * @return
+	 */
+	public Object[] getValues() {
+		return values;
+	}
+
+	/**
+	 * @param string
+	 * @return
+	 */
+	public Object getValue(String label) {
+		return getValue(table.getColumnIndex(label));
 	}
 }

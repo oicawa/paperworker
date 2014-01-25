@@ -28,13 +28,13 @@
 
 package pw.core.accesser;
 
+import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import pw.core.PWError;
 import pw.core.table.PWTable;
-import pw.core.table.PWTableColumn;
 import pw.core.table.PWTableRow;
 
 /**
@@ -43,7 +43,7 @@ import pw.core.table.PWTableRow;
  */
 public class PWAfterViewQuery implements PWAfterQuery<ResultSet> {
 
-	private PWTable view;
+	private PWTable table;
 	
 	public PWAfterViewQuery() {
 	}
@@ -54,19 +54,24 @@ public class PWAfterViewQuery implements PWAfterQuery<ResultSet> {
         	// Get metadata
         	ResultSetMetaData meta = resultSet.getMetaData();
         	int columnCount = meta.getColumnCount();
-        	view = new PWTable(columnCount);
+        	table = new PWTable(columnCount);
         	for (int i = 0; i < columnCount; i++) {
-        		PWTableColumn column = view.getColumn(i);
-        		column.setLabel(meta.getColumnLabel(i + 1));
-        		column.setName(meta.getColumnName(i + 1));
-        		column.setDbType(meta.getColumnTypeName(i + 1));
+        		table.setColumnLabel(i, meta.getColumnLabel(i + 1));
+        		table.setColumnName(i, meta.getColumnName(i + 1));
+        		table.setColumnDbType(i, meta.getColumnTypeName(i + 1));
         	}
         	
         	// Get all row data
 			while (resultSet.next()) {
-				PWTableRow row = view.addRow();
+				PWTableRow row = table.addRow();
 				for (int i = 0; i < columnCount; i++) {
-					row.setValue(i, resultSet.getObject(i + 1));
+					Object object = resultSet.getObject(i + 1);
+					if (object instanceof Clob) {
+		    			Clob clob = resultSet.getClob(i + 1);
+		    			String value = clob == null ? null : clob.getSubString(1, (int) clob.length());
+		    			object = value;
+					}
+					row.setValue(i, object);
 				}
 			}
 		} catch (SQLException e) {
@@ -75,7 +80,7 @@ public class PWAfterViewQuery implements PWAfterQuery<ResultSet> {
 	}
 
 	public PWTable getView() {
-		return view;
+		return table;
 	}
 
 }

@@ -40,7 +40,7 @@ public class PWPrintAction extends PWAction {
 	 * @see pw.core.action.PWAction#parseArguments(java.lang.String[])
 	 */
 	@Override
-	protected void parseArguments(String[] arguments) {
+	protected void parseSettingParameters(String[] arguments) {
 		// TODO Auto-generated method stub
 
 	}

@@ -32,6 +32,7 @@ import java.util.List;
 
 import pw.core.PWError;
 import pw.core.PWField;
+import pw.core.accesser.PWAccesser;
 import pw.core.accesser.PWAfterSqlQuery;
 import pw.core.accesser.PWQuery;
 import pw.core.item.PWItem;
@@ -51,13 +52,12 @@ public class PWDetailAction extends AbstractBasicAction {
 	 */
 	@Override
 	public Object run(Object... objects) {
-		assert(session != null);
 		assert(objects.length == 1);
 		assert(objects[0] != null);
 		
 		PWQuery query = getQuery(itemType, keyType, objects);
 		PWAfterSqlQuery afterQuery = new PWAfterSqlQuery(itemType);
-		session.getAccesser().select(query, afterQuery);
+		PWAccesser.getDefaultAccesser().select(query, afterQuery);
 		List<Object> list = afterQuery.getItemList();
 		return list.size() == 0 ? null : list.get(0);
 	}

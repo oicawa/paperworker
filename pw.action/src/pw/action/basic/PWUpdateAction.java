@@ -32,6 +32,7 @@ import java.util.List;
 
 import pw.core.PWField;
 import pw.core.PWUtilities;
+import pw.core.accesser.PWAccesser;
 import pw.core.accesser.PWQuery;
 import pw.core.item.PWItem;
 
@@ -50,7 +51,6 @@ public class PWUpdateAction extends AbstractBasicAction {
 	 */
 	@Override
 	public Object run(Object... objects) {
-		assert(session != null);
 		assert(2 <= objects.length);
 		assert(objects[0] != null);
 		assert(objects[1] != null);
@@ -71,7 +71,7 @@ public class PWUpdateAction extends AbstractBasicAction {
 		if (query == null) {
 			return null;
 		}
-		session.getAccesser().execute(query);
+		PWAccesser.getDefaultAccesser().execute(query);
         return null;
 	}
 	

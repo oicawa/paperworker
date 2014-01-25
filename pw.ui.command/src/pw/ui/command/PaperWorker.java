@@ -99,7 +99,7 @@ public class PaperWorker implements Closeable {
 	}
 	
 	public void close() {
-		session.getAccesser().close();
+		PWAccesser.closeAllConnections();
 	}
 
 	private void run() {
@@ -113,19 +113,18 @@ public class PaperWorker implements Closeable {
 			if (userId.equals("")) {
 				continue;
 			}
-			session.setAccesser(PWAccesser.getAccesser(userId));
-			session.setUserId(userId);
+			PWSession.setUserId(userId);
 			jobs = new Jobs(session);
 			
 			message("");
-			message("Welcome to PaperWorker system, %s", session.getUserId());
+			message("Welcome to PaperWorker system, %s", PWSession.getUserId());
 			message("");
 			
 			break;
 		}
 		
 		while (true) {
-			String input = prompt("%s > ", session.getUserId());
+			String input = prompt("%s > ", PWSession.getUserId());
 			
 			if (input.equals("")) {
 				continue;
@@ -241,7 +240,7 @@ public class PaperWorker implements Closeable {
 		@SuppressWarnings("unchecked")
 		Class<PWAction> actionType = (Class<PWAction>)PWUtilities.getClass(setting.getActionClassPath());
 		PWAction action = (PWAction)PWUtilities.createInstance(actionType);
-		action.setSession(session);
+		//action.setSession(session);
 		action.setParameters(setting.getArgumentArray());
 		
 		try {

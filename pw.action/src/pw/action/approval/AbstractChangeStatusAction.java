@@ -35,6 +35,8 @@ import java.util.UUID;
 
 import pw.core.PWAction;
 import pw.core.PWError;
+import pw.core.PWSession;
+import pw.core.accesser.PWAccesser;
 import pw.core.accesser.PWAfterSqlQuery;
 import pw.core.accesser.PWQuery;
 import pw.item.division.ApprovalStatus;
@@ -59,7 +61,7 @@ public abstract class AbstractChangeStatusAction extends PWAction {
 	 * @see pw.core.action.PWAction#parseArguments(java.lang.String[])
 	 */
 	@Override
-	protected void parseArguments(String[] arguments) {
+	protected void parseSettingParameters(String[] arguments) {
 	}
 
 	/* (non-Javadoc)
@@ -78,21 +80,21 @@ public abstract class AbstractChangeStatusAction extends PWAction {
 			throw new PWError("The document does not request you to approve. [DocumentID: %s]", documentId.toString());
 		}
 		List<PWQuery> queries = new ArrayList<PWQuery>();
-		queries.add(getQueryForUpdateRequested(documentId, session.getUserId(), status));
+		queries.add(getQueryForUpdateRequested(documentId, PWSession.getUserId(), status));
 		
 		Approval next = getNextApproval(documentId, requested.getOrderNo() + 1);
 		if (next != null && status == ApprovalStatus.Approved) {
 			queries.add(getQueryForUpdateNext(documentId, next.getOrderNo()));
 		}
 		
-		session.getAccesser().execute(queries.toArray(new PWQuery[queries.size()]));
+		PWAccesser.getDefaultAccesser().execute(queries.toArray(new PWQuery[queries.size()]));
 		return null;
 	}
 	
 	private Approval getRequestedApproval(UUID documentId) {
-		PWQuery query = getQueryForRequested(documentId, session.getUserId());
+		PWQuery query = getQueryForRequested(documentId, PWSession.getUserId());
 		PWAfterSqlQuery afterQuery = new PWAfterSqlQuery(Approval.class);
-		session.getAccesser().select(query, afterQuery);
+		PWAccesser.getDefaultAccesser().select(query, afterQuery);
 		List<Object> items = afterQuery.getItemList();
 		if (items == null || items.size() == 0) {
 			return null;
@@ -103,7 +105,7 @@ public abstract class AbstractChangeStatusAction extends PWAction {
 	private Approval getNextApproval(UUID documentId, int nextOrderNo) {
 		PWQuery query = getQueryForNext(documentId, nextOrderNo);
 		PWAfterSqlQuery afterQuery = new PWAfterSqlQuery(Approval.class);
-		session.getAccesser().select(query, afterQuery);
+		PWAccesser.getDefaultAccesser().select(query, afterQuery);
 		List<Object> items = afterQuery.getItemList();
 		if (items == null || items.size() == 0) {
 			return null;
