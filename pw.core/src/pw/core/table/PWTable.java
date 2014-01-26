@@ -30,6 +30,7 @@ package pw.core.table;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -38,44 +39,44 @@ import java.util.List;
  */
 public class PWTable {
 
-	private List<PWTableColumn> columns;
+	private List<PWTableColumn> columnList;
+	private HashMap<String, Integer> indexMap;
 	private List<PWTableRow> rows = new ArrayList<PWTableRow>();
 	
 	public PWTable(int columnCount) {
-		columns = new ArrayList<PWTableColumn>();
-		//columnMap = new HashMap<String, Integer>();
+		columnList = new ArrayList<PWTableColumn>();
+		indexMap = new HashMap<String, Integer>();
 		for (int i = 0; i < columnCount; i++) {
-			columns.add(new PWTableColumn());
-			//columnMap.
+			columnList.add(new PWTableColumn());
 		}
 	}
 
 	public String getColumnLabel(int index) {
-		return columns.get(index).getLabel();
+		return columnList.get(index).getLabel();
 	}
 
 	public void setColumnLabel(int index, String label) {
-		columns.get(index).setLabel(label);
+		columnList.get(index).setLabel(label);
 	}
 
 	public String getColumnName(int index) {
-		return columns.get(index).getName();
+		return columnList.get(index).getName();
 	}
 
 	public void setColumnName(int index, String name) {
-		columns.get(index).setName(name);
+		columnList.get(index).setName(name);
 	}
 
 	public String getColumnDbType(int index) {
-		return columns.get(index).getDbType();
+		return columnList.get(index).getDbType();
 	}
 
 	public void setColumnDbType(int index, String dbType) {
-		columns.get(index).setDbType(dbType);
+		columnList.get(index).setDbType(dbType);
 	}
 
 	public int getColumnCount() {
-		return columns.size();
+		return columnList.size();
 	}
 	
 	public PWTableRow addRow() {
@@ -93,7 +94,7 @@ public class PWTable {
 	}
 
 	public Collection<PWTableColumn> getColumns() {
-		return columns;
+		return columnList;
 	}
 
 	/**
@@ -101,8 +102,14 @@ public class PWTable {
 	 * @return
 	 */
 	public int getColumnIndex(String label) {
-		for (int i = 0; i < columns.size(); i++) {
-			if (columns.get(i).getLabel().equals(label)) {
+		if (indexMap.containsKey(label)) {
+			return indexMap.get(label);
+		}
+		
+		for (int i = 0; i < columnList.size(); i++) {
+			String headerValue = columnList.get(i).getLabel();
+			if (headerValue.equals(label)) {
+				indexMap.put(label, i);
 				return i;
 			}
 		}

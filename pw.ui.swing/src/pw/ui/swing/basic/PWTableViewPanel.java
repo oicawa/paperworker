@@ -120,19 +120,18 @@ public class PWTableViewPanel extends JPanel {
 		}
 	}
 
-	protected void addColumn(String headerName) {
-		int count = tableColumns.getColumnCount();
-		TableColumn column = new TableColumn();
-		column.setHeaderValue(headerName);
-		column.setModelIndex(count);	// Require. If not set, all column header value is set by last specified header name.
-		tableColumns.addColumn(column);
-		tableModel.addColumn(column);
-		columnMap.put(headerName, column);
-	}
-	
-	public void setColumnHeaderCaption(String headerName, String caption) {
-		TableColumn column = columnMap.get(headerName);
-		column.setHeaderRenderer(new PWViewCellRenderer(caption));
+	public void addColumnHeader(String mappingName, String displayName) {
+		if (!columnMap.containsKey(mappingName)) {
+			int count = columnMap.size();
+			TableColumn column = new TableColumn();
+			column.setHeaderValue(mappingName);
+			column.setModelIndex(count);	// Require. If not set, all column header value is set by last specified header name.
+			tableColumns.addColumn(column);
+			tableModel.addColumn(column);
+			columnMap.put(mappingName, column);
+		}
+		TableColumn column = columnMap.get(mappingName);
+		column.setHeaderRenderer(new PWViewCellRenderer(displayName));
 	}
 	
 	public void setColumnVisible(String headerName, boolean isVisible) {
@@ -208,18 +207,24 @@ public class PWTableViewPanel extends JPanel {
 	public void setData(PWTable dataTable) {
 		// Reset
 		removeAllRows();
-		removeAllColumns();
 		
 		this.tableData = dataTable;
 		
 		// Set Columns
-		for (PWTableColumn column : dataTable.getColumns()) {
-			addColumn(column.getLabel());
+		int count = tableColumns.getColumnCount();
+		List<String> headerValues = new ArrayList<String>();
+		for (int i = 0; i < count; i++) {
+			headerValues.add(tableColumns.getColumn(i).getHeaderValue().toString());
 		}
 		
 		// Set Rows
 		for (PWTableRow row : dataTable.getRows()) {
-			addRow(row.getValues());
+			Object[] values = new Object[count];
+			for (int i = 0; i < count; i++) {
+				String headerValue = headerValues.get(i);
+				values[i] = row.getValue(headerValue);
+			}
+			addRow(values);
 		}
 	}
 	
