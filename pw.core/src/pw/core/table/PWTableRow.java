@@ -28,17 +28,22 @@
 
 package pw.core.table;
 
+
 /**
  * @author masamitsu
  *
  */
 public class PWTableRow {
-	private PWTable table;
+	private PWTableColumns columns;
 	private Object[] values;
 
-	PWTableRow(PWTable table) {
-		this.table = table;
-		values = new Object[table.getColumnCount()];
+	PWTableRow(PWTableColumns columns) {
+		this.columns = columns;
+		values = new Object[columns.getCount()];
+	}
+	
+	public PWTableColumns getColumns() {
+		return columns;
 	}
 	
 	public void setValue(int index, Object value) {
@@ -48,19 +53,15 @@ public class PWTableRow {
 	public Object getValue(int index) {
 		return values[index];
 	}
+	
+	public Object getValue(String name) {
+		return values[columns.getIndex(name)];
+	}
 
 	/**
 	 * @return
 	 */
 	public Object[] getValues() {
 		return values;
-	}
-
-	/**
-	 * @param string
-	 * @return
-	 */
-	public Object getValue(String label) {
-		return getValue(table.getColumnIndex(label));
 	}
 }

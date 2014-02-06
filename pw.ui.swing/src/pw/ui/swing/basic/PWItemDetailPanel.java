@@ -39,10 +39,7 @@ import javax.swing.JPanel;
 
 import pw.core.PWAction;
 import pw.core.PWField;
-import pw.core.PWSession;
-import pw.core.accesser.PWAccesser;
 import pw.core.item.PWItem;
-import pw.ui.swing.PWFieldDefinition;
 
 /**
  * @author masamitsu

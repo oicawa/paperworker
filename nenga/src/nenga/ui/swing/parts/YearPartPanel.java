@@ -30,15 +30,26 @@ package nenga.ui.swing.parts;
 
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.JButton;
 
+import pw.core.PWUtilities;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
 
 /**
@@ -50,10 +61,15 @@ public class YearPartPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = -4697002083764833898L;
+	private JPanel yearPanel;
+	private JComboBox yearComboBox;
 	private JLabel yearLabel;
 	private JLabel yearCaptionLabel;
 	private JLabel fillerLabel;
 	private JButton yearChangeButton;
+	private int year;
+	private ItemListener defaultListener;
+	private ItemListener addedListener;
 	public YearPartPanel() {
 		setBorder(new TitledBorder(null, "対象年", TitledBorder.LEFT, TitledBorder.TOP, null, null));
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -62,14 +78,39 @@ public class YearPartPanel extends JPanel {
 		gridBagLayout.rowWeights = new double[]{0.0};
 		setLayout(gridBagLayout);
 		
-		yearLabel = new JLabel("9999");
+		yearLabel = new JLabel();
 		yearLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		GridBagConstraints gbc_yearLabel = new GridBagConstraints();
-		gbc_yearLabel.anchor = GridBagConstraints.WEST;
-		gbc_yearLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_yearLabel.gridx = 0;
-		gbc_yearLabel.gridy = 0;
-		add(yearLabel, gbc_yearLabel);
+		
+		defaultListener = new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent arg0) {
+				final JComboBox combobox = (JComboBox)arg0.getSource();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						year = (Integer)combobox.getSelectedItem();
+						updateComboBox();
+						yearComboBox.setVisible(false);
+						yearLabel.setVisible(true);
+						yearLabel.setText(String.format("%d", year));
+						update();
+					}
+				});
+			}
+		};
+		
+		yearComboBox = new JComboBox();
+		
+		yearPanel = new JPanel();
+		yearPanel.setLayout(new FlowLayout());
+		yearPanel.add(yearLabel);
+		yearPanel.add(yearComboBox);
+		GridBagConstraints gbc_yearPanel = new GridBagConstraints();
+		gbc_yearPanel.anchor = GridBagConstraints.WEST;
+		gbc_yearPanel.insets = new Insets(0, 0, 5, 5);
+		gbc_yearPanel.gridx = 0;
+		gbc_yearPanel.gridy = 0;
+		add(yearPanel, gbc_yearPanel);
 		
 		yearCaptionLabel = new JLabel("年");
 		GridBagConstraints gbc_yearCaptionLabel = new GridBagConstraints();
@@ -88,6 +129,19 @@ public class YearPartPanel extends JPanel {
 		add(fillerLabel, gbc_fillerLabel);
 		
 		yearChangeButton = new JButton("変更");
+		yearChangeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						yearComboBox.setVisible(true);
+						yearLabel.setVisible(false);
+						update();
+					}
+				});
+			}
+		});
 		GridBagConstraints gbc_yearChangeButton = new GridBagConstraints();
 		gbc_yearChangeButton.insets = new Insets(0, 0, 5, 0);
 		gbc_yearChangeButton.gridx = 3;
@@ -97,13 +151,43 @@ public class YearPartPanel extends JPanel {
 		initialize();
 	}
 	
-	void initialize() {
-		// Reset Year Label
-		Calendar calendar = Calendar.getInstance();
-		int year = calendar.get(Calendar.YEAR);
-		int month = calendar.get(Calendar.MONTH);
-		if (11 <= month)
-			year += 1;
-		this.yearLabel.setText(String.valueOf(year));
+	private void initialize() {
+		yearLabel.setVisible(true);
+		yearComboBox.setVisible(false);
+	}
+	
+	public void setYear(int year) {
+		this.year = year;
+		yearLabel.setText(String.format("%d", year));
+		updateComboBox();
+	}
+	
+	/**
+	 * 
+	 */
+	private void updateComboBox() {
+		for (ItemListener listener : yearComboBox.getItemListeners()) {
+			yearComboBox.removeItemListener(listener);
+		}
+		
+		final int span = 5;
+		int start = year - (span / 2);
+		yearComboBox.removeAllItems();
+		for (int i = start; i < start + span; i++) {
+			yearComboBox.addItem(i);
+		}
+		yearComboBox.setSelectedItem(year);
+		
+		yearComboBox.addItemListener(defaultListener);
+		yearComboBox.addItemListener(addedListener);
+	}
+
+	private void update() {
+		yearLabel.setText(String.valueOf(year));
+	}
+	
+	public void setItemListener(ItemListener listener) {
+		addedListener = listener;
+		yearComboBox.addItemListener(addedListener);
 	}
 }

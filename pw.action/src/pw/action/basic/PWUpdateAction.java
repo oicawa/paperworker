@@ -28,8 +28,10 @@
 
 package pw.action.basic;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import pw.core.PWError;
 import pw.core.PWField;
 import pw.core.PWUtilities;
 import pw.core.accesser.PWAccesser;
@@ -51,10 +53,29 @@ public class PWUpdateAction extends AbstractBasicAction {
 	 */
 	@Override
 	public Object run(Object... objects) {
-		assert(2 <= objects.length);
-		assert(objects[0] != null);
-		assert(objects[1] != null);
+		// Check argument counts
+		if (objects.length == 0) {
+			throw new PWError("Update Action Failed.(Too few arguments.)");
+		}
 		
+		// Check argument types
+		if (!(objects[0] instanceof PWItem)) {
+			throw new PWError("Update Action Failed.(Illegal data type of 1st argument.)");
+		}
+
+		if (objects.length == 1) {
+			updateMultiItems(objects);
+		}
+		
+		if (objects[1] instanceof String) {
+			updateSingleItem(objects);
+		} else {
+			updateMultiItems(objects);
+		}
+        return null;
+	}
+	
+	private void updateSingleItem(Object... objects) {
 		List<PWField> keyFields = PWItem.getFields(itemType, keyType);
 		
 		PWItem item = (PWItem)objects[0];
@@ -69,10 +90,32 @@ public class PWUpdateAction extends AbstractBasicAction {
 		
 		PWQuery query = getQuery(item, keyType, keyValues);
 		if (query == null) {
-			return null;
+			return;
 		}
 		PWAccesser.getDefaultAccesser().execute(query);
-        return null;
+	}
+	
+	private void updateMultiItems(Object... objects) {
+		List<PWField> keyFields = PWItem.getFields(itemType, keyType);
+
+		List<PWQuery> queries = new ArrayList<PWQuery>();
+		for (Object object : objects) {
+			PWItem item = (PWItem)object;
+			
+			Object[] keyValues = new Object[keyFields.size()];
+			for (int i = 0; i < keyFields.size(); i++) {
+				PWField keyField = keyFields.get(i);
+				keyValues[i] = PWItem.getValue(item, keyField.getName());
+			}
+			
+			PWQuery query = getQuery(item, keyType, keyValues);
+			if (query == null) {
+				continue;
+			}
+			queries.add(query);
+		}
+		PWQuery[] queryArray = queries.toArray(new PWQuery[0]);
+		PWAccesser.getDefaultAccesser().execute(queryArray);
 	}
 	
 	public static PWQuery getQuery(PWItem item, PWField.KeyType keyType, Object... keyValues) {

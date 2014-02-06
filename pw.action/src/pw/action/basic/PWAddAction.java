@@ -50,19 +50,17 @@ public class PWAddAction extends AbstractBasicAction {
 	 */
 	@Override
 	public Object run(Object... objects) {
-		assert(objects.length == 1);
-		assert(objects[0] != null);
-		PWItem item = (PWItem)objects[0];
-		PWQuery query = getQuery(item);
-		PWAccesser.getDefaultAccesser().execute(query);
+		PWQuery[] queries = new PWQuery[objects.length];
+		for (int i = 0; i < objects.length; i++) {
+			PWItem item = (PWItem)objects[i];
+			PWQuery query = getQuery(item);
+			queries[i] = query;
+		}
+		PWAccesser.getDefaultAccesser().execute(queries);
         return null;
 	}
 
 	public static PWQuery getQuery(PWItem item) {
-    	return getQuery(item, false);
-	}
-
-	public static PWQuery getQuery(PWItem item, boolean isMerge) {
     	List<PWField> fields = PWItem.getFields(item.getClass());
     	
     	// Create the fields part of query
@@ -74,7 +72,7 @@ public class PWAddAction extends AbstractBasicAction {
     	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
     	
     	// Create all query
-    	String allQuery = String.format("%s into %s values (%s);", isMerge ? "merge" : "insert", PWQuery.getTableName(item.getClass()), fieldsQuery);
+    	String allQuery = String.format("insert into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
     	
     	// Create PWQuery
     	PWQuery query = new PWQuery(allQuery);

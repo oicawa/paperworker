@@ -1,5 +1,5 @@
 /*
- *  $Id: PWViewColumn.java 2013/10/26 8:14:03 masamitsu $
+ *  $Id: PWTableColumns.java 2014/02/01 10:20:58 masamitsu $
  *
  *  ===============================================================================
  *
@@ -28,30 +28,50 @@
 
 package pw.core.table;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * @author masamitsu
  *
  */
-class PWTableColumn {
-	private int index;
-	private String name;
-	private String dbType;
-	
-	PWTableColumn(int index, String name, String dbType) {
-		this.index = index;
-		this.name = name;
-		this.dbType = dbType;
+public class PWTableColumns {
+	private List<PWTableColumn> columns;
+	private HashMap<String, PWTableColumn> nameMap;
+
+	public PWTableColumns() {
+		columns = new ArrayList<PWTableColumn>();
+		nameMap = new HashMap<String, PWTableColumn>();
 	}
 	
-	int getIndex() {
-		return index;
+	public void add(String name, String dbType) {
+		int index = columns.size();
+		PWTableColumn column = new PWTableColumn(index, name, dbType);
+		columns.add(column);
+		nameMap.put(name, column);
 	}
-	
-	String getName() {
-		return name;
+
+	public String getName(int index) {
+		return columns.get(index).getName();
 	}
-	
-	String getDbType() {
-		return dbType;
+
+	public String getDbType(int index) {
+		return columns.get(index).getDbType();
+	}
+
+	public int getCount() {
+		return columns.size();
+	}
+
+	/**
+	 * @param label
+	 * @return
+	 */
+	public int getIndex(String name) {
+		if (!nameMap.containsKey(name)) {
+			return -1;
+		}
+		return nameMap.get(name).getIndex();
 	}
 }

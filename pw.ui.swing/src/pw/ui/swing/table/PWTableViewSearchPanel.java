@@ -26,7 +26,7 @@
  *  ===============================================================================
  */
 
-package pw.ui.swing.basic;
+package pw.ui.swing.table;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;

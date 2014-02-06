@@ -1,5 +1,5 @@
 /*
- *  $Id: PWViewColumn.java 2013/10/26 8:14:03 masamitsu $
+ *  $Id: PWUuidConverter.java 2013/10/27 20:05:15 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,32 +26,32 @@
  *  ===============================================================================
  */
 
-package pw.core.table;
+package pw.core.converter;
+
+import java.util.UUID;
+
+import pw.core.PWConverter;
 
 /**
  * @author masamitsu
  *
  */
-class PWTableColumn {
-	private int index;
-	private String name;
-	private String dbType;
-	
-	PWTableColumn(int index, String name, String dbType) {
-		this.index = index;
-		this.name = name;
-		this.dbType = dbType;
+public class PWUUIDConverter implements PWConverter {
+
+	/* (non-Javadoc)
+	 * @see pw.core.PWConverter#toObject(java.lang.String)
+	 */
+	@Override
+	public Object toObject(String value) {
+		return UUID.fromString(value);
 	}
-	
-	int getIndex() {
-		return index;
+
+	/* (non-Javadoc)
+	 * @see pw.core.PWConverter#toString(java.lang.Object)
+	 */
+	@Override
+	public String toString(Object object) {
+		return ((UUID)object).toString();
 	}
-	
-	String getName() {
-		return name;
-	}
-	
-	String getDbType() {
-		return dbType;
-	}
+
 }

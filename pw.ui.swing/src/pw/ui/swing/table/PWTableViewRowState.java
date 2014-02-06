@@ -1,5 +1,5 @@
 /*
- *  $Id: PWUuidConverter.java 2013/10/27 20:05:15 masamitsu $
+ *  $Id: PWTableViewRowState.java 2014/02/02 12:29:41 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,32 +26,15 @@
  *  ===============================================================================
  */
 
-package pw.core.converter;
-
-import java.util.UUID;
-
-import pw.core.PWConverter;
+package pw.ui.swing.table;
 
 /**
  * @author masamitsu
  *
  */
-public class PWUuidConverter implements PWConverter {
-
-	/* (non-Javadoc)
-	 * @see pw.core.PWConverter#toObject(java.lang.String)
-	 */
-	@Override
-	public Object toObject(String value) {
-		return UUID.fromString(value);
-	}
-
-	/* (non-Javadoc)
-	 * @see pw.core.PWConverter#toString(java.lang.Object)
-	 */
-	@Override
-	public String toString(Object object) {
-		return ((UUID)object).toString();
-	}
-
+public enum PWTableViewRowState {
+	None,
+	Added,
+	Modified,
+	Deleted,
 }

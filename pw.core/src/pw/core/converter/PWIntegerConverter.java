@@ -1,5 +1,5 @@
 /*
- *  $Id: PWViewColumn.java 2013/10/26 8:14:03 masamitsu $
+ *  $Id: PWStringConverter.java 2013/10/26 21:02:46 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,32 +26,30 @@
  *  ===============================================================================
  */
 
-package pw.core.table;
+package pw.core.converter;
+
+import pw.core.PWConverter;
 
 /**
  * @author masamitsu
  *
  */
-class PWTableColumn {
-	private int index;
-	private String name;
-	private String dbType;
-	
-	PWTableColumn(int index, String name, String dbType) {
-		this.index = index;
-		this.name = name;
-		this.dbType = dbType;
+public class PWIntegerConverter implements PWConverter {
+
+	/* (non-Javadoc)
+	 * @see pw.core.view.PWConverter#convert(java.lang.String)
+	 */
+	@Override
+	public Object toObject(String value) {
+		return (Integer)Integer.parseInt(value);
 	}
-	
-	int getIndex() {
-		return index;
+
+	/* (non-Javadoc)
+	 * @see pw.core.PWConverter#toString(java.lang.Object)
+	 */
+	@Override
+	public String toString(Object object) {
+		return String.format("%d", object);
 	}
-	
-	String getName() {
-		return name;
-	}
-	
-	String getDbType() {
-		return dbType;
-	}
+
 }

@@ -1,5 +1,5 @@
 /*
- *  $Id: PWViewColumn.java 2013/10/26 8:14:03 masamitsu $
+ *  $Id: PWTableViewHeaderRenderer.java 2014/01/27 22:47:07 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,32 +26,24 @@
  *  ===============================================================================
  */
 
-package pw.core.table;
+package pw.ui.swing.table;
 
-/**
- * @author masamitsu
- *
- */
-class PWTableColumn {
-	private int index;
-	private String name;
-	private String dbType;
-	
-	PWTableColumn(int index, String name, String dbType) {
-		this.index = index;
-		this.name = name;
-		this.dbType = dbType;
+import java.awt.Component;
+
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
+
+class PWTableViewHeaderRenderer implements TableCellRenderer {
+	private JLabel captionLabel;
+	PWTableViewHeaderRenderer(String caption) {
+		this.captionLabel = new JLabel(caption);
+	}
+	@Override
+	public Component getTableCellRendererComponent(JTable table,
+			Object value, boolean isSelected, boolean hasFocus, int row,
+			int column) {
+		return captionLabel;
 	}
 	
-	int getIndex() {
-		return index;
-	}
-	
-	String getName() {
-		return name;
-	}
-	
-	String getDbType() {
-		return dbType;
-	}
 }

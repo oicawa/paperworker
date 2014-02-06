@@ -146,9 +146,10 @@ public class PWViewAction extends PWAction {
 			
 			if (converters.containsKey(parameterName)) {
 				PWConverter converter = converters.get(parameterName);
-				String value = (String)objects[index];
+				//String value = (String)objects[index];
+				//query.addValue(converter.toObject(value));
+				query.addValue(objects[index]);
 				index++;
-				query.addValue(converter.toObject(value));
 				continue;
 			}
 			

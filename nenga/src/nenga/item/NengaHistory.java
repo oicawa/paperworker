@@ -85,6 +85,12 @@ public class NengaHistory extends PWItem {
 	public void setReceiverAddressId(UUID receiverAddressId) {
 		this.receiverAddressId = receiverAddressId;
 	}
+	public String getHonorific() {
+		return honorific;
+	}
+	public void setHonorific(String honorific) {
+		this.honorific = honorific;
+	}
 	public Date getSentDate() {
 		return sentDate;
 	}

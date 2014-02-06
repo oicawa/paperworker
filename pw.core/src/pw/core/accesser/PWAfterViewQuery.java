@@ -35,6 +35,7 @@ import java.sql.SQLException;
 
 import pw.core.PWError;
 import pw.core.table.PWTable;
+import pw.core.table.PWTableColumns;
 import pw.core.table.PWTableRow;
 
 /**
@@ -54,12 +55,14 @@ public class PWAfterViewQuery implements PWAfterQuery<ResultSet> {
         	// Get metadata
         	ResultSetMetaData meta = resultSet.getMetaData();
         	int columnCount = meta.getColumnCount();
-        	table = new PWTable(columnCount);
+        	PWTableColumns columns = new PWTableColumns();
         	for (int i = 0; i < columnCount; i++) {
-        		table.setColumnLabel(i, meta.getColumnLabel(i + 1));
-        		table.setColumnName(i, meta.getColumnName(i + 1));
-        		table.setColumnDbType(i, meta.getColumnTypeName(i + 1));
+        		//String name = meta.getColumnName(i + 1);
+        		String name = meta.getColumnLabel(i + 1);
+        		String dbType = meta.getColumnTypeName(i + 1);
+        		columns.add(name, dbType);
         	}
+        	table = new PWTable(columns);
         	
         	// Get all row data
 			while (resultSet.next()) {

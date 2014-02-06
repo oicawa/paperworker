@@ -1,5 +1,5 @@
 /*
- *  $Id: PWViewColumn.java 2013/10/26 8:14:03 masamitsu $
+ *  $Id: PWTableModel.java 2014/01/27 22:49:22 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,32 +26,38 @@
  *  ===============================================================================
  */
 
-package pw.core.table;
+package pw.ui.swing.table;
+
+import java.util.HashMap;
+
+import javax.swing.table.DefaultTableModel;
 
 /**
  * @author masamitsu
  *
  */
-class PWTableColumn {
-	private int index;
-	private String name;
-	private String dbType;
+class PWTableModel extends DefaultTableModel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8124884810159811905L;
 	
-	PWTableColumn(int index, String name, String dbType) {
-		this.index = index;
-		this.name = name;
-		this.dbType = dbType;
+	protected HashMap<Integer, Boolean> columnEditableMap;
+	
+	PWTableModel() {
+		columnEditableMap = new HashMap<Integer, Boolean>();
+	}
+
+	@Override
+	public boolean isCellEditable(int row, int column) {
+		if (!columnEditableMap.containsKey(column)) {
+			return false;
+		}
+		
+		return columnEditableMap.get(column);
 	}
 	
-	int getIndex() {
-		return index;
-	}
-	
-	String getName() {
-		return name;
-	}
-	
-	String getDbType() {
-		return dbType;
+	void setColumnEditable(int columnIndex, boolean editable) {
+		columnEditableMap.put(columnIndex, editable);
 	}
 }

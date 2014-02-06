@@ -30,12 +30,23 @@ package nenga.ui.swing;
 
 import java.awt.GridBagLayout;
 
+import pw.core.PWAction;
+import pw.core.table.PWTable;
 import pw.ui.swing.PWJobPane;
+import pw.ui.swing.table.PWTableViewPanel;
 
 import java.awt.Color;
-
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Calendar;
+import java.util.UUID;
+
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 
 import nenga.ui.swing.parts.ReceiversPartPanel;
 import nenga.ui.swing.parts.SenderPartPanel;
@@ -55,6 +66,14 @@ public class ConsolePanel extends PWJobPane<SettingPanel> {
 	public ConsolePanel() {
 		super(new SettingPanel());
 		setForeground(Color.LIGHT_GRAY);
+
+		// Year
+		Calendar calendar = Calendar.getInstance();
+		int year = calendar.get(Calendar.YEAR);
+		int month = calendar.get(Calendar.MONTH);
+		if (11 <= month)
+			year += 1;
+		
 		GridBagLayout gridBagLayout_1 = new GridBagLayout();
 		gridBagLayout_1.columnWidths = new int[]{448, 0};
 		gridBagLayout_1.rowHeights = new int[]{71, 101, 234, 0};
@@ -77,7 +96,7 @@ public class ConsolePanel extends PWJobPane<SettingPanel> {
 		gbc.insets = new Insets(0, 0, 5, 0);
 		gbc.gridx = 0;
 		gbc.gridy = 1;
-		SenderPartPanel senderPartPanel = new SenderPartPanel();
+		final SenderPartPanel senderPartPanel = new SenderPartPanel();
 		add(senderPartPanel, gbc);
 		GridBagConstraints gbc_1 = new GridBagConstraints();
 		gbc_1.weightx = 1.0;
@@ -85,8 +104,65 @@ public class ConsolePanel extends PWJobPane<SettingPanel> {
 		gbc_1.fill = GridBagConstraints.BOTH;
 		gbc_1.gridx = 0;
 		gbc_1.gridy = 2;
-		ReceiversPartPanel receiversPartPanel = new ReceiversPartPanel();
+		final ReceiversPartPanel receiversPartPanel = new ReceiversPartPanel();
 		add(receiversPartPanel, gbc_1);
+		
+		senderPartPanel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// Get Data
+				PWAction action = PWAction.getAction("address", "list");
+				PWTable table = (PWTable)action.run();
+				
+				// Table View
+				final PWTableViewPanel tableView = senderPartPanel.createAddressTableView();
+				tableView.setData(table);
+				
+				// Show Dialog
+				int res = JOptionPane.showConfirmDialog(
+						null,
+						tableView,
+						"住所選択",
+						JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.PLAIN_MESSAGE);
+				if (res == JOptionPane.CANCEL_OPTION) {
+					return;
+				}
+				
+				// Check Selected Count
+				int[] modelIndexes = tableView.getSelectedRowIndexes();
+				if (modelIndexes.length == 0) {
+					return;
+				}
+				
+				// Set Selected Data to GUI
+				int modelIndex = modelIndexes[0];
+				String familyName = tableView.getValueAt(modelIndex, "FAMILYNAME").toString();
+				String firstNames = tableView.getValueAt(modelIndex, "FIRSTNAMES").toString();
+				String name = familyName + " " + firstNames;
+				senderPartPanel.setSenderName(name);
+				String zipcode = tableView.getValueAt(modelIndex, "ZIPCODE").toString();
+				String address = tableView.getValueAt(modelIndex, "ADDRESS").toString();
+				senderPartPanel.setSenderAddress(String.format("〒%s %s", zipcode, address));
+				
+				// Sender Address UUID
+				UUID senderAddressId = (UUID)tableView.getValueAt(modelIndex, "UUID");
+				senderPartPanel.setSenderAddressId(senderAddressId);
+				
+				receiversPartPanel.setSenderAddressId(senderAddressId);
+			}
+		});
+		
+		yearPartPanel.setYear(year);
+		yearPartPanel.setItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				JComboBox combobox = (JComboBox)e.getSource();
+				receiversPartPanel.setYear((Integer)combobox.getSelectedItem());
+			}
+		});
+		
+		receiversPartPanel.setYear(year);
 	}
 
 	/* (non-Javadoc)

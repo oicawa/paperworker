@@ -30,7 +30,6 @@ package pw.core.table;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -39,50 +38,28 @@ import java.util.List;
  */
 public class PWTable {
 
-	private List<PWTableColumn> columnList;
-	private HashMap<String, Integer> indexMap;
+	private PWTableColumns columns;
 	private List<PWTableRow> rows = new ArrayList<PWTableRow>();
 	
-	public PWTable(int columnCount) {
-		columnList = new ArrayList<PWTableColumn>();
-		indexMap = new HashMap<String, Integer>();
-		for (int i = 0; i < columnCount; i++) {
-			columnList.add(new PWTableColumn());
-		}
+	public PWTable(PWTableColumns columns) {
+		this.columns = columns;
 	}
 
-	public String getColumnLabel(int index) {
-		return columnList.get(index).getLabel();
-	}
-
-	public void setColumnLabel(int index, String label) {
-		columnList.get(index).setLabel(label);
-	}
-
-	public String getColumnName(int index) {
-		return columnList.get(index).getName();
-	}
-
-	public void setColumnName(int index, String name) {
-		columnList.get(index).setName(name);
-	}
-
-	public String getColumnDbType(int index) {
-		return columnList.get(index).getDbType();
-	}
-
-	public void setColumnDbType(int index, String dbType) {
-		columnList.get(index).setDbType(dbType);
-	}
-
-	public int getColumnCount() {
-		return columnList.size();
+	public PWTableColumns getColumns() {
+		return columns;
 	}
 	
 	public PWTableRow addRow() {
-		PWTableRow row = new PWTableRow(this);
+		PWTableRow row = new PWTableRow(columns);
 		rows.add(row);
 		return row;
+	}
+
+	/**
+	 * @param row
+	 */
+	public void addRow(PWTableRow row) {
+		rows.add(row);
 	}
 	
 	public PWTableRow getRow(int index) {
@@ -93,26 +70,10 @@ public class PWTable {
 		return rows;
 	}
 
-	public Collection<PWTableColumn> getColumns() {
-		return columnList;
-	}
-
 	/**
-	 * @param label
-	 * @return
+	 * @param modelIndex
 	 */
-	public int getColumnIndex(String label) {
-		if (indexMap.containsKey(label)) {
-			return indexMap.get(label);
-		}
-		
-		for (int i = 0; i < columnList.size(); i++) {
-			String headerValue = columnList.get(i).getLabel();
-			if (headerValue.equals(label)) {
-				indexMap.put(label, i);
-				return i;
-			}
-		}
-		return -1;
+	public void removeRow(int modelIndex) {
+		rows.remove(modelIndex);
 	}
 }

@@ -26,14 +26,13 @@
  *  ===============================================================================
  */
 
-package pw.ui.swing.basic;
+package pw.ui.swing.table;
 
 import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 
-import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -41,19 +40,21 @@ import javax.swing.RowFilter;
 import javax.swing.RowSorter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import pw.core.table.PWTable;
-import pw.core.table.PWTableColumn;
 import pw.core.table.PWTableRow;
+import pw.ui.swing.basic.PWSelectionMode;
 
 /**
  * @author masamitsu
@@ -64,26 +65,11 @@ public class PWTableViewPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 7115936873190034551L;
-	protected DefaultTableModel tableModel;
-	protected DefaultTableColumnModel tableColumns;
+	protected PWTableModel tableModel;					// Inner Data Storage 
+	protected DefaultTableColumnModel tableColumns;	// For tableView
 	protected JTable tableView;
-	protected PWTable tableData;
 	protected HashMap<String, TableColumn> columnMap;
-	protected PWTableRow selectedRow;
-	
-	class PWViewCellRenderer implements TableCellRenderer {
-		private JLabel captionLabel;
-		PWViewCellRenderer(String caption) {
-			this.captionLabel = new JLabel(caption);
-		}
-		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
-			return captionLabel;
-		}
-		
-	}
+	protected List<PWTableViewRowState> rowStateList;
 	
 	public PWTableViewPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -94,33 +80,18 @@ public class PWTableViewPanel extends JPanel {
 	 * @return
 	 */
 	private Component createTable() {
-		tableModel = new DefaultTableModel() {
-			private static final long serialVersionUID = -1378660522664810408L;
-
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
+		tableModel = new PWTableModel();
 		tableColumns = new DefaultTableColumnModel();
 		tableView = new JTable(tableModel);
 		tableView.setAutoCreateColumnsFromModel(false);
 		tableView.setAutoCreateRowSorter(true);
 		tableView.setColumnModel(tableColumns);
 		columnMap = new HashMap<String, TableColumn>();
+		rowStateList = new ArrayList<PWTableViewRowState>();
 		return new JScrollPane(tableView);
 	}
-	
-	protected void removeAllColumns() {
-		while (0 < tableColumns.getColumnCount()) {
-			TableColumn column = tableColumns.getColumn(0);
-			tableColumns.removeColumn(column);
-			String headerName = (String)column.getHeaderValue();
-			columnMap.remove(headerName);
-		}
-	}
 
-	public void addColumnHeader(String mappingName, String displayName) {
+	public void addColumn(String mappingName, String displayName) {
 		if (!columnMap.containsKey(mappingName)) {
 			int count = columnMap.size();
 			TableColumn column = new TableColumn();
@@ -131,11 +102,11 @@ public class PWTableViewPanel extends JPanel {
 			columnMap.put(mappingName, column);
 		}
 		TableColumn column = columnMap.get(mappingName);
-		column.setHeaderRenderer(new PWViewCellRenderer(displayName));
+		column.setHeaderRenderer(new PWTableViewHeaderRenderer(displayName));
 	}
 	
-	public void setColumnVisible(String headerName, boolean isVisible) {
-		TableColumn column = columnMap.get(headerName);
+	public void setColumnVisible(String mappingName, boolean isVisible) {
+		TableColumn column = columnMap.get(mappingName);
 		if (isVisible) {
 			tableColumns.addColumn(column);
 			int columnIndex = tableColumns.getColumnCount();
@@ -143,22 +114,6 @@ public class PWTableViewPanel extends JPanel {
 		} else {
 			tableColumns.removeColumn(column);
 		}
-	}
-	
-	private TableColumn getColumn(int modelIndex) {
-		for (TableColumn column : columnMap.values()) {
-			if (column.getModelIndex() == modelIndex) {
-				return column;
-			}
-		}
-		return null;
-	}
-	
-	private TableColumn getColumn(String headerName) {
-		if (!columnMap.containsKey(headerName)) {
-			return null;
-		}
-		return columnMap.get(headerName);
 	}
 	
 	public boolean isColumnVisible(TableColumn targetColumn) {
@@ -184,53 +139,85 @@ public class PWTableViewPanel extends JPanel {
 		return isColumnVisible(getColumn(modelIndex));
 	}
 	
+	public void setColumnCellEditor(String mappingName, TableCellEditor editor) {
+		if (!columnMap.containsKey(mappingName)) {
+			return;
+		}
+		TableColumn column = columnMap.get(mappingName);
+		column.setCellEditor(editor);
+		tableModel.setColumnEditable(column.getModelIndex(), true);
+	}
+	
+	public void setColumnCellRenderer(String mappingName, TableCellRenderer renderer) {
+		if (!columnMap.containsKey(mappingName)) {
+			return;
+		}
+		TableColumn column = columnMap.get(mappingName);
+		column.setCellRenderer(renderer);
+	}
+	
+	private TableColumn getColumn(int modelIndex) {
+		for (TableColumn column : columnMap.values()) {
+			if (column.getModelIndex() == modelIndex) {
+				return column;
+			}
+		}
+		return null;
+	}
+	
+	private TableColumn getColumn(String headerName) {
+		if (!columnMap.containsKey(headerName)) {
+			return null;
+		}
+		return columnMap.get(headerName);
+	}
+	
 	public int getColumnModelIndex(String headerName) {
 		TableColumn column = columnMap.get(headerName);
 		return column.getModelIndex();
 	}
 	
-	public void removeRow(int rowIndex) {
-		tableModel.removeRow(rowIndex);
-	}
-	
-	public void removeAllRows() {
-		int count = tableModel.getRowCount();
-		for (int i = count - 1; 0 <= i; i--) {
-			tableModel.removeRow(i);
-		}
-	}
-	
-	public void addRow(Object[] values) {
-		tableModel.addRow(values);
-	}
-	
 	public void setData(PWTable dataTable) {
 		// Reset
-		removeAllRows();
-		
-		this.tableData = dataTable;
-		
-		// Set Columns
-		int count = tableColumns.getColumnCount();
-		List<String> headerValues = new ArrayList<String>();
-		for (int i = 0; i < count; i++) {
-			headerValues.add(tableColumns.getColumn(i).getHeaderValue().toString());
-		}
+		deleteAllRows();
 		
 		// Set Rows
+		int count = tableModel.getColumnCount();
 		for (PWTableRow row : dataTable.getRows()) {
 			Object[] values = new Object[count];
 			for (int i = 0; i < count; i++) {
-				String headerValue = headerValues.get(i);
-				values[i] = row.getValue(headerValue);
+				values[i] = row.getValue(i);
 			}
-			addRow(values);
+			tableModel.addRow(values);
+			rowStateList.add(PWTableViewRowState.None);
 		}
 	}
 	
-	public enum SelectionMode {
-		Multi,
-		Single,
+	public void addRow(Object... values) {
+		tableModel.addRow(values);
+		rowStateList.add(PWTableViewRowState.Added);
+	}
+	
+	public void deleteRows(int... modelIndexes) {
+		List<Integer> modelIndexList = new ArrayList<Integer>();
+		for (int i = 0; i < modelIndexes.length; i++) {
+			modelIndexList.add(modelIndexes[i]);
+		}
+		
+		Collections.sort(modelIndexList);
+		Collections.reverse(modelIndexList);
+		for (int modelIndex : modelIndexList) {
+			tableModel.removeRow(modelIndex);
+			rowStateList.remove(modelIndex);
+		}
+	}
+	
+	public void deleteAllRows() {
+		int count = tableModel.getRowCount();
+		for (int i = 0; i < count; i++) {
+			tableModel.removeRow(0);
+			rowStateList.remove(0);
+		}
 	}
 	
 	public void setSelectionMode(PWSelectionMode selectionMode) {
@@ -240,17 +227,27 @@ public class PWTableViewPanel extends JPanel {
 			tableView.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}
 	}
+	
+	public Object getValueAt(int modelRowIndex, int modelColumnIndex) {
+		return tableModel.getValueAt(modelRowIndex, modelColumnIndex);
+	}
+	
+	public Object getValueAt(int modelRowIndex, String columnName) {
+		int modelColumnIndex = columnMap.get(columnName).getModelIndex();
+		return tableModel.getValueAt(modelRowIndex, modelColumnIndex);
+	}
 
 	/**
 	 * @return
 	 */
-	public List<PWTableRow> getSelectedRows() {
-		int[] indexes = tableView.getSelectedRows();
-		List<PWTableRow> rows = new ArrayList<PWTableRow>();
-		for (int index : indexes) {
-			rows.add(tableData.getRow(index));
+	public int[] getSelectedRowIndexes() {
+		int[] viewIndexes = tableView.getSelectedRows();
+		int[] modelIndexes = new int[viewIndexes.length];
+		for (int i = 0; i < viewIndexes.length; i++) {
+			modelIndexes[i] = tableView.convertRowIndexToModel(viewIndexes[i]);
 		}
-		return rows;
+		Arrays.sort(modelIndexes);
+		return modelIndexes;
 	}
 	
 	public void setFilter(RowFilter<TableModel, Integer> filter) {
@@ -261,5 +258,26 @@ public class PWTableViewPanel extends JPanel {
 		
 		TableRowSorter<? extends TableModel> tableRowSorter = (TableRowSorter<? extends TableModel>)sorter;
 		tableRowSorter.setRowFilter(filter);
+	}
+	
+	public int[] getRowIndexesByState(PWTableViewRowState state) {
+		int[] dstIndexes = new int[rowStateList.size()];
+		int dstIndex = 0;
+		for (int srcIndex = 0; srcIndex < rowStateList.size(); srcIndex++) {
+			if (rowStateList.get(srcIndex) == state) {
+				dstIndexes[dstIndex] = srcIndex;
+				dstIndex++;
+			}
+		}
+		int[] targetStateIndexes = Arrays.copyOf(dstIndexes, dstIndex);
+		return targetStateIndexes;
+	}
+	
+	public PWTableViewRowState getRowState(int modelIndex) {
+		return rowStateList.get(modelIndex);
+	}
+	
+	public void setRowState(int modelIndex, PWTableViewRowState state) {
+		rowStateList.set(modelIndex, state);
 	}
 }

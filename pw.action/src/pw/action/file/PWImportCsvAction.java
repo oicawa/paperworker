@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import pw.action.basic.PWAddAction;
 import pw.core.PWAction;
 import pw.core.PWError;
 import pw.core.PWField;
@@ -43,6 +42,7 @@ import pw.core.accesser.PWQuery;
 import pw.core.csv.PWCsvFile;
 import pw.core.item.PWItem;
 import pw.core.table.PWTable;
+import pw.core.table.PWTableColumns;
 import pw.core.table.PWTableRow;
 
 /**
@@ -87,10 +87,11 @@ public class PWImportCsvAction extends PWAction {
 		List<PWField> keyFields = PWItem.getFields(type, KeyType.Primary);
 		int[] keyIndexes = new int[keyFields.size()];
 		Arrays.fill(keyIndexes, -1);
+		PWTableColumns columns = table.getColumns();
 		for (int i = 0; i < keyFields.size(); i++) {
 			PWField keyField = keyFields.get(i);
-			for (int j = 0; j < table.getColumnCount(); j++) {
-				if (table.getColumnName(j).toUpperCase().equals(keyField.getName().toUpperCase())) {
+			for (int j = 0; j < columns.getCount(); j++) {
+				if (columns.getName(j).toUpperCase().equals(keyField.getName().toUpperCase())) {
 					keyIndexes[i] = j;
 					break;
 				}
@@ -115,11 +116,35 @@ public class PWImportCsvAction extends PWAction {
 			}
 			
 			// Create query
-			queries.add(PWAddAction.getQuery(item, true));
+			queries.add(getQuery(item));
 		}
 		
 		PWAccesser.getDefaultAccesser().execute(queries.toArray(new PWQuery[0]));
 		
 		return null;
+	}
+
+	public static PWQuery getQuery(PWItem item) {
+    	List<PWField> fields = PWItem.getFields(item.getClass());
+    	
+    	// Create the fields part of query
+    	StringBuffer fieldsBuffer = new StringBuffer();
+    	for (int i = 0; i < fields.size(); i++) {
+    		fieldsBuffer.append(PWQuery.COMMA);
+    		fieldsBuffer.append("?");
+    	}
+    	String fieldsQuery = fieldsBuffer.substring(PWQuery.COMMA.length());
+    	
+    	// Create all query
+    	String allQuery = String.format("merge into %s values (%s);", PWQuery.getTableName(item.getClass()), fieldsQuery);
+    	
+    	// Create PWQuery
+    	PWQuery query = new PWQuery(allQuery);
+    	for (PWField field : fields) {
+    		Object keyValue = field.getValue(item);
+        	query.addValue(keyValue);
+    	}
+    	
+    	return query;
 	}
 }

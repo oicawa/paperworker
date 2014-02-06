@@ -42,8 +42,9 @@ import pw.core.PWError;
 import pw.core.converter.PWClobConverter;
 import pw.core.converter.PWDateConverter;
 import pw.core.converter.PWStringConverter;
-import pw.core.converter.PWUuidConverter;
+import pw.core.converter.PWUUIDConverter;
 import pw.core.table.PWTable;
+import pw.core.table.PWTableColumns;
 import pw.core.table.PWTableRow;
 
 /**
@@ -60,7 +61,7 @@ public class PWCsvFile {
 	static {
 		converters.put("VARCHAR", new PWStringConverter());
 		converters.put("TIMESTAMP", new PWDateConverter());
-		converters.put("UUID", new PWUuidConverter());
+		converters.put("UUID", new PWUUIDConverter());
 		converters.put("CLOB", new PWClobConverter());
 	}
 	
@@ -85,22 +86,23 @@ public class PWCsvFile {
 			// Write header
 			StringBuffer columnNamesBuffer = new StringBuffer();
 			StringBuffer columnTypesBuffer = new StringBuffer();
-			for (int i = 0; i < table.getColumnCount(); i++) {
+			PWTableColumns columns = table.getColumns();
+			for (int i = 0; i < columns.getCount(); i++) {
 				columnNamesBuffer.append(COLUMN_SEPARATOR);
-				columnNamesBuffer.append(table.getColumnName(i));
+				columnNamesBuffer.append(columns.getName(i));
 				columnTypesBuffer.append(COLUMN_SEPARATOR);
-				columnTypesBuffer.append(table.getColumnDbType(i));
+				columnTypesBuffer.append(columns.getDbType(i));
 			}
-			String columnNames = table.getColumnCount() == 0 ? "" : columnNamesBuffer.substring(COLUMN_SEPARATOR.length());
-			String columnTypes = table.getColumnCount() == 0 ? "" : columnTypesBuffer.substring(COLUMN_SEPARATOR.length());
+			String columnNames = columns.getCount() == 0 ? "" : columnNamesBuffer.substring(COLUMN_SEPARATOR.length());
+			String columnTypes = columns.getCount() == 0 ? "" : columnTypesBuffer.substring(COLUMN_SEPARATOR.length());
 			writer.println(columnNames);
 			writer.println(columnTypes);
 
 			// Write rows
 			for (PWTableRow row : table.getRows()) {
 				StringBuffer rowBuffer = new StringBuffer();
-				for (int i = 0; i < table.getColumnCount(); i++) {
-					String value = converters.get(table.getColumnDbType(i)).toString(row.getValue(i));
+				for (int i = 0; i < columns.getCount(); i++) {
+					String value = converters.get(columns.getDbType(i)).toString(row.getValue(i));
 					if (value != null) {
 						value = value.replace("\r", "\\r");
 						value = value.replace("\n", "\\n");
@@ -109,7 +111,7 @@ public class PWCsvFile {
 					rowBuffer.append(COLUMN_SEPARATOR);
 					rowBuffer.append(value);
 				}
-				String values = table.getColumnCount() == 0 ? "" : rowBuffer.substring(COLUMN_SEPARATOR.length());
+				String values = columns.getCount() == 0 ? "" : rowBuffer.substring(COLUMN_SEPARATOR.length());
 				writer.println(values);
 			}
 			
@@ -131,25 +133,25 @@ public class PWCsvFile {
 		BufferedReader reader = new BufferedReader(fileReader);
 		try {
 			// Get columns
-			String[] columns = reader.readLine().split(",");
+			String[] names = reader.readLine().split(",");
 			String[] types = reader.readLine().split(",");
 			
 			// Create view & columns
-			PWTable table = new PWTable(columns.length);
-			for (int i = 0; i < table.getColumnCount(); i++) {
-				table.setColumnName(i, columns[i]);
-				table.setColumnDbType(i, types[i]);
+			PWTableColumns columns = new PWTableColumns();
+			for (int i = 0; i < names.length; i++) {
+				columns.add(names[i], types[i]);
 			}
+			PWTable table = new PWTable(columns);
 			
 			// Create rows
             while (reader.ready()) {
                 String line = reader.readLine();
                 Object[] objects = toObjects(line, types);
-                if (objects.length != table.getColumnCount()) {
+                if (objects.length != columns.getCount()) {
                 	throw new PWError("The column count of the row line is not correct.");
                 }
                 PWTableRow row = table.addRow();
-                for (int i = 0; i < table.getColumnCount(); i++) {
+                for (int i = 0; i < columns.getCount(); i++) {
                 	row.setValue(i, objects[i]);
                 }
             }
