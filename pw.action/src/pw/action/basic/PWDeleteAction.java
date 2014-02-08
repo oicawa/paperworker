@@ -28,6 +28,7 @@
 
 package pw.action.basic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pw.core.PWError;
@@ -51,9 +52,57 @@ public class PWDeleteAction extends AbstractBasicAction {
 	 */
 	@Override
 	public Object run(Object... objects) {
+		// Check argument counts
+		if (objects.length == 0) {
+			throw new PWError("Delete Action Failed.(Too few arguments.)");
+		}
+		
+		// Check argument types
+		if (!(objects[0] instanceof PWItem)) {
+			throw new PWError("Delete Action Failed.(Illegal data type of 1st argument.)");
+		}
+		
+		if (objects.length == 1) {
+			deleteMultiItems(objects);
+			return null;
+		}
+		
+		if (objects[1] instanceof PWItem) {
+			deleteMultiItems(objects);
+		} else {
+			deleteSingleItem(objects);
+		}
+		return null;
+	}
+	
+	private void deleteSingleItem(Object... objects) {
 		PWQuery query = getQuery(itemType, keyType, objects);
 		PWAccesser.getDefaultAccesser().execute(query);
-		return null;
+		return;
+	}
+	
+	private void deleteMultiItems(Object... objects) {
+		List<PWField> keyFields = PWItem.getFields(itemType, keyType);
+		List<PWQuery> queries = new ArrayList<PWQuery>();
+		for (int i = 0; i < objects.length; i++) {
+			PWItem item = (PWItem)objects[i];
+			
+			Object[] keyValues = new Object[keyFields.size()];
+			for (int j = 0; j < keyFields.size(); j++) {
+				PWField keyField = keyFields.get(j);
+				keyValues[j] = PWItem.getValue(item, keyField.getName());
+			}
+			
+			PWQuery query = getQuery(itemType, keyType, keyValues);
+			if (query == null) {
+				continue;
+			}
+			
+			queries.add(query);
+		}
+		
+		PWQuery[] queryArray = queries.toArray(new PWQuery[0]);
+		PWAccesser.getDefaultAccesser().execute(queryArray);
 	}
 
 	public static PWQuery getQuery(Class<? extends PWItem> itemType, PWField.KeyType keyType, Object... keyValues) {

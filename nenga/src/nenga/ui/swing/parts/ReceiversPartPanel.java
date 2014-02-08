@@ -30,7 +30,6 @@ package nenga.ui.swing.parts;
 
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.TableView;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -38,7 +37,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,6 +47,7 @@ import javax.swing.JTable;
 
 import nenga.item.NengaHistory;
 import pw.action.basic.PWAddAction;
+import pw.action.basic.PWDeleteAction;
 import pw.action.basic.PWUpdateAction;
 import pw.action.basic.PWViewAction;
 import pw.core.PWAction;
@@ -105,7 +105,7 @@ public class ReceiversPartPanel extends JPanel {
 		receiversTable.addColumn("MOURNING", "喪中");
 		receiversTable.addColumn("SENTDATE", "送付日");
 		receiversTable.addColumn("RECEIVEDDATE", "受取日");
-		receiversTable.setColumnVisible("UUID", false);
+		//receiversTable.setColumnVisible("UUID", false);
 		receiversTable.setColumnVisible("STATE", false);
 		
 		PWComboBoxCellEditor<String> editor = new PWComboBoxCellEditor<String>(receiversTable, "樣", "御中");
@@ -152,32 +152,47 @@ public class ReceiversPartPanel extends JPanel {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int res = JOptionPane.showConfirmDialog(null, "追加・変更した行を保存しますか？", "保存", JOptionPane.YES_NO_OPTION);
+				int[] addedIndexes = receiversTable.getRowIndexesByState(PWTableViewRowState.Added);
+				int[] modifiedIndexes = receiversTable.getRowIndexesByState(PWTableViewRowState.Modified);
+				
+				if (addedIndexes.length + modifiedIndexes.length == 0) {
+					JOptionPane.showMessageDialog(null, "追加・変更した行はありません", "保存", JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
+				
+				String caption;
+				if (0 < addedIndexes.length && 0 < modifiedIndexes.length) {
+					caption = "追加・変更";
+				} else if (0 < addedIndexes.length) {
+					caption = "追加";
+				} else {
+					caption = "変更";
+				}
+				
+				int res = JOptionPane.showConfirmDialog(null, caption + "した行を保存しますか？", "保存", JOptionPane.YES_NO_OPTION);
 				if (res == JOptionPane.NO_OPTION) {
 					return;
 				}
 				
 				// Add Rows
-				int[] addedIndexes = receiversTable.getRowIndexesByState(PWTableViewRowState.Added);
 				if (0 < addedIndexes.length) {
 					List<NengaHistory> addedHistories = getHistories(addedIndexes);
 					Object[] addedObjects = addedHistories.toArray();
 					PWAddAction addAction = (PWAddAction)PWAction.getAction("nenga", "addhistories");
 					addAction.run(addedObjects);
 					for (int i = 0; i < addedIndexes.length; i++) {
-						receiversTable.setRowState(i, PWTableViewRowState.None);
+						receiversTable.setRowState(addedIndexes[i], PWTableViewRowState.None);
 					}
 				}
 				
 				// Update Rows
-				int[] modifiedIndexes = receiversTable.getRowIndexesByState(PWTableViewRowState.Modified);
 				if (0 < modifiedIndexes.length) {
 					List<NengaHistory> modifiedHistories = getHistories(modifiedIndexes);
 					Object[] modifiedObjects = modifiedHistories.toArray();
 					PWUpdateAction updateAction = (PWUpdateAction)PWAction.getAction("nenga", "updatehistories");
 					updateAction.run(modifiedObjects);
 					for (int i = 0; i < modifiedIndexes.length; i++) {
-						receiversTable.setRowState(i, PWTableViewRowState.None);
+						receiversTable.setRowState(modifiedIndexes[i], PWTableViewRowState.None);
 					}
 				}
 			}
@@ -192,11 +207,34 @@ public class ReceiversPartPanel extends JPanel {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int res = JOptionPane.showConfirmDialog(null, "選択した行を削除しますか？", "Hoge", JOptionPane.YES_NO_OPTION);
+				int[] indexes = receiversTable.getSelectedRowIndexes();
+				if (indexes.length == 0) {
+					JOptionPane.showConfirmDialog(null, "１件以上の宛先を選択してください", "削除", JOptionPane.OK_OPTION);
+					return;
+				}
+				
+				int res = JOptionPane.showConfirmDialog(null, "選択した行を削除しますか？", "削除", JOptionPane.YES_NO_OPTION);
 				if (res == JOptionPane.NO_OPTION) {
 					return;
 				}
-				int[] indexes = receiversTable.getSelectedRowIndexes();
+				
+				List<NengaHistory> histories = new ArrayList<NengaHistory>();
+				for (int i = 0; i < indexes.length; i++) {
+					if (receiversTable.getRowState(indexes[i]) != PWTableViewRowState.None) {
+						continue;
+					}
+					NengaHistory history = new NengaHistory();
+					history.setYear(year);
+					history.setSenderAddressId(senderAddressId);
+					history.setReceiverAddressId((UUID)receiversTable.getValueAt(indexes[i], "UUID"));
+					histories.add(history);
+				}
+				Object[] objects = histories.toArray();
+				
+				
+				PWDeleteAction deleteAction = (PWDeleteAction)PWAction.getAction("nenga", "deletehistories");
+				deleteAction.run(objects);
+				
 				receiversTable.deleteRows(indexes);
 			}
 		});
@@ -210,6 +248,11 @@ public class ReceiversPartPanel extends JPanel {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (senderAddressId == null) {
+					JOptionPane.showMessageDialog(null, "差出人を指定してから送付先を追加してください", "追加", JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
+				
 				// Get Data
 				PWAction action = PWAction.getAction("address", "list");
 				PWTable table = (PWTable)action.run();
@@ -222,7 +265,7 @@ public class ReceiversPartPanel extends JPanel {
 				tableView.addColumn("ADDRESS", "住所");
 				tableView.addColumn("FAMILYNAME", "姓");
 				tableView.addColumn("FIRSTNAMES", "名");
-				tableView.setColumnVisible("UUID", false);
+				//tableView.setColumnVisible("UUID", false);
 				tableView.add(new PWTableViewSearchPanel(tableView), BorderLayout.NORTH);
 				tableView.setData(table);
 				
@@ -237,14 +280,20 @@ public class ReceiversPartPanel extends JPanel {
 					return;
 				}
 				
+				HashMap<UUID, Integer> map = new HashMap<UUID, Integer>();
+				for (int i = 0; i < receiversTable.getRowCount(); i++) {
+					UUID receiverAddressId = (UUID)receiversTable.getValueAt(i, "UUID");
+					map.put(receiverAddressId, i);
+				}
+				
 				// Set Selected Data to GUI
+				boolean overWrite = false;
 				int[] modelIndexes = tableView.getSelectedRowIndexes();
 				for (int i = 0; i < modelIndexes.length; i++) {
 					int index = modelIndexes[i];
 					UUID uuid = (UUID)tableView.getValueAt(index, "UUID");
 					String familyName = tableView.getValueAt(index, "FAMILYNAME") == null ? "" : (String)tableView.getValueAt(index, "FAMILYNAME");
 					String firstNames = tableView.getValueAt(index, "FIRSTNAMES") == null ? "" : (String)tableView.getValueAt(index, "FIRSTNAMES");
-					
 					String name = familyName + " " + firstNames;
 					String honorific = "樣";
 					String zipcode = tableView.getValueAt(index, "ZIPCODE") == null ? "" : (String)tableView.getValueAt(index, "ZIPCODE");
@@ -253,7 +302,36 @@ public class ReceiversPartPanel extends JPanel {
 					String sentDate = "";
 					String receivedDate = "";
 					
-					receiversTable.addRow(uuid, name, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
+					if (!map.containsKey(uuid)) {
+						receiversTable.addRow(uuid, name, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
+						return;
+					}
+					
+					int modelIndex = map.get(uuid);
+					if (overWrite) {
+						receiversTable.setRow(modelIndex, uuid, name, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
+						return;
+					}
+					
+					final String buttons[] = {"上書き","すべて上書き","スキップ"};
+					int select = JOptionPane.showOptionDialog(
+							null,
+							String.format("%s は既に追加されています。上書きしますか？\n(「すべて上書き」を選択した場合、残りのすべての重複した宛先が上書きされます。)", name),
+							"追加",
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE,
+							null,
+							buttons,
+							buttons[2]);
+					if (select == 2) {
+						continue;
+					}
+					
+					if (select == 1) {
+						overWrite = true;
+					}
+					
+					receiversTable.setRow(modelIndex, uuid, name, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
 				}
 			}
 		});

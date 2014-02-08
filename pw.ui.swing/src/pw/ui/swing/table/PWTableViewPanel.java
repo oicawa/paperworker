@@ -197,6 +197,21 @@ public class PWTableViewPanel extends JPanel {
 		tableModel.addRow(values);
 		rowStateList.add(PWTableViewRowState.Added);
 	}
+
+	public void setRow(int row, Object... values) {
+		int count = tableModel.getColumnCount();
+		if (values.length < count) {
+			count = values.length;
+		}
+		
+		for (int column = 0; column < count; column++) {
+			tableModel.setValueAt(values[column], row, column);
+		}
+		
+		if (rowStateList.get(row) == PWTableViewRowState.None) {
+			rowStateList.set(row, PWTableViewRowState.Modified);
+		}
+	}
 	
 	public void deleteRows(int... modelIndexes) {
 		List<Integer> modelIndexList = new ArrayList<Integer>();
@@ -279,5 +294,12 @@ public class PWTableViewPanel extends JPanel {
 	
 	public void setRowState(int modelIndex, PWTableViewRowState state) {
 		rowStateList.set(modelIndex, state);
+	}
+
+	/**
+	 * @return
+	 */
+	public int getRowCount() {
+		return tableModel.getRowCount();
 	}
 }

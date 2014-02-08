@@ -65,12 +65,10 @@ public class PWUpdateAction extends AbstractBasicAction {
 
 		if (objects.length == 1) {
 			updateMultiItems(objects);
-		}
-		
-		if (objects[1] instanceof String) {
-			updateSingleItem(objects);
-		} else {
+		} else if (objects[1] instanceof PWItem) {
 			updateMultiItems(objects);
+		} else {
+			updateSingleItem(objects);
 		}
         return null;
 	}

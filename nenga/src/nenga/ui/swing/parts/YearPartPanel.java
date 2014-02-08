@@ -35,7 +35,6 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -46,11 +45,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.JButton;
-
-import pw.core.PWUtilities;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Calendar;
 
 /**
  * @author masamitsu
