@@ -43,6 +43,11 @@ import javax.swing.table.TableCellRenderer;
  */
 public abstract class PWCellRenderer<T> extends DefaultTableCellRenderer implements TableCellRenderer {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6316878414217141903L;
+	
 	protected JLabel label;
 	
 	public PWCellRenderer() {

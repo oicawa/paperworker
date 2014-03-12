@@ -1,5 +1,5 @@
 /*
- *  $Id: PWPreference.java 2013/11/09 14:21:08 masamitsu $
+ *  $Id: AddAction.java 2013/09/28 1:05:04 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,76 +26,49 @@
  *  ===============================================================================
  */
 
-package pw.ui.swing.preference;
+package pw.action.basic;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.prefs.Preferences;
 
+import pw.core.PWAction;
 import pw.core.PWError;
 
 /**
  * @author masamitsu
  *
  */
-public class PWSettings {
+public class PWCommandAction extends PWAction {
 	
-	protected Preferences prefs;
+	private String commandFormat;
 	
-	protected PWSettings(Class<?> type) {
-		prefs = Preferences.userNodeForPackage(type);
+	public PWCommandAction() {
+		super();
 	}
 	
-	public void save() {
-		try{
-			prefs.flush();
-		}catch(java.util.prefs.BackingStoreException e) {
+	/* (non-Javadoc)
+	 * @see pw.core.PWAction#run()
+	 */
+	@Override
+	public Object run(Object... objects) {
+		// Execute command
+		try {
+			String command = String.format(commandFormat, objects);
+			Runtime.getRuntime().exec(command);
+		} catch (IOException e) {
 			throw new PWError(e, e.getMessage());
 		}
+        return null;
 	}
-	
-	protected Object getObject(String key) {
-		// Get byte array from preferences
-		byte[] value = prefs.getByteArray(key, null);
-		if (value == null) {
-			return null;
+
+	/* (non-Javadoc)
+	 * @see pw.core.PWAction#parseArguments(java.lang.String[])
+	 */
+	@Override
+	protected void parseSettingParameters(String[] arguments) {
+		if (arguments.length == 0) {
+			throw new PWError("PWCommnadAction requires one parameter as command line.");
 		}
 		
-		// Convert from byte array to object
-		ByteArrayInputStream bytes = new ByteArrayInputStream(value);
-		ObjectInputStream oos;
-		try {
-			oos = new ObjectInputStream(bytes);
-			Object object;
-			try {
-				object = oos.readObject();
-			} catch (ClassNotFoundException e) {
-				return null;
-			} finally {
-				oos.close();
-			}
-			return object;
-		} catch (IOException e) {
-			return null;
-		}
-	}
-	
-	protected void setObject(String key, Object object) {
-		try {
-			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-			ObjectOutputStream stream = new ObjectOutputStream(bytes);
-			try {
-				stream.writeObject(object);
-				stream.flush();
-				prefs.putByteArray(key, bytes.toByteArray());
-			} finally {
-				stream.close();
-			}
-		} catch (IOException e) {
-			throw new PWError(e, e.getMessage());
-		}
+		commandFormat = (String)arguments[0];
 	}
 }

@@ -137,19 +137,18 @@ public class ConsolePanel extends PWJobPane<SettingPanel> {
 				
 				// Set Selected Data to GUI
 				int modelIndex = modelIndexes[0];
-				String familyName = tableView.getValueAt(modelIndex, "FAMILYNAME").toString();
-				String firstNames = tableView.getValueAt(modelIndex, "FIRSTNAMES").toString();
-				String name = familyName + " " + firstNames;
-				senderPartPanel.setSenderName(name);
+				UUID addressId = (UUID)tableView.getValueAt(modelIndex, "UUID");
 				String zipcode = tableView.getValueAt(modelIndex, "ZIPCODE").toString();
 				String address = tableView.getValueAt(modelIndex, "ADDRESS").toString();
+				String familyName = tableView.getValueAt(modelIndex, "FAMILYNAME").toString();
+				String firstNames = tableView.getValueAt(modelIndex, "FIRSTNAMES").toString();
+				
+				String name = familyName + " " + firstNames;
+				senderPartPanel.setSenderName(name);
 				senderPartPanel.setSenderAddress(String.format("〒%s %s", zipcode, address));
+				senderPartPanel.setSenderAddressId(addressId);
 				
-				// Sender Address UUID
-				UUID senderAddressId = (UUID)tableView.getValueAt(modelIndex, "UUID");
-				senderPartPanel.setSenderAddressId(senderAddressId);
-				
-				receiversPartPanel.setSenderAddressId(senderAddressId);
+				receiversPartPanel.setSenderAddressId(addressId, zipcode, address, familyName, firstNames.split("/"));
 			}
 		});
 		

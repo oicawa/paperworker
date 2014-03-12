@@ -1,0 +1,43 @@
+#!/bin/sh
+
+FILE_PATH=$1
+MEDIA_TYPE=JPPOSTCARD
+if test "$2" = "test"
+then
+	MEDIA_TYPE=PLAIN
+fi
+
+lpr \
+-P EPSON-EP-804A \
+-o MediaType=${MEDIA_TYPE} \
+-o PrintQuality=Normal \
+-o PageSize=100x148mm \
+-o PageRegion=A4 \
+-o InputSlot=UpperTray \
+-o Color=Grayscale \
+-o Borderless=Off \
+-o OutputPaper=100x148mm \
+-o ReduceEnlarge=Off \
+-o ScaleRatio=0 \
+-o PosterPrinting=Off \
+-o Duplex=None \
+-o AdjustPrintDensity=Text \
+-o Rotate180=Off \
+-o MirrorImage=Off \
+-o CDDVDInnerPrintPosition=43mm \
+-o CDDVDPrintPosUpDown=0.0mm \
+-o CDDVDPrintPosLeftRight=0.0mm \
+-o Watermark=None \
+-o ColurWatermark=Red \
+-o PositionWatermark=Center \
+-o DensityWatermark=Level4 \
+-o SizeWatermark=70 \
+-o CorrectionColor=AdobeRGB \
+-o GammaValue=2.2 \
+-o BrightnessValue=0 \
+-o ContrastValue=0 \
+-o SaturationValue=0 \
+-o CyanValue=0 \
+-o MagentaValue=0 \
+-o YellowValue=0 \
+${FILE_PATH}

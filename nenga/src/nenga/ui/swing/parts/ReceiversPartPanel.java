@@ -36,6 +36,8 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,12 +47,15 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
-import nenga.item.NengaHistory;
+import nenga.core.NengaAtenaWriter;
+import nenga.core.NengaHistory;
 import pw.action.basic.PWAddAction;
+import pw.action.basic.PWCommandAction;
 import pw.action.basic.PWDeleteAction;
 import pw.action.basic.PWUpdateAction;
 import pw.action.basic.PWViewAction;
 import pw.core.PWAction;
+import pw.core.PWError;
 import pw.core.table.PWTable;
 import pw.ui.swing.basic.PWSelectionMode;
 import pw.ui.swing.table.PWCellRenderer;
@@ -69,15 +74,28 @@ public class ReceiversPartPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 2319250559294999837L;
+	
 	private PWTableViewPanel receiversTable;
+	
 	private int year;
+
 	private UUID senderAddressId;
+	private String senderZipcode;
+	private String senderAddress;
+	private String senderFamilyName;
+	private String[] senderFirstNames;
+	
 	public ReceiversPartPanel() {
 		setBorder(new TitledBorder(null, "宛先一覧", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		setLayout(new BorderLayout(0, 0));
 		
 		year = -1;
+		
 		senderAddressId = null;
+		senderZipcode = null;
+		senderAddress = null;
+		senderFamilyName = null;
+		senderFirstNames = null;
 		
 		JPanel buttonsPanel = new JPanel();
 		FlowLayout fl_buttonsPanel = (FlowLayout) buttonsPanel.getLayout();
@@ -93,22 +111,23 @@ public class ReceiversPartPanel extends JPanel {
 		JButton modifyButton = createSaveButton();
 		buttonsPanel.add(modifyButton);
 		
-		JButton printButton = new JButton("印刷");
-		buttonsPanel.add(printButton);
+		JButton pdfButton = createPdfButton();
+		buttonsPanel.add(pdfButton);
 		
 		receiversTable = new PWTableViewPanel();
 		receiversTable.addColumn("UUID", "");
-		receiversTable.addColumn("NAME", "宛先");
+		receiversTable.addColumn("FAMILYNAME", "姓");
+		receiversTable.addColumn("FIRSTNAMES", "名(複数可)");
 		receiversTable.addColumn("HONORIFIC", "敬称");
 		receiversTable.addColumn("ZIPCODE", "郵便番号");
 		receiversTable.addColumn("ADDRESS", "住所");
 		receiversTable.addColumn("MOURNING", "喪中");
 		receiversTable.addColumn("SENTDATE", "送付日");
 		receiversTable.addColumn("RECEIVEDDATE", "受取日");
-		//receiversTable.setColumnVisible("UUID", false);
+		receiversTable.setColumnVisible("UUID", false);
 		receiversTable.setColumnVisible("STATE", false);
 		
-		PWComboBoxCellEditor<String> editor = new PWComboBoxCellEditor<String>(receiversTable, "樣", "御中");
+		PWComboBoxCellEditor<String> editor = new PWComboBoxCellEditor<String>(receiversTable, "様", "御中");
 		receiversTable.setColumnCellEditor("HONORIFIC", editor);
 		
 		PWCheckBoxCellEditor checkBox = new PWCheckBoxCellEditor(receiversTable);
@@ -124,14 +143,18 @@ public class ReceiversPartPanel extends JPanel {
 		
 		add(receiversTable, BorderLayout.CENTER);
 	}
-	
+
 	public void setYear(int year) {
 		this.year = year;
 		updateData();
 	}
 	
-	public void setSenderAddressId(UUID senderAddressId) {
-		this.senderAddressId = senderAddressId;
+	public void setSenderAddressId(UUID addressId, String zipcode, String address, String familyName, String[] firstNames) {
+		senderAddressId = addressId;
+		senderZipcode = zipcode;
+		senderAddress = address;
+		senderFamilyName = familyName;
+		senderFirstNames = firstNames;
 		updateData();
 	}
 	
@@ -142,6 +165,140 @@ public class ReceiversPartPanel extends JPanel {
 		PWViewAction action = (PWViewAction)PWAction.getAction("nenga", "listhistories");
 		PWTable tableData = (PWTable)action.run(year, senderAddressId);
 		receiversTable.setData(tableData);
+	}
+	
+	private JButton createAddButton() {
+		JButton button = new JButton("追加");
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (senderAddressId == null) {
+					JOptionPane.showMessageDialog(null, "差出人を指定してから送付先を追加してください", "追加", JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
+				
+				// Get Data
+				PWAction action = PWAction.getAction("address", "list");
+				PWTable table = (PWTable)action.run();
+				
+				// Table View
+				final PWTableViewPanel tableView = new PWTableViewPanel();
+				tableView.setSelectionMode(PWSelectionMode.Multi);
+				tableView.addColumn("UUID", "");
+				tableView.addColumn("ZIPCODE", "郵便番号");
+				tableView.addColumn("ADDRESS", "住所");
+				tableView.addColumn("FAMILYNAME", "姓");
+				tableView.addColumn("FIRSTNAMES", "名");
+				tableView.setColumnVisible("UUID", false);
+				tableView.add(new PWTableViewSearchPanel(tableView), BorderLayout.NORTH);
+				tableView.setData(table);
+				
+				// Show Dialog
+				int res = JOptionPane.showConfirmDialog(
+						null,
+						tableView,
+						"住所選択",
+						JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.PLAIN_MESSAGE);
+				if (res == JOptionPane.CANCEL_OPTION) {
+					return;
+				}
+				
+				HashMap<UUID, Integer> map = new HashMap<UUID, Integer>();
+				for (int i = 0; i < receiversTable.getRowCount(); i++) {
+					UUID receiverAddressId = (UUID)receiversTable.getValueAt(i, "UUID");
+					map.put(receiverAddressId, i);
+				}
+				
+				// Set Selected Data to GUI
+				boolean overWrite = false;
+				int[] modelIndexes = tableView.getSelectedRowIndexes();
+				for (int i = 0; i < modelIndexes.length; i++) {
+					int index = modelIndexes[i];
+					UUID uuid = (UUID)tableView.getValueAt(index, "UUID");
+					String familyName = tableView.getValueAt(index, "FAMILYNAME") == null ? "" : (String)tableView.getValueAt(index, "FAMILYNAME");
+					String firstNames = tableView.getValueAt(index, "FIRSTNAMES") == null ? "" : (String)tableView.getValueAt(index, "FIRSTNAMES");
+					String name = familyName + " " + firstNames;
+					String honorific = "様";
+					String zipcode = tableView.getValueAt(index, "ZIPCODE") == null ? "" : (String)tableView.getValueAt(index, "ZIPCODE");
+					String address = tableView.getValueAt(index, "ADDRESS") == null ? "" : (String)tableView.getValueAt(index, "ADDRESS");
+					boolean mourning = false;
+					String sentDate = "";
+					String receivedDate = "";
+					
+					if (!map.containsKey(uuid)) {
+						receiversTable.addRow(uuid, familyName, firstNames, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
+						return;
+					}
+					
+					int modelIndex = map.get(uuid);
+					if (overWrite) {
+						receiversTable.setRow(modelIndex, uuid, familyName, firstNames, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
+						return;
+					}
+					
+					final String buttons[] = {"上書き","すべて上書き","スキップ"};
+					int select = JOptionPane.showOptionDialog(
+							null,
+							String.format("%s は既に追加されています。上書きしますか？\n(「すべて上書き」を選択した場合、残りのすべての重複した宛先が上書きされます。)", name),
+							"追加",
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE,
+							null,
+							buttons,
+							buttons[2]);
+					if (select == 2) {
+						continue;
+					}
+					
+					if (select == 1) {
+						overWrite = true;
+					}
+					
+					receiversTable.setRow(modelIndex, uuid, familyName, firstNames, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
+				}
+			}
+		});
+		return button;
+	}
+	
+	private JButton createDeleteButton() {
+		JButton button = new JButton("削除");
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int[] indexes = receiversTable.getSelectedRowIndexes();
+				if (indexes.length == 0) {
+					JOptionPane.showConfirmDialog(null, "１件以上の宛先を選択してください", "削除", JOptionPane.OK_OPTION);
+					return;
+				}
+				
+				int res = JOptionPane.showConfirmDialog(null, "選択した行を削除しますか？", "削除", JOptionPane.YES_NO_OPTION);
+				if (res == JOptionPane.NO_OPTION) {
+					return;
+				}
+				
+				List<NengaHistory> histories = new ArrayList<NengaHistory>();
+				for (int i = 0; i < indexes.length; i++) {
+					if (receiversTable.getRowState(indexes[i]) != PWTableViewRowState.None) {
+						continue;
+					}
+					NengaHistory history = new NengaHistory();
+					history.setYear(year);
+					history.setSenderAddressId(senderAddressId);
+					history.setReceiverAddressId((UUID)receiversTable.getValueAt(indexes[i], "UUID"));
+					histories.add(history);
+				}
+				Object[] objects = histories.toArray();
+				
+				
+				PWDeleteAction deleteAction = (PWDeleteAction)PWAction.getAction("nenga", "deletehistories");
+				deleteAction.run(objects);
+				
+				receiversTable.deleteRows(indexes);
+			}
+		});
+		return button;
 	}
 	
 	/**
@@ -199,140 +356,41 @@ public class ReceiversPartPanel extends JPanel {
 		});
 		return button;
 	}
+	
 	/**
 	 * @return
 	 */
-	private JButton createDeleteButton() {
-		JButton button = new JButton("削除");
+	private JButton createPdfButton() {
+		JButton button = new JButton("PDF");
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int[] indexes = receiversTable.getSelectedRowIndexes();
 				if (indexes.length == 0) {
-					JOptionPane.showConfirmDialog(null, "１件以上の宛先を選択してください", "削除", JOptionPane.OK_OPTION);
+					JOptionPane.showMessageDialog(null, "宛先を選択してください。", "PDF", JOptionPane.INFORMATION_MESSAGE);
 					return;
 				}
-				
-				int res = JOptionPane.showConfirmDialog(null, "選択した行を削除しますか？", "削除", JOptionPane.YES_NO_OPTION);
-				if (res == JOptionPane.NO_OPTION) {
-					return;
-				}
-				
-				List<NengaHistory> histories = new ArrayList<NengaHistory>();
+				NengaAtenaWriter writer = new NengaAtenaWriter();
+				writer.setSenderAddress(senderZipcode, senderAddress, senderFamilyName, senderFirstNames);
 				for (int i = 0; i < indexes.length; i++) {
-					if (receiversTable.getRowState(indexes[i]) != PWTableViewRowState.None) {
-						continue;
-					}
-					NengaHistory history = new NengaHistory();
-					history.setYear(year);
-					history.setSenderAddressId(senderAddressId);
-					history.setReceiverAddressId((UUID)receiversTable.getValueAt(indexes[i], "UUID"));
-					histories.add(history);
-				}
-				Object[] objects = histories.toArray();
-				
-				
-				PWDeleteAction deleteAction = (PWDeleteAction)PWAction.getAction("nenga", "deletehistories");
-				deleteAction.run(objects);
-				
-				receiversTable.deleteRows(indexes);
-			}
-		});
-		return button;
-	}
-	/**
-	 * @return
-	 */
-	private JButton createAddButton() {
-		JButton button = new JButton("追加");
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (senderAddressId == null) {
-					JOptionPane.showMessageDialog(null, "差出人を指定してから送付先を追加してください", "追加", JOptionPane.INFORMATION_MESSAGE);
-					return;
+					String zipcode = (String)receiversTable.getValueAt(indexes[i], "ZIPCODE");
+					String address = (String)receiversTable.getValueAt(indexes[i], "ADDRESS");
+					String familyName = (String)receiversTable.getValueAt(indexes[i], "FAMILYNAME");
+					String firstNames = (String)receiversTable.getValueAt(indexes[i], "FIRSTNAMES");
+					String honorific = (String)receiversTable.getValueAt(indexes[i], "HONORIFIC");
+					writer.addReceiverAddress(zipcode, address, honorific, familyName, firstNames.split("/"));
 				}
 				
-				// Get Data
-				PWAction action = PWAction.getAction("address", "list");
-				PWTable table = (PWTable)action.run();
-				
-				// Table View
-				final PWTableViewPanel tableView = new PWTableViewPanel();
-				tableView.setSelectionMode(PWSelectionMode.Multi);
-				tableView.addColumn("UUID", "");
-				tableView.addColumn("ZIPCODE", "郵便番号");
-				tableView.addColumn("ADDRESS", "住所");
-				tableView.addColumn("FAMILYNAME", "姓");
-				tableView.addColumn("FIRSTNAMES", "名");
-				//tableView.setColumnVisible("UUID", false);
-				tableView.add(new PWTableViewSearchPanel(tableView), BorderLayout.NORTH);
-				tableView.setData(table);
-				
-				// Show Dialog
-				int res = JOptionPane.showConfirmDialog(
-						null,
-						tableView,
-						"住所選択",
-						JOptionPane.OK_CANCEL_OPTION,
-						JOptionPane.PLAIN_MESSAGE);
-				if (res == JOptionPane.CANCEL_OPTION) {
-					return;
+				File tmpPdfFile;
+				try {
+					tmpPdfFile = File.createTempFile("atena", ".pdf");
+				} catch (IOException ex) {
+					throw new PWError(ex, "Failed to create temporary PDF file.");
 				}
+				writer.save(tmpPdfFile);
 				
-				HashMap<UUID, Integer> map = new HashMap<UUID, Integer>();
-				for (int i = 0; i < receiversTable.getRowCount(); i++) {
-					UUID receiverAddressId = (UUID)receiversTable.getValueAt(i, "UUID");
-					map.put(receiverAddressId, i);
-				}
-				
-				// Set Selected Data to GUI
-				boolean overWrite = false;
-				int[] modelIndexes = tableView.getSelectedRowIndexes();
-				for (int i = 0; i < modelIndexes.length; i++) {
-					int index = modelIndexes[i];
-					UUID uuid = (UUID)tableView.getValueAt(index, "UUID");
-					String familyName = tableView.getValueAt(index, "FAMILYNAME") == null ? "" : (String)tableView.getValueAt(index, "FAMILYNAME");
-					String firstNames = tableView.getValueAt(index, "FIRSTNAMES") == null ? "" : (String)tableView.getValueAt(index, "FIRSTNAMES");
-					String name = familyName + " " + firstNames;
-					String honorific = "樣";
-					String zipcode = tableView.getValueAt(index, "ZIPCODE") == null ? "" : (String)tableView.getValueAt(index, "ZIPCODE");
-					String address = tableView.getValueAt(index, "ADDRESS") == null ? "" : (String)tableView.getValueAt(index, "ADDRESS");
-					boolean mourning = false;
-					String sentDate = "";
-					String receivedDate = "";
-					
-					if (!map.containsKey(uuid)) {
-						receiversTable.addRow(uuid, name, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
-						return;
-					}
-					
-					int modelIndex = map.get(uuid);
-					if (overWrite) {
-						receiversTable.setRow(modelIndex, uuid, name, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
-						return;
-					}
-					
-					final String buttons[] = {"上書き","すべて上書き","スキップ"};
-					int select = JOptionPane.showOptionDialog(
-							null,
-							String.format("%s は既に追加されています。上書きしますか？\n(「すべて上書き」を選択した場合、残りのすべての重複した宛先が上書きされます。)", name),
-							"追加",
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE,
-							null,
-							buttons,
-							buttons[2]);
-					if (select == 2) {
-						continue;
-					}
-					
-					if (select == 1) {
-						overWrite = true;
-					}
-					
-					receiversTable.setRow(modelIndex, uuid, name, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
-				}
+				PWCommandAction action = (PWCommandAction)PWAction.getAction("nenga", "pdf");
+				action.run(tmpPdfFile.getAbsolutePath());
 			}
 		});
 		return button;

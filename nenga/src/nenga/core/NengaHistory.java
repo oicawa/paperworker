@@ -26,7 +26,7 @@
  *  ===============================================================================
  */
 
-package nenga.item;
+package nenga.core;
 
 import java.util.Date;
 import java.util.UUID;

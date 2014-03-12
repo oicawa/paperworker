@@ -1,0 +1,7 @@
+select
+	*
+from
+	ACTIONSETTINGS as A
+where
+	A.JOBNAME = ? and
+	A.ACTIONNAME = ?

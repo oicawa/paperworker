@@ -1,0 +1,11 @@
+#!/bin/sh
+
+FILE_PATH=$1
+MEDIA_TYPE=JPPOSTCARD
+if test "$2" = "test"
+then
+	MEDIA_TYPE=PLAIN
+fi
+
+echo ${FILE_PATH}
+echo ${MEDIA_TYPE}
