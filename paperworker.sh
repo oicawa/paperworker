@@ -12,13 +12,20 @@ for dirname in `ls -F ..|grep -e "^pw.*/"`
 do
 	PACKAGES_PATH=${PACKAGES_PATH}../${dirname}bin:
 done
+
+#create lib path
+for libname in `ls ../lib`
+do
+	PACKAGES_PATH=${PACKAGES_PATH}../lib/${libname}:
+done
 PACKAGES_PATH=${PACKAGES_PATH}../nenga/bin:
+
+#echo ${PACKAGES_PATH}
 
 #run
 java \
 -cp \
 ..:\
-${PACKAGES_PATH}\
-${LIB_PATH}/h2-1.3.173.jar \
+${PACKAGES_PATH} \
 pw.ui.${UI}.PaperWorker
 
