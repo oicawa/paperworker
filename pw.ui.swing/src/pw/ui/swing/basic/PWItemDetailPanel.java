@@ -30,15 +30,15 @@ package pw.ui.swing.basic;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.util.List;
+//import java.awt.GridBagConstraints;
+//import java.awt.GridBagLayout;
+//import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import pw.core.PWAction;
-import pw.core.PWField;
+//import pw.core.PWAction;
+//import pw.core.PWField;
 import pw.core.item.PWItem;
 
 /**
@@ -62,16 +62,16 @@ public class PWItemDetailPanel extends JPanel {
 		buttonsPanel.add(editButton);
 		add(buttonsPanel, BorderLayout.NORTH);
 		
-		// Fields
-		List<PWField> fields = PWItem.getFields(itemType);
-		String tableName = PWItem.getTableName(itemType);
-		
-		PWAction action = PWAction.getAction("field", "item");
-		
-		JPanel fieldsPanel = new JPanel();
-		fieldsPanel.setLayout(new GridBagLayout());
-		
-		GridBagConstraints gbc = new GridBagConstraints();
+//		// Fields
+//		List<PWField> fields = PWItem.getFields(itemType);
+//		String tableName = PWItem.getTableName(itemType);
+//		
+//		PWAction action = PWAction.getAction("field", "item");
+//		
+//		JPanel fieldsPanel = new JPanel();
+//		fieldsPanel.setLayout(new GridBagLayout());
+//		
+//		GridBagConstraints gbc = new GridBagConstraints();
 		
 	}
 

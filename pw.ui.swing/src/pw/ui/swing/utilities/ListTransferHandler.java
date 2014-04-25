@@ -49,7 +49,7 @@ public class ListTransferHandler extends StringTransferHandler {
 	 */
 	@Override
 	protected String exportString(JComponent c) {
-        JList list = (JList)c;
+        JList<?> list = (JList<?>)c;
         s_index = list.getSelectedIndex();
         return (String)list.getSelectedValue();
 	}
@@ -59,8 +59,9 @@ public class ListTransferHandler extends StringTransferHandler {
 	 */
 	@Override
 	protected void importString(JComponent c, String str) {
-        JList target = (JList)c;
-        DefaultListModel listModel = (DefaultListModel)target.getModel();
+        @SuppressWarnings("unchecked")
+		JList<String> target = (JList<String>)c;
+        DefaultListModel<String> listModel = (DefaultListModel<String>)target.getModel();
         int index = target.getSelectedIndex();
 
         int max = listModel.getSize();
@@ -82,8 +83,8 @@ public class ListTransferHandler extends StringTransferHandler {
 	@Override
 	protected void cleanup(JComponent c, boolean remove) {
         if (remove && s_index != -1 && addIndex != -1) {
-            JList source = (JList) c;
-            DefaultListModel model = (DefaultListModel) source.getModel();
+            JList<?> source = (JList<?>) c;
+            DefaultListModel<?> model = (DefaultListModel<?>) source.getModel();
             if (s_index > addIndex) {
                 s_index += 1;
             }

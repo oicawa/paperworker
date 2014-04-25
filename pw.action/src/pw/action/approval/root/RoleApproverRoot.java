@@ -52,5 +52,9 @@ public class RoleApproverRoot extends ApproverRoot {
 	public List<String> getApprovers() {
 		return null;
 	}
+	
+	public String getFinalApproverRole() {
+		return finalApproverRole;
+	}
 
 }

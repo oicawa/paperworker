@@ -56,7 +56,7 @@ public class YearPartPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = -4697002083764833898L;
 	private JPanel yearPanel;
-	private JComboBox yearComboBox;
+	private JComboBox<Integer> yearComboBox;
 	private JLabel yearLabel;
 	private JLabel yearCaptionLabel;
 	private JLabel fillerLabel;
@@ -78,7 +78,8 @@ public class YearPartPanel extends JPanel {
 		defaultListener = new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
-				final JComboBox combobox = (JComboBox)arg0.getSource();
+				@SuppressWarnings("unchecked")
+				final JComboBox<Integer> combobox = (JComboBox<Integer>)arg0.getSource();
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -93,7 +94,7 @@ public class YearPartPanel extends JPanel {
 			}
 		};
 		
-		yearComboBox = new JComboBox();
+		yearComboBox = new JComboBox<Integer>();
 		
 		yearPanel = new JPanel();
 		yearPanel.setLayout(new FlowLayout());

@@ -34,9 +34,9 @@ import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.DefaultListModel;
+//import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
-import javax.swing.JList;
+//import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SwingUtilities;
@@ -46,7 +46,7 @@ import javax.swing.event.ChangeListener;
 
 import pw.ui.swing.PWJobSettingPanel;
 import pw.ui.swing.PWLayout;
-import pw.ui.swing.utilities.ListTransferHandler;
+//import pw.ui.swing.utilities.ListTransferHandler;
 
 /**
  * @author masamitsu
@@ -193,13 +193,14 @@ public class PWMenuSettingPane extends PWJobSettingPanel<PWMenuPreferences> {
 		menuManager.setDescription("実行可能なメニューの登録、変更、削除を行います。");
 		menuManager.setClassPath("pw.ui.swing.menu.Menu");
 
-		DefaultListModel model = new DefaultListModel();
-		model.addElement("Menu Management");
+//		DefaultListModel model = new DefaultListModel();
+//		model.addElement("Menu Management");
 		
-		JList buttonList = new JList(model);
-		buttonList.setDragEnabled(true);
-		buttonList.setTransferHandler(new ListTransferHandler());
-		return new JScrollPane(buttonList);
+//		JList buttonList = new JList(model);
+//		buttonList.setDragEnabled(true);
+//		buttonList.setTransferHandler(new ListTransferHandler());
+//		return new JScrollPane(buttonList);
+		return null;
 	}
 	
 	private JLabel getColonLabel() {

@@ -156,7 +156,7 @@ public class ConsolePanel extends PWJobPane<SettingPanel> {
 		yearPartPanel.setItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				JComboBox combobox = (JComboBox)e.getSource();
+				JComboBox<?> combobox = (JComboBox<?>)e.getSource();
 				receiversPartPanel.setYear((Integer)combobox.getSelectedItem());
 			}
 		});

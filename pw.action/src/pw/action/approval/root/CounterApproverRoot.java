@@ -54,5 +54,9 @@ public class CounterApproverRoot extends ApproverRoot {
 		
 		return null;
 	}
+	
+	public int getCount() {
+		return count;
+	}
 
 }

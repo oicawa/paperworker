@@ -52,11 +52,11 @@ public class PWComboBoxCellEditor<T> extends AbstractCellEditor implements Table
 	private static final long serialVersionUID = 3934744589317183697L;
 	
 	protected int rowIndex;
-	protected JComboBox comboBox;
+	protected JComboBox<T> comboBox;
 	
 	public PWComboBoxCellEditor(final PWTableViewPanel tableView, T... items) {
 		rowIndex = -1;
-		comboBox = new JComboBox();
+		comboBox = new JComboBox<T>();
 		for (int i = 0; i < items.length; i++) {
 			comboBox.addItem(items[i]);
 		}
@@ -73,7 +73,7 @@ public class PWComboBoxCellEditor<T> extends AbstractCellEditor implements Table
 		});
 	}
 	
-	public void setRenderer(ListCellRenderer renderer) {
+	public void setRenderer(ListCellRenderer<T> renderer) {
 		comboBox.setRenderer(renderer);
 	}
 	
