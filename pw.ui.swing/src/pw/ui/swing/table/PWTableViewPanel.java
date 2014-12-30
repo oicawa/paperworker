@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -45,6 +46,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -70,10 +75,38 @@ public class PWTableViewPanel extends JPanel {
 	protected JTable tableView;
 	protected HashMap<String, TableColumn> columnMap;
 	protected List<PWTableViewRowState> rowStateList;
+	protected JLabel rowCountLabel;
+	protected String selectedCountCaption;
+	protected String totalCountCaption = "%d";
 	
 	public PWTableViewPanel() {
 		setLayout(new BorderLayout(0, 0));
 		add(createTable(), BorderLayout.CENTER);
+		add(createRowCount(), BorderLayout.SOUTH);
+	}
+
+	private Component createRowCount() {
+		rowCountLabel = new JLabel();
+		rowCountLabel.setHorizontalAlignment(JLabel.RIGHT);
+		return rowCountLabel;
+	}
+	
+	public void setSelectedCountCaption(String caption) {
+		selectedCountCaption = caption;
+	}
+	
+	public void setTotalCountCaption(String caption) {
+		totalCountCaption = caption;
+	}
+	
+	private void updateCounts() {
+		String caption;
+		if (selectedCountCaption == null) {
+			caption = String.format(totalCountCaption, tableView.getRowCount());
+		} else {
+			caption = String.format(selectedCountCaption + ", " + totalCountCaption, tableView.getSelectedRowCount(), tableView.getRowCount());
+		}
+		this.rowCountLabel.setText(caption);
 	}
 
 	/**
@@ -86,6 +119,14 @@ public class PWTableViewPanel extends JPanel {
 		tableView.setAutoCreateColumnsFromModel(false);
 		tableView.setAutoCreateRowSorter(true);
 		tableView.setColumnModel(tableColumns);
+		tableView.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+			@Override
+			public void valueChanged(ListSelectionEvent arg0) {
+				updateCounts();
+			}
+			
+		});
 		columnMap = new HashMap<String, TableColumn>();
 		rowStateList = new ArrayList<PWTableViewRowState>();
 		return new JScrollPane(tableView);
@@ -178,6 +219,10 @@ public class PWTableViewPanel extends JPanel {
 	}
 	
 	public void setData(PWTable dataTable) {
+		setData(dataTable, PWTableViewRowState.None);
+	}
+	
+	public void setData(PWTable dataTable, PWTableViewRowState state) {
 		// Reset
 		deleteAllRows();
 		
@@ -189,13 +234,15 @@ public class PWTableViewPanel extends JPanel {
 				values[i] = row.getValue(i);
 			}
 			tableModel.addRow(values);
-			rowStateList.add(PWTableViewRowState.None);
+			rowStateList.add(state);
 		}
+		updateCounts();
 	}
 	
 	public void addRow(Object... values) {
 		tableModel.addRow(values);
 		rowStateList.add(PWTableViewRowState.Added);
+		updateCounts();
 	}
 
 	public void setRow(int row, Object... values) {
@@ -225,6 +272,7 @@ public class PWTableViewPanel extends JPanel {
 			tableModel.removeRow(modelIndex);
 			rowStateList.remove(modelIndex);
 		}
+		updateCounts();
 	}
 	
 	public void deleteAllRows() {
@@ -233,6 +281,7 @@ public class PWTableViewPanel extends JPanel {
 			tableModel.removeRow(0);
 			rowStateList.remove(0);
 		}
+		updateCounts();
 	}
 	
 	public void setSelectionMode(PWSelectionMode selectionMode) {
@@ -273,6 +322,7 @@ public class PWTableViewPanel extends JPanel {
 		
 		TableRowSorter<? extends TableModel> tableRowSorter = (TableRowSorter<? extends TableModel>)sorter;
 		tableRowSorter.setRowFilter(filter);
+		updateCounts();
 	}
 	
 	public int[] getRowIndexesByState(PWTableViewRowState state) {

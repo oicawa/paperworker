@@ -102,6 +102,9 @@ public class ReceiversPartPanel extends JPanel {
 		fl_buttonsPanel.setAlignment(FlowLayout.RIGHT);
 		add(buttonsPanel, BorderLayout.NORTH);
 		
+		JButton importButton = createImportButton();
+		buttonsPanel.add(importButton);
+		
 		JButton addButton = createAddButton();
 		buttonsPanel.add(addButton);
 		
@@ -140,8 +143,46 @@ public class ReceiversPartPanel extends JPanel {
 				return label;
 			}
 		});
+		receiversTable.setTotalCountCaption("%d 件");
+		receiversTable.setSelectedCountCaption("選択 %d 件");
 		
 		add(receiversTable, BorderLayout.CENTER);
+	}
+
+	private JButton createImportButton() {
+		JButton button = new JButton("インポート");
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (senderAddressId == null) {
+					JOptionPane.showMessageDialog(null, "差出人の指定が必要です", "インポート", JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
+				
+				String input = JOptionPane.showInputDialog(null, "インポートしたい年を入力してください");
+				if (input == null) {
+					return;
+				}
+				
+				int inputYear = -1;
+				try {
+					inputYear = Integer.parseInt(input, 10);
+				} catch (NumberFormatException ex) {
+					JOptionPane.showMessageDialog(null, "整数値を入力してください");
+					return;
+				}
+				
+				PWViewAction action = (PWViewAction)PWAction.getAction("nenga", "listhistories");
+				PWTable tableData = (PWTable)action.run(inputYear, senderAddressId);
+				
+				if (tableData.getRows().size() == 0) {
+					JOptionPane.showMessageDialog(null, String.format("[%d]年における、[%s %s]が差出人になっている年賀状送付履歴はありませんでした", inputYear, senderFamilyName, senderFirstNames));
+					return;
+				}
+				receiversTable.setData(tableData, PWTableViewRowState.Added);
+			}
+		});
+		return button;
 	}
 
 	public void setYear(int year) {
@@ -228,13 +269,13 @@ public class ReceiversPartPanel extends JPanel {
 					
 					if (!map.containsKey(uuid)) {
 						receiversTable.addRow(uuid, familyName, firstNames, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
-						return;
+						continue;
 					}
 					
 					int modelIndex = map.get(uuid);
 					if (overWrite) {
 						receiversTable.setRow(modelIndex, uuid, familyName, firstNames, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
-						return;
+						continue;
 					}
 					
 					final String buttons[] = {"上書き","すべて上書き","スキップ"};

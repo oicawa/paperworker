@@ -5,7 +5,7 @@ UI=$1
 cd ./pw.ui.${UI}
 
 BASE_PATH=`pwd`
-LIB_PATH=../lib
+LIB_PATH=../../lib
 
 #create class path
 for dirname in `ls -F ..|grep -e "^pw.*/"`
@@ -14,9 +14,9 @@ do
 done
 
 #create lib path
-for libname in `ls ../lib`
+for libname in `ls ../../lib`
 do
-	PACKAGES_PATH=${PACKAGES_PATH}../lib/${libname}:
+	PACKAGES_PATH=${PACKAGES_PATH}../../lib/${libname}:
 done
 PACKAGES_PATH=${PACKAGES_PATH}../nenga/bin:
 

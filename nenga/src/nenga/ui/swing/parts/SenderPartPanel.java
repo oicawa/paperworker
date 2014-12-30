@@ -171,6 +171,8 @@ public class SenderPartPanel extends JPanel {
 		tableView.addColumn("FAMILYNAME", "姓");
 		tableView.addColumn("FIRSTNAMES", "名");
 		tableView.setColumnVisible("UUID", false);
+		tableView.setTotalCountCaption("%d件");
+		tableView.setSelectedCountCaption("選択%d件");
 		tableView.add(new PWTableViewSearchPanel(tableView), BorderLayout.NORTH);
 		return tableView;
 	}

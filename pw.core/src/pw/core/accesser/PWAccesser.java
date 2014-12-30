@@ -71,8 +71,8 @@ public class PWAccesser implements Closeable {
 		}
 		
 		Properties properties = new Properties();
-//		props.put("user", "sa");
-//		props.put("password", "");
+		//properties.put("user", "");
+		//properties.put("password", "");
 		Connection connection;
 		try {
 			String connectionString = PWPropertyLoader.getValue("jdbcConnection");

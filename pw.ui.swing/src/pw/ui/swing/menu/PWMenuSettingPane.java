@@ -126,7 +126,7 @@ public class PWMenuSettingPane extends PWJobSettingPanel<PWMenuPreferences> {
 		gbc.weighty = 1.0;
 		gbc.gridheight = 2;
 		gbc.fill = GridBagConstraints.BOTH;
-		add(getMenuList(), gbc);
+		//add(getMenuList(), gbc);
 		
 	}
 
