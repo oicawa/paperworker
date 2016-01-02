@@ -1,5 +1,5 @@
 /*
- *  $Id: PWComboBoxCellEditor.java 2014/01/27 20:43:05 masamitsu $
+ *  $Id: PWCheckBoxCellEditor.java 2014/01/28 22:02:51 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,43 +26,42 @@
  *  ===============================================================================
  */
 
-package pw.ui.swing.table;
+package pw.ui.swing.table.editor;
 
 import java.awt.Component;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
 
 import javax.swing.AbstractCellEditor;
-import javax.swing.JComboBox;
+import javax.swing.JCheckBox;
 import javax.swing.JTable;
-import javax.swing.ListCellRenderer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.TableCellEditor;
+
+import pw.ui.swing.table.PWTableViewPanel;
+import pw.ui.swing.table.PWTableViewRowState;
 
 /**
  * @author masamitsu
  *
  */
-public class PWComboBoxCellEditor<T> extends AbstractCellEditor implements TableCellEditor {
+public class PWCheckBoxCellEditor extends AbstractCellEditor implements TableCellEditor {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 3934744589317183697L;
+	private static final long serialVersionUID = -444438388252924616L;
 	
 	protected int rowIndex;
-	protected JComboBox<T> comboBox;
+	protected JCheckBox checkBox;
 	
-	public PWComboBoxCellEditor(final PWTableViewPanel tableView, T... items) {
+	public PWCheckBoxCellEditor(final PWTableViewPanel tableView) {
 		rowIndex = -1;
-		comboBox = new JComboBox<T>();
-		for (int i = 0; i < items.length; i++) {
-			comboBox.addItem(items[i]);
-		}
-		comboBox.addItemListener(new ItemListener() {
+		checkBox = new JCheckBox();
+		checkBox.addChangeListener(new ChangeListener() {
 			@Override
-			public void itemStateChanged(ItemEvent arg0) {
+			public void stateChanged(ChangeEvent e) {
 				if (rowIndex < 0) {
 					return;
 				}
@@ -71,14 +70,6 @@ public class PWComboBoxCellEditor<T> extends AbstractCellEditor implements Table
 					tableView.setRowState(rowIndex, PWTableViewRowState.Modified);
 			}
 		});
-	}
-	
-	public void setRenderer(ListCellRenderer<T> renderer) {
-		comboBox.setRenderer(renderer);
-	}
-	
-	public void addItem(T item) {
-		comboBox.addItem(item);
 	}
 	
 	public boolean isCellEditable(EventObject event) {
@@ -90,13 +81,13 @@ public class PWComboBoxCellEditor<T> extends AbstractCellEditor implements Table
 		}
 		return true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see javax.swing.CellEditor#getCellEditorValue()
 	 */
 	@Override
 	public Object getCellEditorValue() {
-		return comboBox.getSelectedItem();
+		return checkBox.isSelected();
 	}
 
 	/* (non-Javadoc)
@@ -105,8 +96,8 @@ public class PWComboBoxCellEditor<T> extends AbstractCellEditor implements Table
 	@Override
 	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 		rowIndex = row;
-		comboBox.setSelectedItem(value);
-		return comboBox;
+		checkBox.setSelected((Boolean)value);
+		return checkBox;
 	}
 
 }

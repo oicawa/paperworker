@@ -30,6 +30,7 @@ package nenga.ui.swing.parts;
 
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.TableCellEditor;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -38,14 +39,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 
 import nenga.core.NengaAtenaWriter;
 import nenga.core.NengaHistory;
@@ -58,12 +64,15 @@ import pw.core.PWAction;
 import pw.core.PWError;
 import pw.core.table.PWTable;
 import pw.ui.swing.basic.PWSelectionMode;
-import pw.ui.swing.table.PWCellRenderer;
-import pw.ui.swing.table.PWCheckBoxCellEditor;
-import pw.ui.swing.table.PWComboBoxCellEditor;
 import pw.ui.swing.table.PWTableViewPanel;
 import pw.ui.swing.table.PWTableViewRowState;
 import pw.ui.swing.table.PWTableViewSearchPanel;
+import pw.ui.swing.table.editor.PWCheckBoxCellEditor;
+import pw.ui.swing.table.editor.PWComboBoxCellEditor;
+import pw.ui.swing.table.editor.PWDateTimeCellEditor;
+import pw.ui.swing.table.editor.PWTextFieldCellEditor;
+import pw.ui.swing.table.renderer.PWCellRenderer;
+import pw.ui.swing.table.renderer.PWDateTimeCellRenderer;
 
 /**
  * @author masamitsu
@@ -143,6 +152,19 @@ public class ReceiversPartPanel extends JPanel {
 				return label;
 			}
 		});
+		
+		PWDateTimeCellEditor sentDateEditor = new PWDateTimeCellEditor(receiversTable, "yyyy/MM/dd");
+		PWDateTimeCellRenderer sentDateRenderer = new PWDateTimeCellRenderer("yyyy/MM/dd");
+		receiversTable.setColumnCellEditor("SENTDATE", sentDateEditor);
+		receiversTable.setColumnCellRenderer("SENTDATE", sentDateRenderer);
+		receiversTable.setColumnClass("SENTDATE", Date.class);
+		
+		PWDateTimeCellEditor receiveDateEditor = new PWDateTimeCellEditor(receiversTable, "yyyy/MM/dd");
+		PWDateTimeCellRenderer receiveDateRenderer = new PWDateTimeCellRenderer("yyyy/MM/dd");
+		receiversTable.setColumnCellEditor("RECEIVEDDATE", receiveDateEditor);
+		receiversTable.setColumnCellRenderer("RECEIVEDDATE", receiveDateRenderer);
+		receiversTable.setColumnClass("RECEIVEDDATE", Date.class);
+		
 		receiversTable.setTotalCountCaption("%d 件");
 		receiversTable.setSelectedCountCaption("選択 %d 件");
 		
@@ -264,8 +286,8 @@ public class ReceiversPartPanel extends JPanel {
 					String zipcode = tableView.getValueAt(index, "ZIPCODE") == null ? "" : (String)tableView.getValueAt(index, "ZIPCODE");
 					String address = tableView.getValueAt(index, "ADDRESS") == null ? "" : (String)tableView.getValueAt(index, "ADDRESS");
 					boolean mourning = false;
-					String sentDate = "";
-					String receivedDate = "";
+					Date sentDate = null;
+					Date receivedDate = null;
 					
 					if (!map.containsKey(uuid)) {
 						receiversTable.addRow(uuid, familyName, firstNames, honorific, zipcode, address, mourning, sentDate, receivedDate, PWTableViewRowState.Added);
@@ -446,8 +468,8 @@ public class ReceiversPartPanel extends JPanel {
 			history.setReceiverAddressId((UUID)receiversTable.getValueAt(indexes[i], "UUID"));
 			history.setHonorific((String)receiversTable.getValueAt(indexes[i], "HONORIFIC"));
 			history.setMourning((Boolean)receiversTable.getValueAt(indexes[i], "MOURNING"));
-			history.setSentDate(null);
-			history.setReceivedDate(null);
+			history.setSentDate((Date)receiversTable.getValueAt(indexes[i], "SENTDATE"));
+			history.setReceivedDate((Date)receiversTable.getValueAt(indexes[i], "RECEIVEDDATE"));
 			histories.add(history);
 		}
 		return histories;

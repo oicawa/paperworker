@@ -26,7 +26,7 @@
  *  ===============================================================================
  */
 
-package pw.ui.swing.table;
+package pw.ui.swing.table.renderer;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -83,6 +83,9 @@ public abstract class PWCellRenderer<T> extends DefaultTableCellRenderer impleme
 			label.setForeground(foreground);
 			label.setOpaque(false);
 		}
+		System.out.println("----------");
+		System.out.println(value == null ? "(null)" : value.getClass().getName());
+		System.out.println(value == null ? "" : value.toString());
 		return getRendererComponent(table, (T)value, isSelected, isFocused, row, column);
 	}
 

@@ -43,6 +43,7 @@ import javax.swing.RowSorter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -119,6 +120,7 @@ public class PWTableViewPanel extends JPanel {
 		tableView.setAutoCreateColumnsFromModel(false);
 		tableView.setAutoCreateRowSorter(true);
 		tableView.setColumnModel(tableColumns);
+		tableView.setRowHeight(25);
 		tableView.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			@Override
@@ -351,5 +353,15 @@ public class PWTableViewPanel extends JPanel {
 	 */
 	public int getRowCount() {
 		return tableModel.getRowCount();
+	}
+
+	public void setColumnClass(int columnIndex, @SuppressWarnings("rawtypes") Class klass) {
+		tableModel.setColumnClass(columnIndex, klass);
+		
+	}
+
+	public void setColumnClass(String columnName, @SuppressWarnings("rawtypes") Class klass) {
+		int columnIndex = getColumnModelIndex(columnName);
+		tableModel.setColumnClass(columnIndex, klass);
 	}
 }

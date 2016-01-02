@@ -1,5 +1,5 @@
 /*
- *  $Id: PWTableModel.java 2014/01/27 22:49:22 masamitsu $
+ *  $Id: PWCellRenderer.java 2014/01/29 0:39:25 masamitsu $
  *
  *  ===============================================================================
  *
@@ -26,54 +26,38 @@
  *  ===============================================================================
  */
 
-package pw.ui.swing.table;
+package pw.ui.swing.table.renderer;
 
-import java.util.HashMap;
+import java.awt.Component;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import javax.swing.table.DefaultTableModel;
+import javax.swing.JLabel;
+import javax.swing.JTable;
 
 /**
  * @author masamitsu
  *
  */
-class PWTableModel extends DefaultTableModel {
+public class PWDateTimeCellRenderer extends PWCellRenderer<Date> {
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8124884810159811905L;
+	private static final long serialVersionUID = -6316878414217141903L;
 	
-	protected HashMap<Integer, Boolean> columnEditableMap;
-	@SuppressWarnings("rawtypes")
-	protected HashMap<Integer, Class> columnClassMap;
+	protected String format;
 	
-	@SuppressWarnings("rawtypes")
-	PWTableModel() {
-		columnEditableMap = new HashMap<Integer, Boolean>();
-		columnClassMap = new HashMap<Integer, Class>();
+	public PWDateTimeCellRenderer(String format) {
+		super();
+		this.format = format;
 	}
 
-	@Override
-	public boolean isCellEditable(int row, int column) {
-		if (!columnEditableMap.containsKey(column)) {
-			return false;
-		}
-		
-		return columnEditableMap.get(column);
-	}
-	
-	void setColumnEditable(int columnIndex, boolean editable) {
-		columnEditableMap.put(columnIndex, editable);
-	}
-	
-	void setColumnClass(int columnIndex, @SuppressWarnings("rawtypes") Class klass) {
-		columnClassMap.put(columnIndex, klass);
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Class getColumnClass(int columnIndex) {
-		if (columnClassMap.containsKey(columnIndex)) {
-			return columnClassMap.get(columnIndex);
-		}
-		return super.getColumnClass(columnIndex);
+	protected Component getRendererComponent(JTable table, Date value, boolean isSelected, boolean isFocused, int row, int column) {
+		String text = "";
+		if (value != null)
+			text = new SimpleDateFormat(format).format((Date)value);
+		label.setText(text);
+		return label;
 	}
 }
