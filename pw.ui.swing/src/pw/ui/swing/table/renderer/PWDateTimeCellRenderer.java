@@ -32,7 +32,6 @@ import java.awt.Component;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.JLabel;
 import javax.swing.JTable;
 
 /**

@@ -108,7 +108,6 @@ public class ConsolePanel extends PWJobPane<SettingPanel> {
 		add(receiversPartPanel, gbc_1);
 		
 		senderPartPanel.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// Get Data
 				PWAction action = PWAction.getAction("address", "list");
@@ -154,7 +153,6 @@ public class ConsolePanel extends PWJobPane<SettingPanel> {
 		
 		yearPartPanel.setYear(year);
 		yearPartPanel.setItemListener(new ItemListener() {
-			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JComboBox<?> combobox = (JComboBox<?>)e.getSource();
 				receiversPartPanel.setYear((Integer)combobox.getSelectedItem());

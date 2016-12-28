@@ -176,6 +176,7 @@ public class PWMenuSettingPane extends PWJobSettingPanel<PWMenuPreferences> {
 		return spinner;
 	}
 	
+	@SuppressWarnings("unused")
 	private JScrollPane getMenuList() {
 		JLabel address = new JLabel("Address");
 		address.setTransferHandler(new TransferHandler("text"));

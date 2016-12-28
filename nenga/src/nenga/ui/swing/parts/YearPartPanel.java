@@ -76,12 +76,10 @@ public class YearPartPanel extends JPanel {
 		yearLabel.setHorizontalAlignment(SwingConstants.LEFT);
 		
 		defaultListener = new ItemListener() {
-			@Override
 			public void itemStateChanged(ItemEvent arg0) {
 				@SuppressWarnings("unchecked")
 				final JComboBox<Integer> combobox = (JComboBox<Integer>)arg0.getSource();
 				SwingUtilities.invokeLater(new Runnable() {
-					@Override
 					public void run() {
 						year = (Integer)combobox.getSelectedItem();
 						updateComboBox();
@@ -125,10 +123,8 @@ public class YearPartPanel extends JPanel {
 		
 		yearChangeButton = new JButton("変更");
 		yearChangeButton.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				SwingUtilities.invokeLater(new Runnable() {
-					@Override
 					public void run() {
 						yearComboBox.setVisible(true);
 						yearLabel.setVisible(false);

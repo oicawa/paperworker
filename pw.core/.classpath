@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/home/masamitsu/git/lib/iText-5.0.5.jar"/>
-	<classpathentry kind="lib" path="/home/masamitsu/git/lib/iTextAsian.jar"/>
-	<classpathentry kind="lib" path="/home/masamitsu/git/lib/iTextAsianCmaps.jar"/>
-	<classpathentry kind="lib" path="/home/masamitsu/git/lib/h2-1.4.180.jar"/>
+	<classpathentry kind="lib" path="/home/masamitsu/workspace/lib/h2-1.4.193.jar"/>
+	<classpathentry kind="lib" path="/home/masamitsu/workspace/lib/iText-5.0.5.jar"/>
+	<classpathentry kind="lib" path="/home/masamitsu/workspace/lib/iTextAsian.jar"/>
+	<classpathentry kind="lib" path="/home/masamitsu/workspace/lib/itext-asiancmaps.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

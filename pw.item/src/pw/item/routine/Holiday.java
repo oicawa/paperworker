@@ -132,7 +132,6 @@ public class Holiday extends PWItem implements PWDocumentItem {
 	/* (non-Javadoc)
 	 * @see pw.core.item.PWDocumentItem#getDocumentId()
 	 */
-	@Override
 	public UUID getDocumentId() {
 		return uuid;
 	}

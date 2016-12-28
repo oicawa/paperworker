@@ -45,8 +45,12 @@ public class NengaAtenaWriter {
 	private static final PWPdfFile.Encoding ENCODING = PWPdfFile.Encoding.UNIJIS_UCS2_V;
 	
 	private static final int SENDER_ZIPCODE_FONT_SIZE = 11;
-	private static final float SENDER_ZIPCODE_TOP_BASE = 67;
-	private static final float[] SENDER_ZIPCODE_LEFT_BASES = { 21, 32, 44, 57, 69, 81, 92 };
+	//private static final float SENDER_ZIPCODE_TOP_BASE = 67;
+	private static final float SENDER_ZIPCODE_TOP_BASE = 56;
+	//private static final float[] SENDER_ZIPCODE_LEFT_BASES = { 21, 32, 44, 57, 69, 81, 92 };
+	//private static final float[] SENDER_ZIPCODE_LEFT_BASES = { 18, 28, 39, 57, 69, 81, 92 };
+	//private static final float[] SENDER_ZIPCODE_LEFT_BASES = { 17, 27, 38, 56, 68, 80, 91 };
+	private static final float[] SENDER_ZIPCODE_LEFT_BASES = { 15, 27, 38, 54, 66, 79, 90 };
 	private static final float SENDER_NAME_BOTTOM_BASE = 80;
 	private static final float SENDER_NAME_LEFT_BASE = 10;
 	private static final float SENDER_NAME_HEIGHT = 160;
@@ -56,8 +60,14 @@ public class NengaAtenaWriter {
 	private static final int SENDER_ADDRESS_FONT_SIZE = 12;
 	
 	private static final int RECEIVER_ZIPCODE_FONT_SIZE = 14;
-	private static final float RECEIVER_ZIPCODE_TOP_BASE = 380;
-	private static final float[] RECEIVER_ZIPCODE_LEFT_BASES = { 133, 153, 173, 194, 213, 233, 253 };
+	//private static final float RECEIVER_ZIPCODE_TOP_BASE = 380;
+	//private static final float RECEIVER_ZIPCODE_TOP_BASE = 375;
+	private static final float RECEIVER_ZIPCODE_TOP_BASE = 377;
+	//private static final float[] RECEIVER_ZIPCODE_LEFT_BASES = { 133, 153, 173, 194, 213, 233, 253 };
+	//private static final float[] RECEIVER_ZIPCODE_LEFT_BASES = { 140, 161, 182, 205, 225, 246, 270 };
+	//private static final float[] RECEIVER_ZIPCODE_LEFT_BASES = { 140, 161, 182, 200, 221, 242, 263 };
+	//private static final float[] RECEIVER_ZIPCODE_LEFT_BASES = { 136, 157, 178, 200, 221, 241, 262 };
+	private static final float[] RECEIVER_ZIPCODE_LEFT_BASES = { 135, 156, 177, 199, 220, 240, 261 };
 	private static final float RECEIVER_NAME_TOP_BASE = 330;
 	private static final float RECEIVER_NAME_CENTER_BASE = 145;
 	private static final float RECEIVER_NAME_HEIGHT = 280;
@@ -119,6 +129,8 @@ public class NengaAtenaWriter {
 				}
 				pdf.insertNewPage();
 			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		} finally {
 			pdf.close();
 		}
@@ -137,12 +149,10 @@ public class NengaAtenaWriter {
 	private void addSenderInfo(List<PWPdfField> fields) {
 		addZipCode(fields, sender.zipcode, SENDER_ZIPCODE_TOP_BASE, SENDER_ZIPCODE_LEFT_BASES, SENDER_ZIPCODE_FONT_SIZE);
 		addAddress(fields, sender.address, new PositionCalculator() {
-			@Override
 			public float getTopBase(float fontSize, int stringLength) {
 				return SENDER_ADDRESS_BOTTOM_BASE + (fontSize * stringLength);
 			}
 			
-			@Override
 			public float getLeftBase(float fontSize, int count) {
 				int maxFirstNameLength = getMaxLength(sender.firstNames);
 				int familyNameLength = sender.familyName.length();
@@ -152,23 +162,19 @@ public class NengaAtenaWriter {
 				return fontSize * (2 + count) + offset;
 			}
 
-			@Override
 			public float getFontSize(int length) {
 				return getPreferredFontSize((float)SENDER_ADDRESS_FONT_SIZE, SENDER_ADDRESS_HEIGHT, length);
 			}
 		});
 		addNameFields(fields, sender, new PositionCalculator() {
-			@Override
 			public float getTopBase(float fontSize, int totalNameLength) {
 				return SENDER_NAME_BOTTOM_BASE + (fontSize * totalNameLength);
 			}
 			
-			@Override
 			public float getLeftBase(float fontSize, int firstNamesCount) {
 				return SENDER_NAME_LEFT_BASE + (fontSize * firstNamesCount);
 			}
 
-			@Override
 			public float getFontSize(int length) {
 				return getPreferredFontSize((float)SENDER_NAME_FONT_SIZE, SENDER_NAME_HEIGHT, length);
 			}
@@ -178,33 +184,27 @@ public class NengaAtenaWriter {
 	private void addReceiverInfo(List<PWPdfField> fields, Item receiver) {
 		addZipCode(fields, receiver.zipcode, RECEIVER_ZIPCODE_TOP_BASE, RECEIVER_ZIPCODE_LEFT_BASES, RECEIVER_ZIPCODE_FONT_SIZE);
 		addAddress(fields, receiver.address, new PositionCalculator() {
-			@Override
 			public float getTopBase(float preferredFontSize, int totalNameLength) {
 				return RECEIVER_ADDRESS_TOP_BASE;
 			}
 			
-			@Override
 			public float getLeftBase(float fontSize, int firstNamesCount) {
 				return RECEIVER_ADDRESS_LEFT_BASE;
 			}
 
-			@Override
 			public float getFontSize(int length) {
 				return getPreferredFontSize((float)RECEIVER_ADDRESS_FONT_SIZE, RECEIVER_ADDRESS_HEIGHT, length);
 			}
 		});
 		addNameFields(fields, receiver, new PositionCalculator() {
-			@Override
 			public float getTopBase(float fontSize, int totalNameLength) {
 				return RECEIVER_NAME_TOP_BASE;
 			}
 			
-			@Override
 			public float getLeftBase(float fontSize, int firstNamesCount) {
 				return RECEIVER_NAME_CENTER_BASE + (fontSize / 2.0f) * (firstNamesCount - 1);
 			}
 
-			@Override
 			public float getFontSize(int length) {
 				return getPreferredFontSize((float)RECEIVER_NAME_FONT_SIZE, RECEIVER_NAME_HEIGHT, length);
 			}
